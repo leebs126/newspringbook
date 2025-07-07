@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 정보 출력창</title>
+</head>
+<body>
+<table border="1" align="center" width="80%">
+    <tr align="center" bgcolor="lightgreen">
+        <td><b>아이디</b></td>
+        <td><b>비밀번호</b></td>
+        <td><b>이름</b></td>
+        <td><b>이메일</b></td>
+        <td><b>가입일</b></td>
+        <td><b>삭제</b></td>
+    </tr>
+
+    <!-- Thymeleaf 반복문 -->
+    <tr th:each="member : ${membersList}" align="center">
+        <td th:text="${member.id}">아이디</td>
+        <td th:text="${member.pwd}">비밀번호</td>
+        <td th:text="${member.name}">이름</td>
+        <td th:text="${member.email}">이메일</td>
+        <td th:text="${member.joinDate}">가입일</td>
+        <td>
+            <a th:href="@{/member/removeMember.do(id=${member.id})}">삭제하기</a>
+        </td>
+    </tr>
+</table>
+
+<!-- 회원가입 링크 -->
+<div style="text-align:center; margin-top: 20px;">
+    <a th:href="@{/member/memberForm.do}">
+        <h1>회원가입</h1>
+    </a>
+</div>
+</body>
+</html>
