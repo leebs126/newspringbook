@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout :: layout(~{::title}, ~{::section})">
+
+<head>
+    <title>회원 정보 수정창</title>
+</head>
+
+<section style="margin: 5% auto; width: 100%; max-width: 1000px; text-align: center;">
+    <h1>회원 정보 수정창</h1>
+    <form method="post" th:action="@{/member/modMember.do}">
+        <table border="1" style="margin: 0 auto; width: 100%; max-width: 600px; border-collapse: collapse;">
+            <tr>
+                <td style="width: 200px; text-align: right;">아이디</td>
+                <td style="width: 400px;">
+                    <input type="text" name="id" th:value="${member.id}" readonly />
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">비밀번호</td>
+                <td>
+                    <input type="password" name="pwd" th:value="${member.pwd}" />
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">이름</td>
+                <td>
+                    <input type="text" name="name" th:value="${member.name}" />
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">이메일</td>
+                <td>
+                    <input type="text" name="email" th:value="${member.email}" />
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" value="수정하기" />
+                    <input type="reset" value="다시입력" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</section>
+</html>

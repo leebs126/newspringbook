@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, body)">
+<head>
+    <meta charset="UTF-8">
+    <title th:replace="${title}">페이지 제목</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        #container {
+			height: 100%;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* 전체 화면 높이 */
+        }
+
+        #header {
+            background: lightgreen;
+            padding: 20px;
+            flex: 0 0 auto; /* 고정 높이 */
+        }
+
+        #main {
+            display: flex;
+            flex: 1 1 auto;
+            height: 70%;
+        }
+
+        #sidebar-left {
+            background: yellow;
+            padding: 20px;
+            width: 20%;
+            box-sizing: border-box;
+        }
+
+        #content {
+			background: white;
+			     width: 80%;
+			     display: flex;
+			     justify-content: center;
+			     align-items: center;
+				 
+        }
+
+        #footer {
+            background: lightblue;
+            padding: 20px;
+            flex: 0 0 auto;
+        }
+		
+		
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="header" th:replace="fragments/header :: headerFragment"></div>
+
+    <div id="main">
+        <div id="sidebar-left" th:replace="fragments/side :: sideFragment"></div>
+        <div id="content" th:replace="${body}">
+			
+		</div>
+    </div>
+
+    <div id="footer" th:replace="fragments/footer :: footerFragment"></div>
+</div>
+</body>
+</html>

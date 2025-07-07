@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"></head>
+<body>
+<div id="header" th:fragment="headerFragment">
+    <table border="0" width="100%">
+        <tr>
+            <td>
+                <a th:href="@{/main.do}">
+                    <img th:src="@{/image/duke_swing.gif}" />
+                </a>
+            </td>
+            <td>
+                <h1 style="font-size: 30px;">스프링실습 홈페이지!!</h1>
+            </td>
+            <td>
+                <div th:if="${isLogOn} and ${member != null}">
+                    <h3 th:text="'환영합니다. ' + ${member.name} + '님!'"></h3>
+                    <a th:href="@{/member/logout.do}"><h3>로그아웃</h3></a>
+                </div>
+                <div th:unless="${isLogOn} and ${member != null}">
+                    <a th:href="@{/member/loginForm.do}"><h3>로그인</h3></a>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
