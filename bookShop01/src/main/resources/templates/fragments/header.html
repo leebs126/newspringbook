@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="headerFragment">
+    <div id="logo">
+        <a th:href="@{/main/main.do}">
+            <img width="176" height="80" alt="booktopia" th:src="@{/image/Booktopia_Logo.jpg}" />
+        </a>
+    </div>
+    <div id="head_link">
+        <ul>
+            <li th:if="${isLogOn}"><a th:href="@{/member/logout.do}">로그아웃</a></li>
+            <li th:if="${isLogOn}"><a th:href="@{/mypage/myPageMain.do}">마이페이지</a></li>
+            <li th:if="${isLogOn}"><a th:href="@{/cart/myCartList.do}">장바구니</a></li>
+            <li th:if="${isLogOn}"><a href="#">주문배송</a></li>
+            <li th:unless="${isLogOn}"><a th:href="@{/member/loginForm.do}">로그인</a></li>
+            <li th:unless="${isLogOn}"><a th:href="@{/member/memberForm.do}">회원가입</a></li>
+            <li><a href="#">고객센터</a></li>
+			<!-- 관리자 전용 링크: null 체크 추가 -->
+	       <li th:if="${isLogOn != null and isLogOn and memberInfo != null and memberInfo.member_id == 'admin'}">
+	           <a th:href="@{/admin/goods/adminGoodsMain.do}">관리자</a>
+	       </li>
+        </ul>
+    </div>
+    <br />
+    <div id="search">
+        <form name="frmSearch" th:action="@{/goods/searchGoods.do}">
+            <input name="searchWord" class="main_input" type="text" onkeyup="keywordSearch()" />
+            <input type="submit" name="search" class="btn1" value="검 색" />
+        </form>
+    </div>
+    <div id="suggest"><div id="suggestList"></div></div>
+</div>
+</body>
+</html>

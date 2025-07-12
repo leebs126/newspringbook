@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>회원가입</title>
+  
+</head>
+
+<body>
+<section>
+	<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+	  <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+	  <script th:inline="javascript">
+	    function execDaumPostcode() {
+	      new daum.Postcode({
+	        oncomplete: function(data) {
+	          let fullRoadAddr = data.roadAddress;
+	          let extraRoadAddr = '';
+
+	          if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+	            extraRoadAddr += data.bname;
+	          }
+	          if (data.buildingName !== '' && data.apartment === 'Y') {
+	            extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+	          }
+	          if (extraRoadAddr !== '') {
+	            fullRoadAddr += ' (' + extraRoadAddr + ')';
+	          }
+
+	          document.getElementById('zipcode').value = data.zonecode;
+	          document.getElementById('roadAddress').value = fullRoadAddr;
+	          document.getElementById('jibunAddress').value = data.jibunAddress;
+	        }
+	      }).open();
+	    }
+
+	    function fn_overlapped() {
+	      let _id = $('#_member_id').val();
+	      if (_id === '') {
+	        alert("ID를 입력하세요");
+	        return;
+	      }
+	      $.ajax({
+	        type: "post",
+	        url: "/member/overlapped.do", 
+	        data: { id: _id },
+	        success: function(data) {
+	          if (data === 'false') {
+	            alert("사용할 수 있는 ID입니다.");
+	            $('#btnOverlapped').prop("disabled", true);
+	            $('#_member_id').prop("disabled", true);
+	            $('#member_id').val(_id);
+	          } else {
+	            alert("사용할 수 없는 ID입니다.");
+	          }
+	        },
+	        error: function() {
+	          alert("에러가 발생했습니다.");
+	        }
+	      });
+	    }
+	  </script>	
+  <h3>필수입력사항</h3>
+  <form th:action="@{/member/addMember.do}" method="post">
+    <div id="detail_table">
+      <table>
+        <tr>
+          <td class="fixed_join">아이디</td>
+          <td>
+            <input type="text" name="_member_id" id="_member_id" />
+            <input type="hidden" name="member_id" id="member_id" />
+            <input type="button" id="btnOverlapped" value="중복체크" onclick="fn_overlapped()" />
+          </td>
+        </tr>
+
+        <tr>
+          <td class="fixed_join">비밀번호</td>
+          <td><input type="password" name="member_pw" /></td>
+        </tr>
+
+        <tr>
+          <td class="fixed_join">이름</td>
+          <td><input type="text" name="member_name" /></td>
+        </tr>
+
+        <tr>
+          <td class="fixed_join">성별</td>
+          <td>
+            <input type="radio" name="member_gender" value="102" />여성
+            <input type="radio" name="member_gender" value="101" checked />남성
+          </td>
+        </tr>
+
+        <tr>
+          <td class="fixed_join">법정생년월일</td>
+          <td>
+            <select name="member_birth_y">
+              <option th:each="year : ${#numbers.sequence(1921, 2020)}"
+                      th:value="${year}" th:text="${year}"
+                      th:selected="${year == 2000}">2000</option>
+            </select>년
+            <select name="member_birth_m">
+              <option th:each="month : ${#numbers.sequence(1,12)}"
+                      th:value="${month}" th:text="${month}"
+                      th:selected="${month == 5}">5</option>
+            </select>월
+            <select name="member_birth_d">
+              <option th:each="day : ${#numbers.sequence(1,31)}"
+                      th:value="${day}" th:text="${day}"
+                      th:selected="${day == 10}">10</option>
+            </select>일
+            <input type="radio" name="member_birth_gn" value="2" checked />양력
+            <input type="radio" name="member_birth_gn" value="1" />음력
+          </td>
+        </tr>
+
+        <tr>
+          <td class="fixed_join">전화번호</td>
+          <td>
+            <select name="tel1">
+              <option value="없음">없음</option>
+              <option value="02">02</option>
+              <option value="031">031</option>
+              <!-- 생략 -->
+            </select> -
+            <input type="text" name="tel2" size="10" /> -
+            <input type="text" name="tel3" size="10" />
+          </td>
+        </tr>
+
+        <tr>
+          <td class="fixed_join">휴대폰번호</td>
+          <td>
+            <select name="hp1">
+              <option value="010" selected>010</option>
+              <option value="011">011</option>
+              <!-- 생략 -->
+            </select> -
+            <input type="text" name="hp2" size="10" /> -
+            <input type="text" name="hp3" size="10" />
+            <br><br>
+            <input type="checkbox" name="smssts_yn" value="Y" checked /> 쇼핑몰에서 발송하는 SMS 수신
+          </td>
+        </tr>
+
+        <tr>
+          <td class="fixed_join">이메일</td>
+          <td>
+            <input type="text" name="email1" size="10" /> @
+            <input type="text" name="email2" size="10" />
+            <select name="email2">
+              <option value="non">직접입력</option>
+              <option value="naver.com">naver.com</option>
+              <option value="gmail.com">gmail.com</option>
+              <!-- 생략 -->
+            </select>
+            <br><br>
+            <input type="checkbox" name="emailsts_yn" value="Y" checked /> 이메일 수신 동의
+          </td>
+        </tr>
+
+        <tr>
+          <td class="fixed_join">주소</td>
+          <td>
+            <input type="text" name="zipcode" id="zipcode" size="10" />
+            <a href="javascript:execDaumPostcode()">우편번호검색</a><br>
+            지번 주소:<br><input type="text" id="jibunAddress" name="jibunAddress" size="50"><br><br>
+            도로명 주소:<br><input type="text" id="roadAddress" name="roadAddress" size="50"><br><br>
+            나머지 주소:<br><input type="text" name="namujiAddress" size="50">
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="clear">
+      <br><br>
+      <table align="center">
+        <tr>
+          <td>
+            <input type="submit" value="회원 가입" />
+            <input type="reset" value="다시입력" />
+          </td>
+        </tr>
+      </table>
+    </div>
+  </form>
+</section>
+</body>
+</html>

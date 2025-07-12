@@ -1,0 +1,34 @@
+<div th:fragment="quickMenuFragment">
+    <div id="sticky">
+        <ul>
+            <li><a href="#"><img width="24" height="24" th:src="@{/image/facebook_icon.png}" /> 페이스북</a></li>
+            <li><a href="#"><img width="24" height="24" th:src="@{/image/twitter_icon.png}" /> 트위터</a></li>
+            <li><a href="#"><img width="24" height="24" th:src="@{/image/rss_icon.png}" /> RSS 피드</a></li>
+        </ul>
+        <div class="recent">
+            <h3>최근 본 상품</h3>
+            <ul>
+                <div th:if="${#lists.isEmpty(quickGoodsList)}"><strong>상품이 없습니다.</strong></div>
+                <form name="frm_sticky">
+                    <div th:each="item, iter : ${quickGoodsList}">
+                        <input type="hidden" name="h_goods_id" th:value="${item.goods_id}" />
+                        <input type="hidden" name="h_goods_fileName" th:value="${item.goods_fileName}" />
+                        <a th:if="${iter.index == 0}" href="javascript:goodsDetail();">
+                            <img width="75" height="95" id="img_sticky" 
+                                 th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" />
+                        </a>
+                    </div>
+                </form>
+            </ul>
+        </div>
+        <div>
+            <h5 th:if="${#lists.isEmpty(quickGoodsList)}"> 0/0 </h5>
+            <h5 th:unless="${#lists.isEmpty(quickGoodsList)}">
+                <a href="javascript:fn_show_previous_goods();">이전</a>
+                <span id="cur_goods_num">1</span>/<span th:text="${quickGoodsListNum}"></span>
+                <a href="javascript:fn_show_next_goods();">다음</a>
+            </h5>
+        </div>
+    </div>
+</div>
+

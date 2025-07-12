@@ -1,0 +1,83 @@
+<div th:fragment="sideFragment">
+    <nav>
+        <ul>
+            <!-- 관리자 메뉴 -->
+            <li th:block th:if="${isLogOn != null and isLogOn and memberInfo != null and memberInfo.member_id == 'admin'}">
+                <h3>주요기능</h3>
+                <ul>
+                    <li><a th:href="@{/admin/goods/adminGoodsMain.do}">상품관리</a></li>
+                    <li><a th:href="@{/admin/order/adminOrderMain.do}">주문관리</a></li>
+                    <li><a th:href="@{/admin/member/adminMemberMain.do}">회원관리</a></li>
+                    <li><a href="#">배송관리</a></li>
+                    <li><a href="#">게시판관리</a></li>
+                </ul>
+            </li>
+
+            <!-- 마이페이지 메뉴 -->
+            <li th:if="${side_menu != null and side_menu == 'my_page'}">
+                <h3>주문내역</h3>
+                <ul>
+                    <li><a th:href="@{/mypage/listMyOrderHistory.do}">주문내역/배송 조회</a></li>
+                    <li><a href="#">반품/교환 신청 및 조회</a></li>
+                    <li><a href="#">취소 주문 내역</a></li>
+                    <li><a href="#">세금 계산서</a></li>
+                </ul>
+                <h3>정보내역</h3>
+                <ul>
+                    <li><a th:href="@{/mypage/myDetailInfo.do}">회원정보관리</a></li>
+                    <li><a href="#">나의 주소록</a></li>
+                    <li><a href="#">개인정보 동의내역</a></li>
+                    <li><a href="#">회원탈퇴</a></li>
+                </ul>
+            </li>
+
+            <!-- 기본(비로그인 또는 사용자 모드) 메뉴 -->
+            <li th:if="${side_menu == null or (side_menu != 'admin_mode' and side_menu != 'my_page')}">
+                <h3>국내외 도서</h3>
+                <ul>
+                    <li><a th:href="@{/goods/goodsList.do}">IT/인터넷</a></li>
+                    <li><a href="#">경제/경영</a></li>
+                    <li><a href="#">대학교재</a></li>
+                    <li><a href="#">자기계발</a></li>
+                    <li><a href="#">자연과학/공학</a></li>
+                    <li><a href="#">역사/인문학</a></li>
+                </ul>
+                <h3>음반</h3>
+                <ul>
+                    <li><a href="#">가요</a></li>
+                    <li><a href="#">록</a></li>
+                    <li><a href="#">클래식</a></li>
+                    <li><a href="#">뉴에이지</a></li>
+                    <li><a href="#">재즈</a></li>
+                    <li><a href="#">기타</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="clear"></div>
+
+    <!-- 배너 및 공지 영역 -->
+    <div id="banner">
+        <a href="#"><img width="190" height="163" th:src="@{/image/n-pay.jpg}" alt="배너"></a>
+    </div>
+
+    <div id="notice">
+        <h2>공지사항</h2>
+        <ul>
+            <li th:each="i : ${#numbers.sequence(1,5)}">
+                <a href="#">공지사항입니다. <span th:text="${i}">1</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="banner">
+        <a href="#"><img width="190" height="362" th:src="@{/image/side_banner1.jpg}" alt="배너1"></a>
+    </div>
+    <div id="banner">
+        <a href="#"><img width="190" height="104" th:src="@{/image/call_center_logo.jpg}" alt="고객센터"></a>
+    </div>
+    <div id="banner">
+        <a href="#"><img width="190" height="69" th:src="@{/image/QnA_logo.jpg}" alt="QnA"></a>
+    </div>
+</div>

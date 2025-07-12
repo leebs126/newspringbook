@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout :: layout(~{::title}, ~{::section})">
+
+<head>
+    <title>메인 페이지</title>
+</head>
+
+<section style="width: 800px; margin: 0 auto;">
+    <!-- 슬라이드 배너 -->
+    <div id="ad_main_banner">
+        <ul class="bjqs">
+            <li><img width="775" height="145" th:src="@{/image/main_banner01.jpg}" /></li>
+            <li><img width="775" height="145" th:src="@{/image/main_banner02.jpg}" /></li>
+            <li><img width="775" height="145" th:src="@{/image/main_banner03.jpg}" /></li>
+        </ul>
+    </div>
+
+    <!-- 베스트셀러 -->
+    <div class="main_book">
+        <h3>베스트셀러</h3>
+        <div th:each="item, stat : ${goodsMap.bestseller}">
+            <div class="book">
+                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                    <img class="link" th:src="@{/image/1px.gif}" />
+                </a>
+                <img width="121" height="154"
+                     th:src="@{/thumbnails.do(goods_id=${item.goods_id}, fileName=${item.goods_fileName})}" />
+                <div class="title" th:text="${item.goods_title}">도서 제목</div>
+                <div class="price" th:text="${#numbers.formatInteger(item.goods_price, 3, 'COMMA')} + '원'">가격</div>
+            </div>
+            <div class="book" th:if="${stat.index == 14}">
+                <font size="20"><a href="#">more</a></font>
+            </div>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+    <div id="ad_sub_banner">
+        <img width="770" height="117" th:src="@{/image/sub_banner01.jpg}" />
+    </div>
+
+    <!-- 신간 도서 -->
+    <div class="main_book">
+        <h3>새로 출판된 책</h3>
+        <div th:each="item, stat : ${goodsMap.newbook}">
+            <div class="book">
+                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                    <img class="link" th:src="@{/image/1px.gif}" />
+                </a>
+                <img width="121" height="154"
+                     th:src="@{/thumbnails.do(goods_id=${item.goods_id}, fileName=${item.goods_fileName})}" />
+                <div class="title" th:text="${item.goods_title}">도서 제목</div>
+                <div class="price" th:text="${#numbers.formatInteger(item.goods_price, 3, 'COMMA')} + '원'">가격</div>
+            </div>
+            <div class="book" th:if="${stat.index == 14}">
+                <font size="20"><a href="#">more</a></font>
+            </div>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+    <div id="ad_sub_banner">
+        <img width="770" height="117" th:src="@{/image/sub_banner02.jpg}" />
+    </div>
+
+    <!-- 스테디셀러 -->
+    <div class="main_book">
+        <h3>스테디셀러</h3>
+        <div th:each="item, stat : ${goodsMap.steadyseller}">
+            <div class="book">
+                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                    <img class="link" th:src="@{/image/1px.gif}" />
+                </a>
+                <img width="121" height="154"
+                     th:src="@{/thumbnails.do(goods_id=${item.goods_id}, fileName=${item.goods_fileName})}" />
+                <div class="title" th:text="${item.goods_title}">도서 제목</div>
+                <div class="price" th:text="${#numbers.formatInteger(item.goods_price, 3, 'COMMA')} + '원'">가격</div>
+            </div>
+            <div class="book" th:if="${stat.index == 14}">
+                <font size="20"><a href="#">more</a></font>
+            </div>
+        </div>
+    </div>
+</section>
+
+</html>

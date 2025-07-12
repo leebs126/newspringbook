@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, body)">
+<head>
+    <meta charset="UTF-8" />
+    <title th:replace="${title}">Booktopia</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet" />
+    <link th:href="@{/css/basic-jquery-slider.css}" rel="stylesheet" />
+    <link th:href="@{/css/mobile.css}" rel="stylesheet" />
+    <script th:src="@{/jquery/jquery-1.6.2.min.js}"></script>
+    <script th:src="@{/jquery/jquery.easing.1.3.js}"></script>
+    <script th:src="@{/jquery/stickysidebar.jquery.js}"></script>
+    <script th:src="@{/jquery/basic-jquery-slider.js}"></script>
+    <script th:src="@{/jquery/tabs.js}"></script>
+    <script th:src="@{/jquery/carousel.js}"></script>
+	<script>
+		// 슬라이드 
+		$(document).ready(function() {
+			$('#ad_main_banner').bjqs({
+				'width' : 775,
+				'height' : 145,
+				'showMarkers' : true,
+				'showControls' : false,
+				'centerMarkers' : false
+			});
+		});
+		// 스티키 		
+		$(function() {
+			$("#sticky").stickySidebar({
+				timer : 100,
+				easing : "easeInBounce"
+			});
+		});
+	</script>
+</head>
+<body>
+	<div id="outer_wrap">
+			<div id="wrap">
+				<header>
+					  <header th:replace="fragments/header :: headerFragment"></header>
+				</header>
+				<div class="clear"></div>
+				<aside>
+					 <aside th:replace="fragments/side :: sideFragment"></aside>
+				</aside>
+				<article>
+				 	<!--<tiles:insertAttribute name="body" />-->
+					<article th:replace="${body}"></article>
+				</article>
+				<div class="clear"></div>
+				<footer>
+	        		 <footer th:replace="fragments/footer :: footerFragment"></footer>
+	        	</footer>
+			</div>
+			  <div th:replace="fragments/quickMenu :: quickMenuFragment"></div>
+	    </div>    
+	
+
+		</body>
+</body>
+</html>
