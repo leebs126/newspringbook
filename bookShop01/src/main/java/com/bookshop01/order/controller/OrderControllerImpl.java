@@ -43,9 +43,9 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		
 		Boolean isLogOn=(Boolean)session.getAttribute("isLogOn");
 		String action=(String)session.getAttribute("action");
-		//�α��� ���� üũ
-		//������ �α��� ������ ���� �ֹ����� ����
-		//�α׾ƿ� ������ ��� �α��� ȭ������ �̵�
+		//로그인 여부 체크
+		//이전에 로그인 상태인 경우는 주문과정 진행
+		//로그아웃 상태인 경우 로그인 화면으로 이동
 		if(isLogOn==null || isLogOn==false){
 			session.setAttribute("orderInfo", _orderVO);
 			session.setAttribute("action", "/order/orderEachGoods.do");
@@ -59,16 +59,44 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 			 }
 		 }
 		
-		String viewName=(String)request.getAttribute("viewName");
+//		String viewName=(String)request.getAttribute("viewName");
+		String viewName = "/order/orderGoodsForm";
 		ModelAndView mav = new ModelAndView(viewName);
 		
-		List myOrderList=new ArrayList<OrderVO>();
+		List<OrderVO> myOrderList=new ArrayList<OrderVO>();
 		myOrderList.add(orderVO);
 
 		MemberVO memberInfo=(MemberVO)session.getAttribute("memberInfo");
 		
+		int finalTotalOrderPrice = 0;
+		int totalOrderPrice = 0;
+		int totalDeliveryPrice = 0;
+		int totalDiscountPrice = 0;
+		int totalOrderGoodsQty = 0;
+		int orderGoodsQty = 0;
+		for (OrderVO orderVO : myOrderList) {
+			orderGoodsQty = orderVO.getOrder_goods_qty();
+//			finalTotalOrderPrice+=orderVO.getGoods_sales_price() * orderGoodsQty;
+			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
+			totalDeliveryPrice += orderVO.getGoods_delivery_price();
+			totalOrderGoodsQty+= orderGoodsQty;
+		}
+		
+		totalDiscountPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
+		finalTotalOrderPrice = totalOrderPrice - totalDiscountPrice;
 		session.setAttribute("myOrderList", myOrderList);
 		session.setAttribute("orderer", memberInfo);
+		
+		mav.addObject("finalTotalOrderPrice", finalTotalOrderPrice);
+		mav.addObject("totalOrderPrice", totalOrderPrice);
+		mav.addObject("totalOrderGoodsQty", totalOrderGoodsQty);
+		mav.addObject("totalDeliveryPrice", totalDeliveryPrice);
+		mav.addObject("totalDiscountPrice", totalDiscountPrice);
+		
+//		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
+//		session.setAttribute("totalOrderPrice", totalOrderPrice);
+//		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
+//		
 		return mav;
 	}
 	

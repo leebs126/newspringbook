@@ -11,8 +11,8 @@ public class OrderVO {
 	private String goods_title;
 	private int goods_sales_price;
 	private int total_goods_price;
-	private int cart_goods_qty; //Àå¹Ù±¸´Ï¿¡ ´ã±ä Á¦Ç° ¼ö
-	private int order_goods_qty; //ÃÖÁ¾ ÁÖ¹®  Á¦Ç° ¼ö
+	private int cart_goods_qty; //ï¿½ï¿½Ù±ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ç° ï¿½ï¿½
+	private int order_goods_qty; //ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¹ï¿½  ï¿½ï¿½Ç° ï¿½ï¿½
 	private String orderer_name;
 	private String receiver_name;
 	private String receiver_hp1;
@@ -29,15 +29,15 @@ public class OrderVO {
 	private String pay_method;
 	private String card_com_name;
 	private String card_pay_month;
-	private String pay_orderer_hp_num; //ÈÞ´ëÆù °áÁ¦ ÀüÈ­¹øÈ£
+	private String pay_orderer_hp_num; //ï¿½Þ´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È­ï¿½ï¿½È£
 	private String pay_order_time;
-	private String delivery_state;  //ÇöÀç ÁÖ¹® »óÇ° ¹è¼Û »óÅÂ
+	private String delivery_state;  //ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¹ï¿½ ï¿½ï¿½Ç° ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	
 	private String final_total_price;
 	private int goods_qty;
 	private String goods_fileName;
 	private String orderer_hp;
-	
+	private int goods_delivery_price;
 	
 	
 	
@@ -243,6 +243,15 @@ public class OrderVO {
 	public void setOrderer_hp(String orderer_hp) {
 		this.orderer_hp = orderer_hp;
 	}
+	public int getGoods_delivery_price() {
+		return goods_delivery_price;
+	}
+	public void setGoods_delivery_price(int goods_delivery_price) {
+		this.goods_delivery_price = goods_delivery_price;
+	}
+	
+	
+	
 	
 	
 

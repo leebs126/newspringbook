@@ -34,10 +34,12 @@ public class CartServiceImpl  implements CartService{
 	}
 	
 	public boolean findCartGoods(CartVO cartVO) throws Exception{
-		 return cartDAO.selectCountInCart(cartVO);
+		 return Boolean.parseBoolean(cartDAO.selectCountInCart(cartVO));
 		
 	}	
 	public void addGoodsInCart(CartVO cartVO) throws Exception{
+		int cartId= cartDAO.selectMaxCartId();
+		cartVO.setCart_id(cartId);
 		cartDAO.insertGoodsInCart(cartVO);
 	}
 	

@@ -9,15 +9,15 @@
     </div>
     <div id="head_link">
         <ul>
-            <li th:if="${isLogOn}"><a th:href="@{/member/logout.do}">로그아웃</a></li>
-            <li th:if="${isLogOn}"><a th:href="@{/mypage/myPageMain.do}">마이페이지</a></li>
-            <li th:if="${isLogOn}"><a th:href="@{/cart/myCartList.do}">장바구니</a></li>
-            <li th:if="${isLogOn}"><a href="#">주문배송</a></li>
-            <li th:unless="${isLogOn}"><a th:href="@{/member/loginForm.do}">로그인</a></li>
-            <li th:unless="${isLogOn}"><a th:href="@{/member/memberForm.do}">회원가입</a></li>
+            <li th:if="${session.isLogOn}"><a th:href="@{/member/logout.do}">로그아웃</a></li>
+            <li th:if="${session.isLogOn}"><a th:href="@{/mypage/myPageMain.do}">마이페이지</a></li>
+            <li th:if="${session.isLogOn}"><a th:href="@{/cart/myCartList.do}">장바구니</a></li>
+            <li th:if="${session.isLogOn}"><a href="#">주문배송</a></li>
+            <li th:unless="${session.isLogOn}"><a th:href="@{/member/loginForm.do}">로그인</a></li>
+            <li th:unless="${session.isLogOn}"><a th:href="@{/member/memberForm.do}">회원가입</a></li>
             <li><a href="#">고객센터</a></li>
 			<!-- 관리자 전용 링크: null 체크 추가 -->
-	       <li th:if="${isLogOn != null and isLogOn and memberInfo != null and memberInfo.member_id == 'admin'}">
+	       <li th:if="${session.isLogOn != null and session.isLogOn and memberInfo != null and memberInfo.member_id == 'admin'}">
 	           <a th:href="@{/admin/goods/adminGoodsMain.do}">관리자</a>
 	       </li>
         </ul>

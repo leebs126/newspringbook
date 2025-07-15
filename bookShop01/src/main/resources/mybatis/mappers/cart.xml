@@ -67,10 +67,10 @@
 
 	<insert id="insertGoodsInCart" parameterType="cartVO">
 	    <![CDATA[
-		    	insert into t_shopping_cart(cart_id,
+		    	INSERT INTO t_shopping_cart(cart_id,
 		    	                           goods_id,
 		    	                           member_id)
-		        				 values(#{cart_id},
+		        				 VALUES(#{cart_id},
     							        #{goods_id},
     							        #{member_id})
     	]]>
