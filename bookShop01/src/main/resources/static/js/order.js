@@ -157,16 +157,18 @@ function fn_pay_card(){
 function imagePopup(type) {
 	if (type == 'open') {
 		// 팝업창을 연다.
-		jQuery('#layer').attr('style', 'visibility:visible');
-
-		// 페이지를 가리기위한 레이어 영역의 높이를 페이지 전체의 높이와 같게 한다.
-		jQuery('#layer').height(jQuery(document).height());
+		jQuery('#layer').css({
+					'display': 'flex',
+					'visibility': 'visible'
+		});
 	}
 
 	else if (type == 'close') {
-
 		// 팝업창을 닫는다.
-		jQuery('#layer').attr('style', 'visibility:hidden');
+		jQuery('#layer').css({
+					'display': 'none',
+					'visibility': 'hidden'
+		});
 	}
 }
 

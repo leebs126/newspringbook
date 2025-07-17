@@ -1,8 +1,6 @@
 package com.bookshop01.order.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -27,9 +25,16 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	public void addNewOrder(List<OrderVO> myOrderList) throws Exception{
-		orderDAO.insertNewOrder(myOrderList);
-		//īƮ���� �ֹ� ��ǰ �����Ѵ�.
-		orderDAO.removeGoodsFromCart(myOrderList);
+		
+		for(int i=0; i<myOrderList.size();i++){
+			int order_id= orderDAO.selectOrderID();
+			OrderVO orderVO =(OrderVO)myOrderList.get(i);
+			orderVO.setOrder_id(order_id);
+			orderDAO.insertNewOrder(orderVO);
+			
+			//장바구니에서 주문 상품 제거한다.
+			orderDAO.deleteGoodsFromCart(orderVO);
+		}
 	}	
 	
 	public OrderVO findMyOrder(String order_id) throws Exception{

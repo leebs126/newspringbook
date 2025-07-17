@@ -21,13 +21,13 @@
 				<c:forEach var="item" items="${myOrderList }">
 				    <td> ${item.order_id }</td>
 					<TD class="goods_image">
-					  <a href="${contextPath}/goods/goodsDetail.do?goods_id=${item.goods_id }">
-					    <IMG width="75" alt=""  src="${contextPath}/thumbnails.do?goods_id=${item.goods_id}&fileName=${item.goods_fileName}">
+					  <a href="/goods/goodsDetail.do?goods_id=${item.goods_id }">
+					    <IMG width="75" alt=""  src="/thumbnails.do?goods_id=${item.goods_id}&fileName=${item.goods_fileName}">
 					  </a>
 					</TD>
 					<TD>
 					  <h2>
-					     <A href="${contextPath}/goods/goodsDetail.do?goods_id=${item.goods_id }">${item.goods_title }</A>
+					     <A href="/goods/goodsDetail.do?goods_id=${item.goods_id }">${item.goods_title }</A>
 					  </h2>
 					</TD>
 					<td>
@@ -163,7 +163,7 @@
 		<br>
 		<br> 
 		<a href="${contextPath}/main/main.do"> 
-		   <IMG width="75" alt="" src="${contextPath}/resources/image/btn_shoping_continue.jpg">
+		   <img width="75" alt="" src="/image/btn_shoping_continue.jpg">
 		</a>
 <DIV class="clear"></DIV>		
 	
