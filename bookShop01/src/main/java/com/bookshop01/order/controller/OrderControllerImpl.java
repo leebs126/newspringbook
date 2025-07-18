@@ -71,7 +71,7 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		int finalTotalOrderPrice = 0;
 		int totalOrderPrice = 0;
 		int totalDeliveryPrice = 0;
-		int totalDiscountPrice = 0;
+		int totalDiscountedPrice = 0;
 		int totalOrderGoodsQty = 0;
 		int orderGoodsQty = 0;
 		for (OrderVO orderVO : myOrderList) {
@@ -82,16 +82,16 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 			totalOrderGoodsQty+= orderGoodsQty;
 		}
 		
-		totalDiscountPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
-		finalTotalOrderPrice = totalOrderPrice - totalDiscountPrice;
+		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
+		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
 		session.setAttribute("myOrderList", myOrderList);
 		session.setAttribute("orderer", memberInfo);
 		
-		mav.addObject("finalTotalOrderPrice", finalTotalOrderPrice);
-		mav.addObject("totalOrderPrice", totalOrderPrice);
-		mav.addObject("totalOrderGoodsQty", totalOrderGoodsQty);
-		mav.addObject("totalDeliveryPrice", totalDeliveryPrice);
-		mav.addObject("totalDiscountPrice", totalDiscountPrice);
+		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
+		session.setAttribute("totalOrderPrice", totalOrderPrice);
+		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
+		session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
+		session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
 		
 //		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
 //		session.setAttribute("totalOrderPrice", totalOrderPrice);
@@ -104,11 +104,13 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 	@RequestMapping(value="/orderAllCartGoods.do" ,method = RequestMethod.POST)
 	public ModelAndView orderAllCartGoods( @RequestParam("cart_goods_qty")  String[] cart_goods_qty,
 			                 HttpServletRequest request, HttpServletResponse response)  throws Exception{
-		String viewName=(String)request.getAttribute("viewName");
+//		String viewName=(String)request.getAttribute("viewName");
+		String viewName = "/order/orderGoodsForm";
+		
 		ModelAndView mav = new ModelAndView(viewName);
 		HttpSession session=request.getSession();
 		Map cartMap=(Map)session.getAttribute("cartMap");
-		List myOrderList=new ArrayList<OrderVO>();
+		List<OrderVO> myOrderList=new ArrayList<OrderVO>();
 		
 		List<GoodsVO> myGoodsList=(List<GoodsVO>)cartMap.get("myGoodsList");
 		MemberVO memberVO=(MemberVO)session.getAttribute("memberInfo");
@@ -142,7 +144,8 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 	@RequestMapping(value="/payToOrderGoods.do" ,method = RequestMethod.POST)
 	public ModelAndView payToOrderGoods(@RequestParam Map<String, String> receiverMap,
 			                       HttpServletRequest request, HttpServletResponse response)  throws Exception{
-		String viewName=(String)request.getAttribute("viewName");
+//		String viewName=(String)request.getAttribute("viewName");
+		String viewName = "/order/orderResult";
 		ModelAndView mav = new ModelAndView(viewName);
 		
 		HttpSession session=request.getSession();

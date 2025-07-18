@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <meta charset="utf-8">
+    <title>주문 내역</title>
+</head>
+<body>
+<section>
+<h1>1. 최종 주문 내역서</h1>
+<table class="list_view">
+    <tbody align="center">
+        <tr style="background: #33ff00">
+            <td>주문번호</td>
+            <td colspan="2" class="fixed">주문상품명</td>
+            <td>수량</td>
+            <td>주문금액</td>
+            <td>배송비</td>
+            <td>예상적립금</td>
+            <td>주문금액합계</td>
+        </tr>
+        <tr th:each="item : ${myOrderList}">
+            <td th:text="${item.order_id}"></td>
+            <td class="goods_image">
+                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                    <img width="75" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" alt="">
+                </a>
+            </td>
+            <td>
+                <h2>
+                    <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" 
+                       th:text="${item.goods_title}"></a>
+                </h2>
+            </td>
+            <td><h2 th:text="${item.order_goods_qty} + '개'"></h2></td>
+            <td><h2 th:text="${item.order_goods_qty * item.goods_sales_price} + '원 (10% 할인)'"></h2></td>
+            <td><h2>0원</h2></td>
+            <td><h2 th:text="${item.order_goods_qty * 1500} + '원'"></h2></td>
+            <td><h2 th:text="${item.order_goods_qty * item.goods_sales_price} + '원'"></h2></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="clear"></div>
+
+<form name="form_order">
+    <h1>2. 배송지 정보</h1>
+    <div class="detail_table">
+        <table>
+            <tbody>
+                <tr class="dot_line">
+                    <td class="fixed_join">배송방법</td>
+                    <td th:text="${myOrderInfo.delivery_method}"></td>
+                </tr>
+                <tr class="dot_line">
+                    <td class="fixed_join">받으실 분</td>
+                    <td th:text="${myOrderInfo.receiver_name}"></td>
+                </tr>
+                <tr class="dot_line">
+                    <td class="fixed_join">휴대폰번호</td>
+                    <td th:text="${myOrderInfo.receiver_hp1 + '-' + myOrderInfo.receiver_hp2 + '-' + myOrderInfo.receiver_hp3}"></td>
+                </tr>
+                <tr class="dot_line">
+                    <td class="fixed_join">유선전화(선택)</td>
+                    <td th:text="${myOrderInfo.receiver_tel1 + '-' + myOrderInfo.receiver_tel2 + '-' + myOrderInfo.receiver_tel3}"></td>
+                </tr>
+                <tr class="dot_line">
+                    <td class="fixed_join">주소</td>
+                    <td th:utext="${myOrderInfo.delivery_address}"></td>
+                </tr>
+                <tr class="dot_line">
+                    <td class="fixed_join">배송 메시지</td>
+                    <td th:text="${myOrderInfo.delivery_message}"></td>
+                </tr>
+                <tr class="dot_line">
+                    <td class="fixed_join">선물 포장</td>
+                    <td th:text="${myOrderInfo.gift_wrapping}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <br><br>
+    <h2>주문고객</h2>
+    <table>
+        <tbody>
+            <tr class="dot_line">
+                <td><h2>이름</h2></td>
+                <td><input type="text" th:value="${session.orderer.member_name}" size="15" disabled /></td>
+            </tr>
+            <tr class="dot_line">
+                <td><h2>핸드폰</h2></td>
+                <td>
+                    <input type="text" th:value="${session.orderer.hp1 + '-' + session.orderer.hp2 + '-' + session.orderer.hp3}" size="15" disabled />
+                </td>
+            </tr>
+            <tr class="dot_line">
+                <td><h2>이메일</h2></td>
+                <td>
+                    <input type="text" th:value="${session.orderer.email1 + '@' + session.orderer.email2}" size="15" disabled />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="clear"></div>
+
+    <br><br><br>
+    <h1>3. 결제정보</h1>
+    <div class="detail_table">
+        <table>
+            <tbody>
+                <tr class="dot_line">
+                    <td class="fixed_join">결제방법</td>
+                    <td th:utext="${myOrderInfo.pay_method}"></td>
+                </tr>
+                <tr class="dot_line">
+                    <td class="fixed_join">결제카드</td>
+                    <td th:text="${myOrderInfo.card_com_name}"></td>
+                </tr>
+                <tr class="dot_line">
+                    <td class="fixed_join">할부기간</td>
+                    <td th:text="${myOrderInfo.card_pay_month}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+
+<div class="clear"></div>
+
+<br><br><br>
+<center>
+    <a th:href="@{/main/main.do}">
+        <img width="75" alt="쇼핑 계속하기" src="/image/btn_shoping_continue.jpg">
+    </a>
+</center>
+
+<div class="clear"></div>
+</section>
+</body>
+</html>

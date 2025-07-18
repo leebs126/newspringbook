@@ -297,31 +297,31 @@
 			</tr>
 			<tr cellpadding=40 align=center>
 				<td id="">
-					<p id="p_totalNum" th:text="${totalOrderGoodsQty} +'개'"></p>
-					<input id="h_total_order_goods_qty" type="hidden" th:value="${totalOrderGoodsQty}" />
+					<p id="p_totalNum" th:text="${session.totalOrderGoodsQty} +'개'"></p>
+					<input id="h_total_order_goods_qty" type="hidden" th:value="${session.totalOrderGoodsQty}" />
 				</td>
 				<td>
-					<p id="p_totalPrice" th:text="${totalOrderPrice} +'원'"></p> 
-					<input id="h_totalPrice" type="hidden" th:value="${totalOrderPrice} + '원'" />
+					<p id="p_totalPrice" th:text="${session.totalOrderPrice} +'원'"></p> 
+					<input id="h_totalPrice" type="hidden" th:value="${session.totalOrderPrice} + '원'" />
 				</td>
 				<td><img width="25" alt="" src="${/image/plus.jpg"></td>
 				<td>
-					<p id="p_totalDelivery" th:text="${totalDeliveryPrice } + '원'"></p>
-					<input id="h_totalDelivery" type="hidden" th:value="${totalDeliveryPrice}" />
+					<p id="p_totalDelivery" th:text="${session.totalDeliveryPrice} + '원'"></p>
+					<input id="h_totalDelivery" type="hidden" th:value="${session.totalDeliveryPrice}" />
 				</td>
 				<td>
 				<img width="25" alt="" 	src="${/image/minus.jpg"></td>
 				<td>
-					<p id="p_totalSalesPrice" th:text="${totalDiscountPrice} +'원'"></p>
-					<input id="h_total_sales_price" type="hidden" th:value="${totalDiscountPrice}" />
+					<p id="p_totalSalesPrice" th:text="${session.totalDiscountedPrice} +'원'"></p>
+					<input id="h_total_sales_price" type="hidden" th:value="${session.totalDiscountedPrice}" />
 				</td>
 				<td><img width="25" alt="" src="${/image/equal.jpg"></td>
 				<td>
 					
 						<font>
-							<p id="p_final_total_price" th:text="${finalTotalOrderPrice} +'원'"></p>
+							<p id="p_final_total_price" th:text="${session.finalTotalOrderPrice} +'원'"></p>
 					</font>
-					 <input id="h_final_total_price" type="hidden" th:value="${finalTotalOrderPrice}" />
+					 <input id="h_final_total_price" type="hidden" th:value="${session.finalTotalOrderPrice}" />
 				</td>
 			</tr>
 		</tbody>
