@@ -44,18 +44,21 @@ public class CartControllerImpl extends BaseController implements CartController
 		String member_id=memberVO.getMember_id();
 		cartVO.setMember_id(member_id);
 		Map<String ,List> cartMap = cartService.myCartList(cartVO);
+		
+		int totalOrderGoodsQty = 0;  //총주문개수
+		int totalDeliveryPrice = 0;  //총배송비
+		int totalOrderGoodsPrice = 0; //총상품주문액
+		int totalDiscountedPrice = 0; //총할인비
+		int finalTotalOrderPrice = 0;    //최종결제비
+		
 		if(cartMap ==null) {
-			return mav;
+			session.setAttribute("cartMap", null);
 		}else {
-			session.setAttribute("cartMap", cartMap);  //장바구니 목록 화면에서 상품 주문 시 사용하기 위해서 장바구니 목록을 세션에 저장한다.
+			session.setAttribute("cartMap", cartMap);  				//장바구니 목록 화면에서 상품 주문 시 사용하기 위해서 장바구니 목록을 세션에 저장한다.
 			List<GoodsVO> myGoodsList = cartMap.get("myGoodsList");
 			List<CartVO> myCartList = cartMap.get("myCartList");
 			
-			int totalOrderGoodsQty = 0;  //총주문 개수
-			int totalDeliveryPrice = 0;  //총배송비
-			int totalOrderGoodsPrice = 0; //총상품주문액
-			int totalDiscountedPrice = 0; //총할인비
-			int finalTotalOrderPrice = 0;    //최종결제비
+			
 			
 			for(CartVO cartVO : myCartList) {
 				totalOrderGoodsQty += cartVO.getCart_goods_qty();
@@ -69,14 +72,13 @@ public class CartControllerImpl extends BaseController implements CartController
 			
 			totalDiscountedPrice = (int)(totalOrderGoodsPrice * 0.1);
 			finalTotalOrderPrice = totalOrderGoodsPrice + totalDeliveryPrice - totalDiscountedPrice;
-			
-			session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
-			session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
-			session.setAttribute("totalOrderGoodsPrice", totalOrderGoodsPrice);
-			session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
-			session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
-			return mav;	
 		}
+		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
+		session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
+		session.setAttribute("totalOrderGoodsPrice", totalOrderGoodsPrice);
+		session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
+		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
+		return mav;	
 		
 		
 	}

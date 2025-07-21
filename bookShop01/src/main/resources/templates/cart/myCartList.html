@@ -11,7 +11,7 @@
 
 <div th:unless="${session.cartMap != null}">
 	<table class="list_view">
-		<tr>
+		<tr align=center>
 		 <td colspan="8" class="fixed"><strong>장바구니에 상품이 없습니다.</strong></td>
 		</tr>
 	</table>
@@ -107,7 +107,6 @@
             <td>
                 <!--<p id="p_totalGoodsPrice" th:text="${#numbers.formatDecimal(totalGoodsPrice, 0, 'COMMA')} + '원'"></p>-->
 				<p id="p_totalOrderGoodsPrice" th:text="${session.totalOrderGoodsPrice} + '원'"></p>
-                
 				<input id="h_totalGoodsPrice" type="hidden" th:value="${session.totalOrderGoodsPrice}" />
             </td>
             <td><img width="25" src="/image/plus.jpg" alt="" /></td>

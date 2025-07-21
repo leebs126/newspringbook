@@ -1,12 +1,11 @@
 package com.bookshop01.mypage.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -24,6 +23,10 @@ import com.bookshop01.member.vo.MemberVO;
 import com.bookshop01.mypage.service.MyPageService;
 import com.bookshop01.order.vo.OrderVO;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @Primary
 @RequestMapping(value="/mypage")
@@ -40,18 +43,38 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 			   HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		HttpSession session=request.getSession();
 		session=request.getSession();
-		session.setAttribute("side_menu", "my_page"); //���������� ���̵� �޴��� �����Ѵ�.
+		session.setAttribute("side_menu", "my_page"); //마이페이지 사이드 메뉴로 설정한다.
 		
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
 		String member_id=memberVO.getMember_id();
 		
-		List<OrderVO> myOrderList=myPageService.listMyOrderGoods(member_id);
+		List<OrderVO> _myOrderList=myPageService.listMyOrderGoods(member_id);
+		
+		
+		Set<Integer> orderIdSet = new HashSet<>();
+		for (OrderVO orderVO : _myOrderList) {
+		    orderIdSet.add(orderVO.getOrder_id());
+		}
+		
+		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
+		
+		Map<Integer, List<OrderVO>> myOrderMap = new HashMap<>();
+
+		for (int orderId : orderIdList) {
+		    List<OrderVO> myOrderList = new ArrayList<>();
+		    for (OrderVO orderVO : _myOrderList) {
+		        if (orderId ==orderVO.getOrder_id()) {
+		        	myOrderList.add(orderVO);
+		        }
+		    }
+		    myOrderMap.put(orderId, myOrderList);
+		}	
+		 
 		
 		mav.addObject("message", message);
-		mav.addObject("myOrderList", myOrderList);
-
+		mav.addObject("myOrderMap", myOrderMap);
 		return mav;
 	}
 	

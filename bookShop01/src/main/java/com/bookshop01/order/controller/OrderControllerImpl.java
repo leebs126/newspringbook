@@ -68,15 +68,14 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 
 		MemberVO memberInfo=(MemberVO)session.getAttribute("memberInfo");
 		
-		int finalTotalOrderPrice = 0;
-		int totalOrderPrice = 0;
-		int totalDeliveryPrice = 0;
-		int totalDiscountedPrice = 0;
-		int totalOrderGoodsQty = 0;
-		int orderGoodsQty = 0;
+		int finalTotalOrderPrice = 0;  //최종결제금액
+		int totalOrderPrice = 0; 		//총주문액
+		int totalDeliveryPrice = 0;		//총배송비
+		int totalDiscountedPrice = 0;	//총할인액
+		int totalOrderGoodsQty = 0; 	//총주문개수
+		int orderGoodsQty = 0;			//총주문수량
 		for (OrderVO orderVO : myOrderList) {
 			orderGoodsQty = orderVO.getOrder_goods_qty();
-//			finalTotalOrderPrice+=orderVO.getGoods_sales_price() * orderGoodsQty;
 			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
 			totalDeliveryPrice += orderVO.getGoods_delivery_price();
 			totalOrderGoodsQty+= orderGoodsQty;
@@ -93,10 +92,6 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
 		session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
 		
-//		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
-//		session.setAttribute("totalOrderPrice", totalOrderPrice);
-//		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
-//		
 		return mav;
 	}
 	
@@ -113,7 +108,7 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		List<OrderVO> myOrderList=new ArrayList<OrderVO>();
 		
 		List<GoodsVO> myGoodsList=(List<GoodsVO>)cartMap.get("myGoodsList");
-		MemberVO memberVO=(MemberVO)session.getAttribute("memberInfo");
+		MemberVO memberInfo=(MemberVO)session.getAttribute("memberInfo");
 		
 		for(int i=0; i<cart_goods_qty.length;i++){
 			String[] cart_goods=cart_goods_qty[i].split(":");
@@ -135,8 +130,31 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 				}
 			}
 		}
+		
+		int finalTotalOrderPrice = 0;  //최종결제금액
+		int totalOrderPrice = 0; 		//총주문액
+		int totalDeliveryPrice = 0;		//총배송비
+		int totalDiscountedPrice = 0;	//총할인액
+		int totalOrderGoodsQty = 0; 	//총주문개수
+		int orderGoodsQty = 0;			//총주문수량
+		for (OrderVO orderVO : myOrderList) {
+			orderGoodsQty = orderVO.getOrder_goods_qty();
+			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
+			totalDeliveryPrice += orderVO.getGoods_delivery_price();
+			totalOrderGoodsQty+= orderGoodsQty;
+		}
+		
+		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
+		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
 		session.setAttribute("myOrderList", myOrderList);
-		session.setAttribute("orderer", memberVO);
+		session.setAttribute("orderer", memberInfo);
+		
+		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
+		session.setAttribute("totalOrderPrice", totalOrderPrice);
+		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
+		session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
+		session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
+		
 		return mav;
 	}	
 	

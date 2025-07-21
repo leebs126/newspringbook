@@ -2,7 +2,7 @@
     <nav>
         <ul>
             <!-- 관리자 메뉴 -->
-            <li th:block th:if="${isLogOn != null and isLogOn and memberInfo != null and memberInfo.member_id == 'admin'}">
+            <li th:block th:if="${session.isLogOn != null and session.isLogOn and memberInfo != null and session.memberInfo.member_id == 'admin'}">
                 <h3>주요기능</h3>
                 <ul>
                     <li><a th:href="@{/admin/goods/adminGoodsMain.do}">상품관리</a></li>
@@ -14,7 +14,7 @@
             </li>
 
             <!-- 마이페이지 메뉴 -->
-            <li th:if="${side_menu != null and side_menu == 'my_page'}">
+            <li th:if="${session.side_menu != null and session.side_menu == 'my_page'}">
                 <h3>주문내역</h3>
                 <ul>
                     <li><a th:href="@{/mypage/listMyOrderHistory.do}">주문내역/배송 조회</a></li>
@@ -32,7 +32,7 @@
             </li>
 
             <!-- 기본(비로그인 또는 사용자 모드) 메뉴 -->
-            <li th:if="${side_menu == null or (side_menu != 'admin_mode' and side_menu != 'my_page')}">
+            <li th:if="${session.side_menu == null or (session.side_menu != 'admin_mode' and session.side_menu != 'my_page')}">
                 <h3>국내외 도서</h3>
                 <ul>
                     <li><a th:href="@{/goods/goodsList.do}">IT/인터넷</a></li>
