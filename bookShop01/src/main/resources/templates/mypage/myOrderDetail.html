@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+  <meta charset="utf-8">
+  <title>주문상세정보</title>
+  
+</head>
+<body>
+<section>
+	<style>
+	  	   .large-row {
+	  	     height: 20px;              /* tr 높이 설정 */
+	  	    
+	  	   }
+  	 </style>
+    <h1>1.주문상세정보</h1>
+    <table class="list_view">
+      <tbody align="center">
+        <tr style="background: #33ff00">
+          <td>주문번호</td>
+          <td>주문일자</td>
+          <td colspan="2" class="fixed">주문상품명/주문개수</td>
+          <td>배송비</td>
+          <td>예상적립금</td>
+		  <td>정가</td>
+          <td>할인가<br>(10% 할인)</td>
+          <td>총주문금액</td>
+        </tr>
+		<th:block th:each="entry : ${myOrderMap}">
+		  <th:block th:with="myOrderList=${entry.value}">
+		    <tr th:each="item, iterStat : ${myOrderList}">
+		      <!-- 주문번호와 주문일자는 첫 번째 항목에만 표시 -->
+		      <td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" th:text="${entry.key}" style="background-color: #d0ebff;" >주문번호</td>
+		      <td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" th:text="${item.pay_order_time}"  style="background-color: rgb(255, 255, 128);">주문일자</td>
+
+		      <!-- 상품 정보 반복 표시 -->
+		      <td >
+		        <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+		          <img width="75" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" alt="">
+		        </a>
+		      </td>
+			 
+		      <td>
+				  <span th:text="${item.goods_title}"></span>/<span th:text="${item.order_goods_qty}"></span>개
+		      </td>
+			 <td><span th:text="${item.goods_delivery_price} + '원'"></span></td>
+			  <td><span th:text="${1500 * item.order_goods_qty} + '원'"></span></td>
+		      <td><span th:text="${item.goods_sales_price} + '원'"></span></td>
+		      <td>
+				<span th:text="${T(java.lang.Math).round(item.goods_sales_price * 0.9)} + '원'"></span>
+			  </td>
+		      
+		      
+			  <td th:if="${iterStat.index == 0}" 
+			      th:rowspan="${#lists.size(myOrderList)}" 
+			      style="background-color: #e0f7da;">
+			    <span th:text="${finalTotalOrderPrice} + '원'"></span>
+			  </td>
+		    </tr>
+		  </th:block>
+		</th:block>
+      </tbody>
+    </table>
+
+    <br><br>
+	<h1>2.배송지 정보</h1>
+
+	<table class="detail_table">
+	  <tbody>
+	    <tr th:each="entry : ${myOrderMap}" class="large-row">
+	      <td class="fixed_join">배송방법</td>
+	      <td th:text="${entry.value[0].delivery_method}"></td>
+	    </tr>
+	    <tr th:each="entry : ${myOrderMap}" class="large-row">
+	      <td class="fixed_join">받으실 분</td>
+	      <td th:text="${entry.value[0].receiver_name}"></td>
+	    </tr>
+	    <tr th:each="entry : ${myOrderMap}" class="large-row">
+	      <td class="fixed_join">휴대폰번호</td>
+	      <td th:text="${entry.value[0].receiver_hp1 + '-' + entry.value[0].receiver_hp2 + '-' + entry.value[0].receiver_hp3}"></td>
+	    </tr>
+	    <tr th:each="entry : ${myOrderMap}" class="large-row">
+	      <td class="fixed_join">유선전화(선택)</td>
+	      <td th:text="${entry.value[0].receiver_tel1 + '-' + entry.value[0].receiver_tel2 + '-' + entry.value[0].receiver_tel3}"></td>
+	    </tr>
+	    <tr th:each="entry : ${myOrderMap}" class="large-row">
+	      <td class="fixed_join">주소</td>
+	      <td th:utext="${entry.value[0].delivery_address}"></td>
+	    </tr>
+	    <tr th:each="entry : ${myOrderMap}" class="large-row">
+	      <td class="fixed_join">배송 메시지</td>
+	      <td th:text="${entry.value[0].delivery_message}"></td>
+	    </tr>
+	    <tr th:each="entry : ${myOrderMap}" class="large-row">
+	      <td class="fixed_join">선물 포장</td>
+	      <td th:text="${entry.value[0].gift_wrapping}"></td>
+	    </tr>
+	  </tbody>
+	</table>
+
+    <h2>주문고객</h2>
+    <table>
+      <tbody>
+        <tr class="dot_line">
+          <td><h2>이름</h2></td>
+          <td>
+            <input type="text" th:value="${orderer.member_name}" size="15" disabled />
+          </td>
+        </tr>
+        <tr class="dot_line">
+          <td><h2>핸드폰</h2></td>
+          <td>
+            <input type="text" th:value="${orderer.hp1 + '-' + orderer.hp2 + '-' + orderer.hp3}" size="15" disabled />
+          </td>
+        </tr>
+        <tr class="dot_line">
+          <td><h2>이메일</h2></td>
+          <td>
+            <input type="text" th:value="${orderer.email1 + '@' + orderer.email2}" size="15" disabled />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+	
+    <div class="clear"></div>
+	<br><br>
+    <h1>3.결제정보</h1>
+	<th:block th:each="entry : ${myOrderMap}" th:with="myOrderList=${entry.value}">
+	  <table class="detail_table">
+	    <tbody>
+	      <tr class="large-row">
+	        <td class="fixed_join">결제방법</td>
+	        <td th:utext="${myOrderList[0].pay_method}"></td>
+	      </tr>
+	      <tr class="large-row">
+	        <td class="fixed_join">결제카드</td>
+	        <td th:text="${myOrderList[0].card_com_name}"></td>
+	      </tr>
+	      <tr class="large-row">
+	        <td class="fixed_join">할부기간</td>
+	        <td th:text="${myOrderList[0].card_pay_month}"></td>
+	      </tr>
+	    </tbody>
+	  </table>
+	</th:block>
+	<div class="clear"></div>
+    <br><br>
+    <a th:href="@{/main/main.do}">
+      <img width="75" alt="쇼핑 계속하기" src="/image/btn_shoping_continue.jpg">
+    </a>
+</section>
+</body>
+</html>

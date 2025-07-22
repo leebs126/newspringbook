@@ -1,11 +1,13 @@
 package com.bookshop01.mypage.controller;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -13,6 +15,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +42,7 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 	private MemberVO memberVO;
 	
 	@Override
-	@RequestMapping(value="/myPageMain.do" ,method = RequestMethod.GET)
+	@GetMapping(value="/myPageMain.do")
 	public ModelAndView myPageMain(@RequestParam(required = false,value="message")  String message,
 			   HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		HttpSession session=request.getSession();
@@ -52,27 +56,25 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		
 		List<OrderVO> _myOrderList=myPageService.listMyOrderGoods(member_id);
 		
-		
 		Set<Integer> orderIdSet = new HashSet<>();
 		for (OrderVO orderVO : _myOrderList) {
 		    orderIdSet.add(orderVO.getOrder_id());
-		}
+		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
 		
-		Map<Integer, List<OrderVO>> myOrderMap = new HashMap<>();
-
+		Map<Integer, List<OrderVO>> myOrderMap = new TreeMap<>(Comparator.reverseOrder());
+		
 		for (int orderId : orderIdList) {
-		    List<OrderVO> myOrderList = new ArrayList<>();
+			List<OrderVO> myOrderList = new ArrayList<>();
 		    for (OrderVO orderVO : _myOrderList) {
-		        if (orderId ==orderVO.getOrder_id()) {
-		        	myOrderList.add(orderVO);
+		        if (orderId == orderVO.getOrder_id()) {
+		            myOrderList.add(orderVO);
 		        }
 		    }
 		    myOrderMap.put(orderId, myOrderList);
 		}	
 		 
-		
 		mav.addObject("message", message);
 		mav.addObject("myOrderMap", myOrderMap);
 		return mav;
@@ -86,14 +88,56 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		HttpSession session=request.getSession();
 		MemberVO orderer=(MemberVO)session.getAttribute("memberInfo");
 		
-		List<OrderVO> myOrderList=myPageService.findMyOrderInfo(order_id);
+		List<OrderVO> _myOrderList = myPageService.findMyOrderInfo(order_id);
+		
+		Set<Integer> orderIdSet = new HashSet<>();
+		for (OrderVO orderVO : _myOrderList) {
+		    orderIdSet.add(orderVO.getOrder_id());
+		}		
+		
+		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
+		Map<Integer, List<OrderVO>> myOrderMap = new TreeMap<>(Comparator.reverseOrder());
+		
+		for (int orderId : orderIdList) {
+			List<OrderVO> myOrderList = new ArrayList<>();
+		    for (OrderVO orderVO : _myOrderList) {
+		        if (orderId == orderVO.getOrder_id()) {
+		            myOrderList.add(orderVO);
+		        }
+		    }
+		    myOrderMap.put(orderId, myOrderList);
+		}	
+		
+		mav.addObject("myOrderMap", myOrderMap);
 		mav.addObject("orderer", orderer);
-		mav.addObject("myOrderList",myOrderList);
+		
+		int finalTotalOrderPrice = 0;  //최종결제금액
+		int totalOrderPrice = 0; 		//총주문액
+		int totalDeliveryPrice = 0;		//총배송비
+		int totalDiscountedPrice = 0;	//총할인액
+		int totalOrderGoodsQty = 0; 	//총주문개수
+		int orderGoodsQty = 0;			//총주문수량
+		for (OrderVO orderVO : _myOrderList) {
+			orderGoodsQty = orderVO.getOrder_goods_qty();
+			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
+			totalDeliveryPrice += orderVO.getGoods_delivery_price();
+			totalOrderGoodsQty+= orderGoodsQty;
+		}
+		
+		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
+		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
+		
+		mav.addObject("finalTotalOrderPrice", finalTotalOrderPrice);
+		mav.addObject("totalOrderPrice", totalOrderPrice);
+		mav.addObject("totalOrderGoodsQty", totalOrderGoodsQty);
+		mav.addObject("totalDeliveryPrice", totalDeliveryPrice);
+		mav.addObject("totalDiscountedPrice", totalDiscountedPrice);
+		
 		return mav;
 	}
 	
 	@Override
-	@RequestMapping(value="/listMyOrderHistory.do" ,method = RequestMethod.GET)
+	@GetMapping(value="/listMyOrderHistory.do")
 	public ModelAndView listMyOrderHistory(@RequestParam Map<String, String> dateMap,
 			                               HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
@@ -111,22 +155,53 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		dateMap.put("beginDate", beginDate);
 		dateMap.put("endDate", endDate);
 		dateMap.put("member_id", member_id);
-		List<OrderVO> myOrderHistList=myPageService.listMyOrderHistory(dateMap);
+		List<OrderVO> _myOrderHistList=myPageService.listMyOrderHistory(dateMap);
 		
-		String beginDate1[]=beginDate.split("-"); //�˻����ڸ� ��,��,�Ϸ� �и��ؼ� ȭ�鿡 �����մϴ�.
+		String beginDate1[]=beginDate.split("-"); //검색일자를 년,월,일로 분리해서 화면에 전달합니다.
+		int[] beginDateInts = new int[beginDate1.length];
+		for (int i = 0; i < beginDate1.length; i++) {
+		    beginDateInts[i] = Integer.parseInt(beginDate1[i]);
+		}
+		
+		
 		String endDate1[]=endDate.split("-");
-		mav.addObject("beginYear",beginDate1[0]);
-		mav.addObject("beginMonth",beginDate1[1]);
-		mav.addObject("beginDay",beginDate1[2]);
-		mav.addObject("endYear",endDate1[0]);
-		mav.addObject("endMonth",endDate1[1]);
-		mav.addObject("endDay",endDate1[2]);
-		mav.addObject("myOrderHistList", myOrderHistList);
+		int[] endDateInts = new int[endDate1.length];
+		for (int i = 0; i < endDate1.length; i++) {
+		    endDateInts[i] = Integer.parseInt(endDate1[i]);
+		}
+		
+		mav.addObject("beginYear", beginDateInts[0]);
+		mav.addObject("beginMonth", beginDateInts[1]);
+		mav.addObject("beginDay", beginDateInts[2]);
+		mav.addObject("endYear", endDateInts[0]);
+		mav.addObject("endMonth", endDateInts[1]);
+		mav.addObject("endDay", endDateInts[2]);
+		
+		
+		Set<Integer> orderIdSet = new HashSet<>();
+		for (OrderVO orderVO : _myOrderHistList) {
+		    orderIdSet.add(orderVO.getOrder_id());
+		}		
+		
+		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
+		Map<Integer, List<OrderVO>> myOrderHistMap = new TreeMap<>(Comparator.reverseOrder());
+		
+		for (int orderId : orderIdList) {
+			List<OrderVO> myOrderHistList = new ArrayList<>();
+		    for (OrderVO orderVO : _myOrderHistList) {
+		        if (orderId == orderVO.getOrder_id()) {
+		        	myOrderHistList.add(orderVO);
+		        }
+		    }
+		    myOrderHistMap.put(orderId, myOrderHistList);
+		}	
+		 
+		mav.addObject("myOrderHistMap", myOrderHistMap);
 		return mav;
 	}	
 	
 	@Override
-	@RequestMapping(value="/cancelMyOrder.do" ,method = RequestMethod.POST)
+	@PostMapping(value="/cancelMyOrder.do")
 	public ModelAndView cancelMyOrder(@RequestParam("order_id")  String order_id,
 			                         HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		ModelAndView mav = new ModelAndView();
@@ -141,6 +216,16 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 	public ModelAndView myDetailInfo(HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
+		
+		HttpSession session=request.getSession();
+		MemberVO memberVO =(MemberVO)session.getAttribute("memberInfo");
+		int member_birth_y = Integer.parseInt(memberVO.getMember_birth_y());
+		int member_birth_m = Integer.parseInt(memberVO.getMember_birth_m());
+		int member_birth_d = Integer.parseInt(memberVO.getMember_birth_d());
+		mav.addObject("member_birth_y", member_birth_y);  //생년월일의 년,월,일을 정수로 변환해서 상세페이지로 전달한다.
+		mav.addObject("member_birth_m", member_birth_m);
+		mav.addObject("member_birth_d", member_birth_d);
+		
 		return mav;
 	}	
 	

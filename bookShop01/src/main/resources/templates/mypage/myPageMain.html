@@ -44,9 +44,13 @@
 	        </tr>
 		<tbody align="center">
 		<tr th:each="entry : ${myOrderMap}">
-		  <td th:text="${entry.key}">주문번호</td>
+		  <!--<td th:text="${entry.key}">주문번호</td>-->
+		  <td>
+			<a th:href="@{/mypage/myOrderDetail.do(order_id=${entry.key})}">
+			    <span th:text="${entry.key}"></span>
+			</a>
+	      </td>
 		  <th:block th:with="orderList=${entry.value}">
-		  <!--<td th:text="${orderList[entryStat.count-1].pay_order_time}">주문일자</td>-->
 		  <td th:if="${#lists.size(orderList) > 0}" th:text="${orderList[0].pay_order_time}">주문일자</td>
 		  <td align='left' style="padding-left:100px;">
 		    <ul>

@@ -37,7 +37,7 @@ public class MemberControllerImpl extends BaseController implements MemberContro
 	public ModelAndView login(@RequestParam Map<String, String> loginMap,
 			                  HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView mav = new ModelAndView();
-		 memberVO=memberService.login(loginMap);
+		 memberVO = memberService.login(loginMap);
 		if(memberVO!= null && memberVO.getMember_id()!=null){
 			HttpSession session=request.getSession();
 			session=request.getSession();
@@ -54,7 +54,7 @@ public class MemberControllerImpl extends BaseController implements MemberContro
 			
 			
 		}else{
-			String message="���̵�  ��й�ȣ�� Ʋ���ϴ�. �ٽ� �α������ּ���";
+			String message="아이디나  비밀번호가 틀립니다. 다시 로그인해주세요";
 			mav.addObject("message", message);
 			mav.setViewName("/member/loginForm");
 		}
@@ -85,13 +85,13 @@ public class MemberControllerImpl extends BaseController implements MemberContro
 		try {
 		    memberService.addMember(_memberVO);
 		    message  = "<script>";
-		    message +=" alert('ȸ�� ������ ���ƽ��ϴ�.�α���â���� �̵��մϴ�.');";
+		    message +=" alert('회원 가입을 마쳤습니다.로그인창으로 이동합니다.');";
 		    message += " location.href='"+request.getContextPath()+"/member/loginForm.do';";
 		    message += " </script>";
 		    
 		}catch(Exception e) {
 			message  = "<script>";
-		    message +=" alert('�۾� �� ������ �߻��߽��ϴ�. �ٽ� �õ��� �ּ���');";
+			message +=" alert('작업 중 오류가 발생했습니다. 다시 시도해 주세요');";
 		    message += " location.href='"+request.getContextPath()+"/member/memberForm.do';";
 		    message += " </script>";
 			e.printStackTrace();
