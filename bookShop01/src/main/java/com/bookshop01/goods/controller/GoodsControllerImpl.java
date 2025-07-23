@@ -40,7 +40,7 @@ public class GoodsControllerImpl extends BaseController   implements GoodsContro
 //		ModelAndView mav = new ModelAndView("goods/goodsDetail");
 		mav.addObject("goodsMap", goodsMap);
 		GoodsVO goodsVO=(GoodsVO)goodsMap.get("goodsVO");
-		addGoodsInQuick(goods_id,goodsVO,session);
+		addGoodsInQuick(Integer.parseInt(goods_id), goodsVO,session);
 		return mav;
 	}
 	
@@ -76,24 +76,41 @@ public class GoodsControllerImpl extends BaseController   implements GoodsContro
 		
 	}
 	
-	private void addGoodsInQuick(String goods_id,GoodsVO goodsVO,HttpSession session){
+	private void addGoodsInQuick(int goods_id,GoodsVO goodsVO,HttpSession session){
 		boolean already_existed=false;
-		List<GoodsVO> quickGoodsList; //�ֱ� �� ��ǰ ���� ArrayList
+		List<GoodsVO> quickGoodsList = null; //최근 본 상품 저장 ArrayList
 		quickGoodsList=(ArrayList<GoodsVO>)session.getAttribute("quickGoodsList");
 		
 		if(quickGoodsList!=null){
-			if(quickGoodsList.size() < 4){ //�̸��� ��ǰ ����Ʈ�� ��ǰ������ ���� ������ ���
-				for(int i=0; i<quickGoodsList.size();i++){
-					GoodsVO _goodsBean=(GoodsVO)quickGoodsList.get(i);
-					if(goods_id.equals(_goodsBean.getGoods_id())){
-						already_existed=true;
-						break;
-					}
-				}
-				if(already_existed==false){
-					quickGoodsList.add(goodsVO);
-				}
-			}
+			 // 기존에 본 상품인지 확인
+		    for (int i = 0; i < quickGoodsList.size(); i++) {
+		        GoodsVO _goodsBean = quickGoodsList.get(i);
+		        if (goods_id == _goodsBean.getGoods_id()) {
+		            already_existed = true;
+		            break;
+		        }
+		    }
+
+		    // 중복이 아니면 맨 앞에 추가
+		    if (!already_existed) {
+		        if (quickGoodsList.size() >= 4) {
+		            quickGoodsList.remove(quickGoodsList.size() - 1); // 가장 오래된 상품 제거
+		        }
+		        quickGoodsList.add(0, goodsVO); // 맨 앞에 추가
+		    }
+		    
+//			if(quickGoodsList.size() < 4){  //미리본 상품 리스트에 상품개수가 세개 이하인 경우
+//				for(int i=0; i<quickGoodsList.size();i++){
+//					GoodsVO _goodsBean=(GoodsVO)quickGoodsList.get(i);
+//					if(goods_id ==_goodsBean.getGoods_id()){
+//						already_existed=true;
+//						break;
+//					}
+//				}
+//				if(already_existed==false){
+//					quickGoodsList.add(goodsVO);
+//				}
+//			}
 			
 		}else{
 			quickGoodsList =new ArrayList<GoodsVO>();
