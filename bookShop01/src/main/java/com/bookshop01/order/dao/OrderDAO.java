@@ -13,5 +13,5 @@ public interface OrderDAO {
 	public void insertNewOrder(OrderVO orderVO) throws DataAccessException;
 	public OrderVO findMyOrder(String order_id) throws DataAccessException;
 	public void deleteGoodsFromCart(OrderVO orderVO)throws DataAccessException;
-	public int selectOrderID() throws DataAccessException;
+	public int selectOrderId() throws DataAccessException;
 }

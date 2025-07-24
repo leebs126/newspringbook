@@ -1,12 +1,10 @@
 package com.bookshop01.order.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -22,6 +20,10 @@ import com.bookshop01.goods.vo.GoodsVO;
 import com.bookshop01.member.vo.MemberVO;
 import com.bookshop01.order.service.OrderService;
 import com.bookshop01.order.vo.OrderVO;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @Primary
@@ -65,33 +67,8 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		
 		List<OrderVO> myOrderList=new ArrayList<OrderVO>();
 		myOrderList.add(orderVO);
+		calcOrderGoodsInfo(request,myOrderList);  //최종결제금액, 총주문액, 총배송비,총할인액을 구해서 session에 저장하는 메서드
 
-		MemberVO memberInfo=(MemberVO)session.getAttribute("memberInfo");
-		
-		int finalTotalOrderPrice = 0;  //최종결제금액
-		int totalOrderPrice = 0; 		//총주문액
-		int totalDeliveryPrice = 0;		//총배송비
-		int totalDiscountedPrice = 0;	//총할인액
-		int totalOrderGoodsQty = 0; 	//총주문개수
-		int orderGoodsQty = 0;			//총주문수량
-		for (OrderVO orderVO : myOrderList) {
-			orderGoodsQty = orderVO.getOrder_goods_qty();
-			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
-			totalDeliveryPrice += orderVO.getGoods_delivery_price();
-			totalOrderGoodsQty+= orderGoodsQty;
-		}
-		
-		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
-		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
-		session.setAttribute("myOrderList", myOrderList);
-		session.setAttribute("orderer", memberInfo);
-		
-		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
-		session.setAttribute("totalOrderPrice", totalOrderPrice);
-		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
-		session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
-		session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
-		
 		return mav;
 	}
 	
@@ -108,7 +85,6 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		List<OrderVO> myOrderList=new ArrayList<OrderVO>();
 		
 		List<GoodsVO> myGoodsList=(List<GoodsVO>)cartMap.get("myGoodsList");
-		MemberVO memberInfo=(MemberVO)session.getAttribute("memberInfo");
 		
 		for(int i=0; i<cart_goods_qty.length;i++){
 			String[] cart_goods=cart_goods_qty[i].split(":");
@@ -131,29 +107,8 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 			}
 		}
 		
-		int finalTotalOrderPrice = 0;  //최종결제금액
-		int totalOrderPrice = 0; 		//총주문액
-		int totalDeliveryPrice = 0;		//총배송비
-		int totalDiscountedPrice = 0;	//총할인액
-		int totalOrderGoodsQty = 0; 	//총주문개수
-		int orderGoodsQty = 0;			//총주문수량
-		for (OrderVO orderVO : myOrderList) {
-			orderGoodsQty = orderVO.getOrder_goods_qty();
-			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
-			totalDeliveryPrice += orderVO.getGoods_delivery_price();
-			totalOrderGoodsQty+= orderGoodsQty;
-		}
-		
-		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
-		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
-		session.setAttribute("myOrderList", myOrderList);
-		session.setAttribute("orderer", memberInfo);
-		
-		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
-		session.setAttribute("totalOrderPrice", totalOrderPrice);
-		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
-		session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
-		session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
+		//최종결제금액, 총주문액, 총배송비,총할인액을 구해서 session에 저장하는 메서드
+		calcOrderGoodsInfo(request,myOrderList);
 		
 		return mav;
 	}	
@@ -171,36 +126,45 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		String member_id=memberVO.getMember_id();
 		String orderer_name=memberVO.getMember_name();
 		String orderer_hp = memberVO.getHp1()+"-"+memberVO.getHp2()+"-"+memberVO.getHp3();
-		List<OrderVO> myOrderList=(List<OrderVO>)session.getAttribute("myOrderList");
+		Map<Integer, List<OrderVO>> myOrderMap=(Map)session.getAttribute("myOrderMap");
 		
-		for(int i=0; i<myOrderList.size();i++){
-			OrderVO orderVO=(OrderVO)myOrderList.get(i);
-			orderVO.setMember_id(member_id);
-			orderVO.setOrderer_name(orderer_name);
-			orderVO.setReceiver_name(receiverMap.get("receiver_name"));
-			
-			orderVO.setReceiver_hp1(receiverMap.get("receiver_hp1"));
-			orderVO.setReceiver_hp2(receiverMap.get("receiver_hp2"));
-			orderVO.setReceiver_hp3(receiverMap.get("receiver_hp3"));
-			orderVO.setReceiver_tel1(receiverMap.get("receiver_tel1"));
-			orderVO.setReceiver_tel2(receiverMap.get("receiver_tel2"));
-			orderVO.setReceiver_tel3(receiverMap.get("receiver_tel3"));
-			
-			orderVO.setDelivery_address(receiverMap.get("delivery_address"));
-			orderVO.setDelivery_message(receiverMap.get("delivery_message"));
-			orderVO.setDelivery_method(receiverMap.get("delivery_method"));
-			orderVO.setGift_wrapping(receiverMap.get("gift_wrapping"));
-			orderVO.setPay_method(receiverMap.get("pay_method"));
-			orderVO.setCard_com_name(receiverMap.get("card_com_name"));
-			orderVO.setCard_pay_month(receiverMap.get("card_pay_month"));
-			orderVO.setPay_orderer_hp_num(receiverMap.get("pay_orderer_hp_num"));	
-			orderVO.setOrderer_hp(orderer_hp);	
-			myOrderList.set(i, orderVO); ; //각 orderVO에 주문자 정보를 세팅한 후 다시 myOrderList에 저장한다.
-		}//end for
+				
+		Iterator ite = myOrderMap.keySet().iterator();
+		List<OrderVO >myOrderList= null;
+		while(ite.hasNext())
+		{
+			int orderSeq = (Integer)ite.next();
+			myOrderList = myOrderMap.get(orderSeq);
 		
-	    orderService.addNewOrder(myOrderList);
+			for(int i=0; i<myOrderList.size();i++){
+				OrderVO orderVO=(OrderVO)myOrderList.get(i);
+				orderVO.setMember_id(member_id);
+				orderVO.setOrderer_name(orderer_name);
+				orderVO.setReceiver_name(receiverMap.get("receiver_name"));
+				
+				orderVO.setReceiver_hp1(receiverMap.get("receiver_hp1"));
+				orderVO.setReceiver_hp2(receiverMap.get("receiver_hp2"));
+				orderVO.setReceiver_hp3(receiverMap.get("receiver_hp3"));
+				orderVO.setReceiver_tel1(receiverMap.get("receiver_tel1"));
+				orderVO.setReceiver_tel2(receiverMap.get("receiver_tel2"));
+				orderVO.setReceiver_tel3(receiverMap.get("receiver_tel3"));
+				
+				orderVO.setDelivery_address(receiverMap.get("delivery_address"));
+				orderVO.setDelivery_message(receiverMap.get("delivery_message"));
+				orderVO.setDelivery_method(receiverMap.get("delivery_method"));
+				orderVO.setGift_wrapping(receiverMap.get("gift_wrapping"));
+				orderVO.setPay_method(receiverMap.get("pay_method"));
+				orderVO.setCard_com_name(receiverMap.get("card_com_name"));
+				orderVO.setCard_pay_month(receiverMap.get("card_pay_month"));
+				orderVO.setPay_orderer_hp_num(receiverMap.get("pay_orderer_hp_num"));	
+				orderVO.setOrderer_hp(orderer_hp);	
+				myOrderList.set(i, orderVO); ; //각 orderVO에 주문자 정보를 세팅한 후 다시 myOrderList에 저장한다.
+			}//end for
+		}
+	    int orderId = orderService.addNewOrder(myOrderList);
+	    mav.addObject("orderId", orderId);
 		mav.addObject("myOrderInfo",receiverMap);  //OrderVO로 주문결과 페이지에  주문자 정보를 표시한다.
-		mav.addObject("myOrderList", myOrderList);
+		mav.addObject("myOrderMap", myOrderMap);
 		return mav;
 	}
 	

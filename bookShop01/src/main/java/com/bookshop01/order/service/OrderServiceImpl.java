@@ -24,16 +24,17 @@ public class OrderServiceImpl implements OrderService {
 		return orderGoodsList;
 	}
 	
-	public void addNewOrder(List<OrderVO> myOrderList) throws Exception{
-		int order_id= orderDAO.selectOrderID();  //주문번호를 얻는다.
+	public int addNewOrder(List<OrderVO> myOrderList) throws Exception{
+		int orderId= orderDAO.selectOrderId();  //주문번호를 얻는다.
 		for(int i=0; i<myOrderList.size();i++){
 			OrderVO orderVO =(OrderVO)myOrderList.get(i);
-			orderVO.setOrder_id(order_id);
+			orderVO.setOrder_id(orderId);
 			orderDAO.insertNewOrder(orderVO);
 			
 			//장바구니에서 주문 상품 제거한다.
 			orderDAO.deleteGoodsFromCart(orderVO);
 		}
+		return orderId;
 	}	
 	
 	public OrderVO findMyOrder(String order_id) throws Exception{

@@ -58,12 +58,9 @@ public class CartControllerImpl extends BaseController implements CartController
 			List<GoodsVO> myGoodsList = cartMap.get("myGoodsList");
 			List<CartVO> myCartList = cartMap.get("myCartList");
 			
-			
-			
 			for(CartVO cartVO : myCartList) {
 				totalOrderGoodsQty += cartVO.getCart_goods_qty();
 			}
-			
 			
 			for(GoodsVO goodsVO : myGoodsList) {
 				totalOrderGoodsPrice+= goodsVO.getGoods_price();

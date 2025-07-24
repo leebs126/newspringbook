@@ -14,13 +14,18 @@
             <td>주문번호</td>
             <td colspan="2" class="fixed">주문상품명</td>
             <td>수량</td>
-            <td>주문금액</td>
+            <td>정가</td>
             <td>배송비</td>
             <td>예상적립금</td>
-            <td>주문금액합계</td>
+            <td>최종주문금액</td>
         </tr>
-        <tr th:each="item : ${myOrderList}">
-            <td th:text="${item.order_id}"></td>
+		<th:block th:each="entry : ${session.myOrderMap}">
+					<th:block th:with="myOrderList=${entry.value}">
+        <tr th:each="item, iterStat : ${myOrderList}">
+            <!--<td th:text="${orderId}"></td>-->
+			<td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" style="background-color: #d0ebff;" >
+				<h2 th:text="${orderId}"></h2>
+			</td>
             <td class="goods_image">
                 <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
                     <img width="75" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" alt="">
@@ -33,11 +38,17 @@
                 </h2>
             </td>
             <td><h2 th:text="${item.order_goods_qty} + '개'"></h2></td>
-            <td><h2 th:text="${item.order_goods_qty * item.goods_sales_price} + '원 (10% 할인)'"></h2></td>
+            <td><h2 th:text="${item.goods_sales_price} + '원'"></h2></td>
             <td><h2>0원</h2></td>
-            <td><h2 th:text="${item.order_goods_qty * 1500} + '원'"></h2></td>
-            <td><h2 th:text="${item.order_goods_qty * item.goods_sales_price} + '원'"></h2></td>
-        </tr>
+            <td><h2 th:text="${1500 * item.order_goods_qty} + '원'"></h2></td>
+			<td th:if="${iterStat.index == 0}" 
+		    	  th:rowspan="${#lists.size(myOrderList)}" 
+		     			 style="background-color: #e0f7da;">
+		    	<h2 th:text="${session.finalTotalOrderPrice} + '원(10%할인)'"></h2>
+		 	</td>
+          </tr>
+		 </th:block>
+		</th:block>
     </tbody>
 </table>
 

@@ -108,7 +108,7 @@
     	]]>
 	</insert>
 
-   <select id="selectOrderID" resultType="int"  >
+   <select id="selectOrderId" resultType="int"  >
 	    <![CDATA[
 		    select seq_order_id.nextval from dual
     	]]>
