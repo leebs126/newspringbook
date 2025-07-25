@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>검색 도서 목록 페이지</title>
+</head>
+<body>
+<section id="new_book">
+<style>
+  #page_control {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 5px; /* 요소 간 간격 */
+    justify-content: center; /* 가운데 정렬 */
+  }
+
+  #page_control li {
+    display: inline-block;
+  }
+
+  #page_control li a {
+    display: inline-block;
+    padding: 6px 12px;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #333;
+  }
+
+  #page_control li a.page_contrl_active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+
+  #page_control li a.no_border {
+    border: none;
+  }
+
+  #page_control li a.disabled {
+    color: #aaa;
+    pointer-events: none;
+  }
+  
+  
+  table.result_table tbody tr:nth-child(odd) {
+    background-color:#f2f7f9; /* 부드러운 하늘색 톤 */
+  }
+
+  table.result_table tbody tr:nth-child(even) {
+    background-color:#ffffff; /* 깔끔한 흰색 */
+  }
+  
+  hgroup h1 {
+    font-size: 28px !important;
+    font-weight: bold !important;
+    margin-bottom: 5px !important;
+  }
+
+  hgroup h2 {
+    font-size: 22px !important;
+    font-weight: normal !important;
+    color: #333 !important;
+    margin-top: 0 !important;
+	font-weight: bold !important;
+  }
+</style>
+<hgroup>
+    <h1>컴퓨터와 인터넷</h1>
+    <h2>오늘의 책</h2>
+</hgroup>
+
+	<link th:href="@{/css/main.css}" rel="stylesheet" />
+	   <link th:href="@{/css/basic-jquery-slider.css}" rel="stylesheet" />
+	   <link th:href="@{/css/mobile.css}" rel="stylesheet" />
+	   <script th:src="@{/jquery/jquery-1.6.2.min.js}"></script>
+	   <script th:src="@{/jquery/jquery.easing.1.3.js}"></script>
+	   <script th:src="@{/jquery/stickysidebar.jquery.js}"></script>
+	   <script th:src="@{/jquery/basic-jquery-slider.js}"></script>
+	   <script th:src="@{/jquery/tabs.js}"></script>
+	   <script th:src="@{/jquery/carousel.js}"></script>
+    <h3>새로나온 책</h3>
+    <div id="left_scroll">
+        <a href='javascript:slide("left")'><img th:src="@{/image/left.gif}" alt="left"></a>
+    </div>
+    <div id="carousel_inner">
+        <ul id="carousel_ul">
+            <li th:if="${#lists.isEmpty(goodsList)}">
+                <div id="book">
+                    <a><h1>제품이없습니다.</h1></a>
+                </div>
+            </li>
+            <li th:each="item : ${goodsList}">
+                <div id="book">
+                    <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                        <img width="75" alt="" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}"/>
+                    </a>
+                    <div class="sort">[컴퓨터 인터넷]</div>
+                    <div class="title">
+                        <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" th:text="${item.goods_title}"></a>
+                    </div>
+                    <div class="writer" th:text="${item.goods_writer + ' | ' + item.goods_publisher}"></div>
+                    <div class="price">
+                        <span th:text="${item.goods_sales_price} + '원'"></span><br>
+                        <span th:text="${item.goods_sales_price * 0.9} + '원 (10%할인)'"></span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="right_scroll">
+        <a href='javascript:slide("right")'><img th:src="@{/image/right.gif}" alt="right"></a>
+    </div>
+    <input id="hidden_auto_slide_seconds" type="hidden" value="0">
+    <div class="clear"></div>
+
+<div id="sorting">
+    <ul>
+        <li><a class="active" href="#">베스트 셀러</a></li>
+        <li><a href="#">최신 출간</a></li>
+        <li><a href="#">최근 등록</a></li>
+    </ul>
+</div>
+
+<table id="list_view" class="result_table">
+    <tbody>
+    <tr th:each="item : ${goodsList}">
+        <td class="goods_image">
+            <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                <img width="75" alt="" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}"/>
+            </a>
+        </td>
+        <td class="goods_description">
+            <h2><a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" th:text="${item.goods_title}"></a></h2>
+            <div class="writer_press">
+                <span th:text="${item.goods_writer + ' 저 | ' + item.goods_publisher + ' | ' + #strings.substring(item.goods_published_date, 0, 10)}"></span>
+            </div>
+        </td>
+        <td class="price">
+            <span th:text="${item.goods_sales_price + '원'}"></span><br>
+            <strong th:text="${item.goods_sales_price * 0.9} + '원'"></strong><br>(10% 할인)
+        </td>
+        <td><input type="checkbox" value=""/></td>
+        <td class="buy_btns">
+            <ul>
+                <li><a href="#">장바구니</a></li>
+                <li><a href="#">구매하기</a></li>
+                <li><a href="#">비교하기</a></li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="clear"></div>
+<div id="page_wrap">
+	<ul id="page_control">
+	    <li>
+	        <a class="no_border" th:href="@{'?page=' + (${currentPage} - 1)}" 
+	           th:if="${currentPage > 1}">Prev</a>
+	        <a class="no_border disabled" th:if="${currentPage <= 1}">Prev</a>
+	    </li>
+
+	    <li th:each="count : ${#numbers.sequence(1, 10)}">
+	        <a th:href="@{'?page=' + ${count}}"
+	           th:class="${count == currentPage} ? 'page_contrl_active' : ''"
+	           th:text="${count}"></a>
+	    </li>
+
+	    <li>
+	        <a class="no_border" th:href="@{'?page=' + (${currentPage} + 1)}"
+	           th:if="${currentPage < 10}">Next</a>
+	        <a class="no_border disabled" th:if="${currentPage >= 10}">Next</a>
+	    </li>
+	</ul>
+</div>
+</section>
+</body>
+</html>

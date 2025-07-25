@@ -1,10 +1,12 @@
 package com.bookshop01.order.controller;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -168,5 +170,39 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		return mav;
 	}
 	
+	
+	//주문상품들의 수량, 할인액, 최종결제금액을 구해서 session에 저장하는 메서드
+	private void calcOrderGoodsInfo(HttpServletRequest request, List<OrderVO> myOrderList) {
+		HttpSession session=request.getSession();
+		MemberVO orderer=(MemberVO)session.getAttribute("memberInfo");
+		int orderSeq = 0;  //최종 주문 전 주문 리스트에 임시로 할당한 주문번호
+		Map<Integer, List<OrderVO>> myOrderMap = new TreeMap<>(Comparator.reverseOrder());
+		myOrderMap.put(orderSeq++, myOrderList);
+		
+		int finalTotalOrderPrice = 0;  //최종결제금액
+		int totalOrderPrice = 0; 		//총주문액
+		int totalDeliveryPrice = 0;		//총배송비
+		int totalDiscountedPrice = 0;	//총할인액
+		int totalOrderGoodsQty = 0; 	//총주문개수
+		int orderGoodsQty = 0;			//총주문수량
+		for (OrderVO orderVO : myOrderList) {
+			orderGoodsQty = orderVO.getOrder_goods_qty();
+			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
+			totalDeliveryPrice += orderVO.getGoods_delivery_price();
+			totalOrderGoodsQty+= orderGoodsQty;
+		}
+		
+		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
+		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
+		
+		session.setAttribute("myOrderMap", myOrderMap);
+		session.setAttribute("orderer", orderer);
+		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
+		session.setAttribute("totalOrderPrice", totalOrderPrice);
+		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
+		session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
+		session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
+		
+	}
 
 }
