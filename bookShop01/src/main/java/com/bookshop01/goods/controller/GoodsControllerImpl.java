@@ -40,7 +40,7 @@ public class GoodsControllerImpl extends BaseController   implements GoodsContro
 //		ModelAndView mav = new ModelAndView("goods/goodsDetail");
 		mav.addObject("goodsMap", goodsMap);
 		GoodsVO goodsVO=(GoodsVO)goodsMap.get("goodsVO");
-		addGoodsInQuick(Integer.parseInt(goods_id), goodsVO,session);
+		addGoodsInQuick(Integer.parseInt(goods_id), goodsVO, session);
 		return mav;
 	}
 	

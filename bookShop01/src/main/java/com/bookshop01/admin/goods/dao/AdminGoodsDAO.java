@@ -24,4 +24,6 @@ public interface AdminGoodsDAO {
 	public List<OrderVO> selectOrderGoodsList(Map condMap) throws DataAccessException;
 	public void updateOrderGoods(Map orderMap) throws DataAccessException;
 	
+	//검색 기간내의 총 새제품 건수 반환
+	public int selectTotalNewGoods(Map condMap) throws Exception;
 }

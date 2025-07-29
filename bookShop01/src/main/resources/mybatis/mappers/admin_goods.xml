@@ -15,6 +15,7 @@
 		<result property="goods_status" column="goods_status" />
 		<result property="goods_sales_price" column="goods_sales_price" />
 		<result property="goods_published_date" column="goods_published_date" />
+		<result property="goods_credate" column="goods_credate" />  
 		<result property="goods_total_page" column="goods_total_page" />
 		<result property="goods_isbn" column="goods_isbn" />
 		<result property="goods_delivery_price" column="goods_delivery_price" />
@@ -22,8 +23,11 @@
 		
 		<result property="goods_fileName" column="fileName" />
 		<result property="goods_sort" column="goods_sort" />
-		<result property="goods_writer_intro" column="goods_writer_intro" />
-		<result property="goods_intro" column="goods_intro" />
+		<result property="goods_publisher_comment" column="goods_publisher_comment" javaType="java.lang.String" jdbcType="CLOB"  />
+		<result property="goods_recommendation" column="goods_recommendation"   javaType="java.lang.String" jdbcType="CLOB"/>
+		<result property="goods_publisher_comment" column="goods_publisher_comment" javaType="java.lang.String" jdbcType="CLOB"  />
+		<result property="goods_writer_intro" column="goods_writer_intro"   javaType="java.lang.String" jdbcType="CLOB"/>
+		<result property="goods_intro" column="goods_intro"  javaType="java.lang.String" jdbcType="CLOB" />
 		<result property="goods_contents_order" column="goods_contents_order" javaType="java.lang.String" jdbcType="CLOB"  />
 	</resultMap>	
 
@@ -82,19 +86,19 @@
                     goods_title,
                     goods_writer,
                     goods_publisher,
-										goods_price,
-										goods_sales_price,
-										goods_point,
-										goods_published_date,
-										goods_total_page,
-										goods_isbn,
-										goods_delivery_price,
-										goods_delivery_date,
-										goods_status,
-										goods_writer_intro,
-										goods_intro,
-										goods_publisher_comment,
-										goods_recommendation,
+					goods_price,
+					goods_sales_price,
+					goods_point,
+					goods_published_date,
+					goods_total_page,
+					goods_isbn,
+					goods_delivery_price,
+					goods_delivery_date,
+					goods_status,
+					goods_writer_intro,
+					goods_intro,
+					goods_publisher_comment,
+					goods_recommendation,
 			              goods_contents_order)
 					  			values(
 					  			      #{goods_id},
@@ -115,9 +119,9 @@
 					  			      #{goods_status },
 					  			      #{goods_writer_intro},
 											
-									      #{goods_intro},
-					  			      #{goods_publisher_comment },
-					  			      #{goods_recommendation },	
+									      #{goods_intro:VARCHAR},
+					  			      #{goods_publisher_comment:VARCHAR },
+					  			      #{goods_recommendation :VARCHAR},	
 					  			      #{goods_contents_order:VARCHAR}
 					 			 )
 		]]>
@@ -129,14 +133,14 @@
 	    <![CDATA[
 		   insert into t_goods_detail_image (image_id,
 		                                     goods_id,
-																				 fileName,
-																				 fileType,
-																				 reg_id)
-											   					values(#{image_id},
-											   					 			 #{goods_id},
-											   							 	 #{fileName},
-											   								 #{fileType},
-											   								 #{reg_id} )
+											 fileName,
+											 fileType,
+											 reg_id)
+		   					values(#{image_id},
+		   					 			 #{goods_id},
+		   							 	 #{fileName},
+		   								 #{fileType},
+		   								 #{reg_id} )
 		]]>
 	</insert> 
 	<select id="selectNewGoodsList" resultMap="goodsResult"   parameterType="java.util.Map"  >
@@ -168,6 +172,14 @@
     	]]>
 	</select>
 	
+	<select id="selectTotalNewGoods" resultType="int" parameterType="java.util.Map">
+	  <![CDATA[
+	    SELECT COUNT(*) 
+	    FROM t_shopping_goods 
+	    WHERE TO_CHAR(goods_creDate, 'YYYY-MM-DD') BETWEEN #{beginDate} AND #{endDate}
+	  ]]>
+	</select>
+	
 	<select id="selectOrderGoodsList" resultMap="orderGoodsResult"   parameterType="java.util.Map"  >
 		  select * from (
 			    select rowNum as recNum,t.*
@@ -193,16 +205,17 @@
  
 
 	
-	<select id="selectGoodsDetail" resultMap="goodsResult"   parameterType="String"  >
+	<select id="selectGoodsDetail" resultMap="goodsResult"   parameterType="int">
 	    <![CDATA[
-		     select g.*,to_char(g.goods_published_date,'YYYY-MM-DD') as goods_published_date, d.fileName from t_shopping_goods g, t_goods_detail_image d
+		     select g.*,to_char(g.goods_published_date,'YYYY-MM-DD') as goods_published_date, 
+		     d.fileName from t_shopping_goods g, t_goods_detail_image d
 	        where g.goods_id=d.goods_id
 	        and d.filetype='main_image'
 	        and g.goods_id=#{goods_id}
 	        order by g.goods_id
     	]]>
 	</select>
-	<select id="selectGoodsImageFileList" resultMap="imageResult"   parameterType="String"  >
+	<select id="selectGoodsImageFileList" resultMap="imageResult"   parameterType="int"  >
 	    <![CDATA[
 		    	select * from  t_goods_detail_image 
 		    	where  
@@ -233,6 +246,9 @@
 	      <if test=" goods_published_date!='' and goods_published_date!=null">
 	        goods_published_date=#{goods_published_date},
 	      </if>
+	      <if test=" goods_credate!='' and goods_credate!=null">
+	        goods_credate=#{goods_credate},
+	      </if>
 	      <if test=" goods_sales_price!='' and goods_sales_price!=null">
 	        goods_sales_price=#{goods_sales_price},
 	      </if>
@@ -255,16 +271,16 @@
 	        goods_status=#{goods_status},
 	      </if>
 	      <if test=" goods_writer_intro!='' and goods_writer_intro!=null">
-	        goods_writer_intro=#{goods_writer_intro},
+	        goods_writer_intro=#{goods_writer_intro:VARCHAR},
 	      </if>
 	      <if test=" goods_intro!='' and goods_intro!=null">
-	        goods_intro=#{goods_intro},
+	        goods_intro=#{goods_intro:VARCHAR},
 	      </if>
-	      <if test=" publisher_comment!='' and publisher_comment!=null">
-	        publisher_comment=#{publisher_comment},
+	      <if test=" goods_publisher_comment!='' and goods_publisher_comment!=null">
+	        goods_publisher_comment=#{goods_publisher_comment:VARCHAR},
 	      </if>
-	      <if test=" recommendation!='' and recommendation!=null">
-	        recommendation=#{recommendation},
+	      <if test=" goods_recommendation!='' and goods_recommendation!=null">
+	        goods_recommendation=#{goods_recommendation:VARCHAR},
 	      </if>
 	      <if test=" goods_contents_order!='' and goods_contents_order!=null">
 	        goods_contents_order=#{goods_contents_order:VARCHAR}

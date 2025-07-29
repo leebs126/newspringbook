@@ -4,16 +4,16 @@
 
 <head>
   <title>회원 로그인</title>
-
-  <script th:if="${message != null}">
-    window.onload = function () {
-      alert("아이디나 비밀번호가 틀립니다. 다시 로그인해주세요");
-    }
-  </script>
 </head>
 
 <body>
 <section>
+<script th:if="${message != null}">
+   window.onload = function () {
+     alert("아이디나 비밀번호가 틀립니다. 다시 로그인해주세요");
+   }
+ </script>
+	 
   <h3>회원 로그인 창</h3>
   <div id="detail_table">
     <form th:action="@{/member/login.do}" method="post">

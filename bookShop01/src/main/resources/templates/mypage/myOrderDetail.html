@@ -8,24 +8,24 @@
 </head>
 <body>
 <section>
-	<style>
-	  	   .large-row {
-	  	     height: 20px;              /* tr 높이 설정 */
-	  	    
-	  	   }
-  	 </style>
+<style>
+  	   .large-row {
+  	     height: 20px;              /* tr 높이 설정 */
+  	    
+  	   }
+ </style>
     <h1>1.주문상세정보</h1>
     <table class="list_view">
       <tbody align="center">
-        <tr style="background: #33ff00">
-          <td>주문번호</td>
-          <td>주문일자</td>
-          <td colspan="2" class="fixed">주문상품명/주문개수</td>
-          <td>배송비</td>
-          <td>예상적립금</td>
-		  <td>정가</td>
-          <td>할인가<br>(10% 할인)</td>
-          <td>총주문금액</td>
+        <tr style="background: #33ff00; height: 30px;">
+          <th>주문번호</th>
+          <th>주문일자</th>
+          <th colspan="2" class="fixed">주문상품명/주문개수</th>
+          <th>배송비</th>
+          <th>예상적립금</th>
+		  <th>정가</th>
+          <th>할인가<br>(10% 할인)</th>
+          <th>총주문금액</th>
         </tr>
 		<th:block th:each="entry : ${myOrderMap}">
 		  <th:block th:with="myOrderList=${entry.value}">

@@ -35,7 +35,7 @@
             <a href="#"><img src="/image/btn_more_see.jpg" alt="더보기" /></a>
         </h1>
 		<table class="list_view">
-	        <tr style="background:#33ff00">
+	        <tr style="background:#33ff00; height: 30px;">
 	            <th>주문번호</th>
 	            <th>주문일자</th>
 	            <th>주문상품</th>
@@ -82,124 +82,7 @@
 		</tbody>
 		</table>
 		</div>
-	<!--	<table class="list_view">
-		    <thead>
-		        <tr style="background:#33ff00">
-		            <th>주문번호</th>
-		            <th>주문일자</th>
-		            <th>주문상품</th>
-		            <th>주문상태</th>
-		            <th>주문취소</th>
-		        </tr>
-		    </thead>
-		    <tbody>
-				<div th:if="${myOrderMap != null}">
-		         주문번호별 그룹 반복 
-		        <tr th:each="entry : ${myOrderMap}">
-		             첫 상품의 정보로 주문번호/일자/상태/취소버튼 출력 
-		          <th:block th:with="orderList=${entry.value}, firstItem=${entry.value[0]}">
-		                <tr>
-		                    <td>
-		                        <a th:href="@{/mypage/myOrderDetail.do(order_id=${entry.key})}"
-		                           th:text="${entry.key}">주문번호</a>
-		                    </td>
-		                    <td th:text="${firstItem.pay_order_time}">주문일자</td>
-		                    <td>
-		                        <strong>
-		                             해당 주문번호의 상품 목록 
-		                            <div th:each="item : ${orderList}">
-		                                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}"
-		                                   th:text="${item.goods_title + '/' + item.order_goods_qty + '개'}"></a><br/>
-		                            </div>
-		                        </strong>
-		                    </td>
-		                    <td>
-		                        <span th:switch="${firstItem.delivery_state}">
-		                            <span th:case="'delivery_prepared'">배송준비중</span>
-		                            <span th:case="'delivering'">배송중</span>
-		                            <span th:case="'finished_delivering'">배송완료</span>
-		                            <span th:case="'cancel_order'">주문취소</span>
-		                            <span th:case="'returning_goods'">반품완료</span>
-		                            <span th:case="*">기타</span>
-		                        </span>
-		                    </td>
-		                    <td>
-		                        <input type="button" th:if="${firstItem.delivery_state == 'delivery_prepared'}"
-		                               th:onclick="'fn_cancel_order(' + ${entry.key} + ')'" value="주문취소"/>
-		                        <input type="button" th:if="${firstItem.delivery_state != 'delivery_prepared'}"
-		                               value="주문취소" disabled/>
-		                    </td>
-		                </tr>
-		            </th:block>
-		        </tr>
-				</div>
-		    </tbody>
-		</table>		-->
-
-<!--        <table class="list_view">
-            <thead>
-                <tr style="background:#33ff00">
-                    <td>주문번호</td>
-                    <td>주문일자</td>
-                    <td>주문상품</td>
-                    <td>주문상태</td>
-                    <td>주문취소</td>
-                </tr>
-            </thead>
-            <tbody align="center">
-            <tr th:if="${#lists.isEmpty(myOrderList)}">
-                <td colspan="5" class="fixed"><strong>주문한 상품이 없습니다.</strong></td>
-            </tr>
-			
-			<tr th:each="item : ${myOrderList}"> 
-			<tr th:each="item : ${myOrderList}"
-			    th:with="rowClass=${item.delivery_state == 'delivery_prepared'} ? 'bg-lightgreen' :
-			                      (item.delivery_state == 'finished_delivering') ? 'bg-lightgray' : 'bg-orange'"
-			    th:class="${rowClass}">
-				
-			     order_id 표시 (첫 항목 또는 이전 항목과 다를 때만) 
-			    <td th:if="${iterStat.index == 0 or myOrderList[iterStat.index - 1].order_id != item.order_id}">
-				<td align="left">
-					    <a th:href="@{/mypage/myOrderDetail.do(order_id=${item.order_id})}">
-			            <span th:text="${item.order_id}"></span>
-			        </a>
-			    </td>
-			    
-				<td align="left">
-			    <td th:if="${iterStat.index == 0 or myOrderList[iterStat.index - 1].order_id != item.order_id}">
-			        <span th:text="${item.pay_order_time}"></span>
-			    </td>
-			    
-			     상품 정보 
-			    <td align="left">
-			        <strong>
-			            <div th:each="item2 : ${myOrderList}" th:if="${item2.order_id == item.order_id}">
-			                <a th:href="@{/goods/goodsDetail.do(goods_id=${item2.goods_id})}"
-			                   th:text="${item2.goods_title + '/' + item2.order_goods_qty + '개'}"></a><br/>
-			            </div>
-			        </strong>
-			    </td>
-			    
-			    <td>
-			        <span th:switch="${item.delivery_state}">
-			            <span th:case="'delivery_prepared'">배송준비중</span>
-			            <span th:case="'delivering'">배송중</span>
-			            <span th:case="'finished_delivering'">배송완료</span>
-			            <span th:case="'cancel_order'">주문취소</span>
-			            <span th:case="'returning_goods'">반품완료</span>
-			        </span>
-			    </td>
-
-			    <td>
-			        <input type="button" th:if="${item.delivery_state == 'delivery_prepared'}"
-			               th:onclick="'fn_cancel_order(' + ${item.order_id} + ')'" value="주문취소"/>
-			        <input type="button" th:if="${item.delivery_state != 'delivery_prepared'}"
-			               value="주문취소" disabled/>
-			    </td>
-			</tr>
-            </tr>
-            </tbody>
-        </table>-->
+	
         <br/><br/><br/>
 
         <h1>계좌내역

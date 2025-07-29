@@ -1,15 +1,18 @@
 package com.bookshop01.common.file;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
-
-import jakarta.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletResponse;
 import net.coobird.thumbnailator.Thumbnails;
 
 
@@ -17,26 +20,40 @@ import net.coobird.thumbnailator.Thumbnails;
 public class FileDownloadController {
 	private static String CURR_IMAGE_REPO_PATH = "C:\\shopping\\file_repo";
 	
-	@RequestMapping("/download")
+	@RequestMapping("/download.do")
 	protected void download(@RequestParam("fileName") String fileName,
 		                 	@RequestParam("goods_id") String goods_id,
 			                 HttpServletResponse response) throws Exception {
-		OutputStream out = response.getOutputStream();
+//		OutputStream out = response.getOutputStream();
 		String filePath=CURR_IMAGE_REPO_PATH+"\\"+goods_id+"\\"+fileName;
-		File image=new File(filePath);
+		File imageFile=new File(filePath);
 
-		response.setHeader("Cache-Control","no-cache");
-		response.addHeader("Content-disposition", "attachment; fileName="+fileName);
-		FileInputStream in=new FileInputStream(image); 
-		byte[] buffer=new byte[1024*8];
-		while(true){
-			int count=in.read(buffer); //���ۿ� �о���� ���ڰ���
-			if(count==-1)  //������ �������� �����ߴ��� üũ
-				break;
-			out.write(buffer,0,count);
-		}
-		in.close();
-		out.close();
+		 if (imageFile.exists()) {
+		        // 한글 파일명 인코딩 처리
+		        String encodedFilename = URLEncoder.encode(imageFile.getName(), "UTF-8").replaceAll("\\+", "%20");
+
+		        response.setContentType("application/octet-stream");
+		        response.setContentLength((int) imageFile.length());
+		        response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFilename + "\"");
+
+		        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(imageFile));
+		             BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream())) {
+		            FileCopyUtils.copy(in, out);
+		        }
+		    }
+		
+//		response.setHeader("Cache-Control","no-cache");
+//		response.addHeader("Content-disposition", "attachment; fileName="+fileName);
+//		FileInputStream in=new FileInputStream(image); 
+//		byte[] buffer=new byte[1024*8];
+//		while(true){
+//			int count=in.read(buffer);  //버퍼에 읽어들인 문자개수
+//			if(count==-1)  //버퍼의 마지막에 도달했는지 체크
+//				break;
+//			out.write(buffer,0,count);
+//		}
+//		in.close();
+//		out.close();
 	}
 	
 	

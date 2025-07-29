@@ -218,7 +218,7 @@
       </div>
       <div class="tab_content" id="tab3">
         <h4>책목차</h4>
-        <p th:utext="${#strings.replace(goodsMap.goodsVO.goods_contents_order, '\n', '<br/>')}"></p>
+        <p th:utext="${goodsMap.goodsVO.goods_contents_order}"></p>
       </div>
       <div class="tab_content" id="tab4">
         <h4>출판사서평</h4>

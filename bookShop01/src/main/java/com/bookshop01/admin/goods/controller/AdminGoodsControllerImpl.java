@@ -44,7 +44,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		ModelAndView mav = new ModelAndView(viewName);
 		HttpSession session=request.getSession();
 		session=request.getSession();
-		session.setAttribute("side_menu", "admin_mode"); //���������� ���̵� �޴��� �����Ѵ�.
+		session.setAttribute("side_menu", "admin_mode"); //관리자 사이드 메뉴를 표시한다.
 		
 		String fixedSearchPeriod = dateMap.get("fixedSearchPeriod");
 		String section = dateMap.get("section");
@@ -57,7 +57,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		dateMap.put("beginDate", beginDate);
 		dateMap.put("endDate", endDate);
 		
-		Map<String,Object> condMap=new HashMap<String,Object>();
+		Map<String,String> condMap=new HashMap<String, String>();
 		if(section== null) {
 			section = "1";
 		}
@@ -68,25 +68,34 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		condMap.put("pageNum",pageNum);
 		condMap.put("beginDate",beginDate);
 		condMap.put("endDate", endDate);
-		List<GoodsVO> newGoodsList=adminGoodsService.listNewGoods(condMap);
+//		List<GoodsVO> newGoodsList = adminGoodsService.listNewGoods(condMap);
+		Map<String, Object> newGoodsMap = adminGoodsService.listNewGoods(condMap);
+		List<GoodsVO> newGoodsList = (List<GoodsVO>)newGoodsMap.get("newGoodsList");
 		mav.addObject("newGoodsList", newGoodsList);
+		
+		//페이징 기능 구현 코드 추가
+		int totalItemCount = (Integer)newGoodsMap.get("totalItemCount");
+		int itemsPerPage = 10;  //한 페이지당 표시되는 데이터 수 
+		int totalPage = (int) Math.ceil((double)totalItemCount / itemsPerPage);
+		mav.addObject("totalPage", totalPage);
 		
 		String beginDate1[]=beginDate.split("-");
 		String endDate2[]=endDate.split("-");
-		mav.addObject("beginYear",beginDate1[0]);
-		mav.addObject("beginMonth",beginDate1[1]);
-		mav.addObject("beginDay",beginDate1[2]);
-		mav.addObject("endYear",endDate2[0]);
-		mav.addObject("endMonth",endDate2[1]);
-		mav.addObject("endDay",endDate2[2]);
+		mav.addObject("beginYear", Integer.parseInt(beginDate1[0]));
+		mav.addObject("beginMonth", Integer.parseInt(beginDate1[1]));
+		mav.addObject("beginDay",  Integer.parseInt(beginDate1[2]));
+		mav.addObject("endYear",  Integer.parseInt(endDate2[0]));
+		mav.addObject("endMonth",  Integer.parseInt(endDate2[1]));
+		mav.addObject("endDay",  Integer.parseInt(endDate2[2]));
 		
-		mav.addObject("section", section);
-		mav.addObject("pageNum", pageNum);
+		mav.addObject("section",  Integer.parseInt(section));
+		mav.addObject("pageNum",  Integer.parseInt(pageNum));
+		
+		
+		
 		return mav;
 		
 	}
-	
-
 	
 	@RequestMapping(value="/addNewGoods.do" ,method={RequestMethod.POST})
 	public ResponseEntity addNewGoods(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)  throws Exception {
@@ -105,7 +114,6 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
 		String reg_id = memberVO.getMember_id();
-		
 		
 		List<ImageFileVO> imageFileList =upload(multipartRequest);
 		if(imageFileList!= null && imageFileList.size()!=0) {
@@ -159,7 +167,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		ModelAndView mav = new ModelAndView(viewName);
 		
 		Map goodsMap=adminGoodsService.goodsDetail(goods_id);
-		mav.addObject("goodsMap",goodsMap);
+		mav.addObject("goodsMap", goodsMap);
 		
 		return mav;
 	}
@@ -169,10 +177,18 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 			                     @RequestParam("attribute") String attribute,
 			                     @RequestParam("value") String value,
 			HttpServletRequest request, HttpServletResponse response)  throws Exception {
-		//System.out.println("modifyGoodsInfo");
 		
 		Map<String,String> goodsMap=new HashMap<String,String>();
 		goodsMap.put("goods_id", goods_id);
+		
+		// 모든 줄바꿈을 <br/>로 직접 변환
+		if(attribute.equals("goods_contents_order") 
+			||attribute.equals("goods_writer_intro")
+			||attribute.equals("goods_intro")
+			||attribute.equals("goods_publisher_comment")
+			||attribute.equals("goods_recommendation")) {
+			value = value.replaceAll("(\r\n|\n|\r)", "<br/>");
+		}
 		goodsMap.put(attribute, value);
 		adminGoodsService.modifyGoodsInfo(goodsMap);
 		

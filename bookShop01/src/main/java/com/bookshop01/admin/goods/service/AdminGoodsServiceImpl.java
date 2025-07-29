@@ -37,8 +37,13 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
 	}
 	
 	@Override
-	public List<GoodsVO> listNewGoods(Map condMap) throws Exception{
-		return adminGoodsDAO.selectNewGoodsList(condMap);
+	public Map<String, Object> listNewGoods(Map<String, String> condMap) throws Exception{
+		Map<String, Object> newGoodsMap =new HashMap<String, Object>();
+		List<GoodsVO> newGoodsList = adminGoodsDAO.selectNewGoodsList(condMap);
+		int totalItemCount = adminGoodsDAO.selectTotalNewGoods(condMap);
+		newGoodsMap.put("newGoodsList", newGoodsList);
+		newGoodsMap.put("totalItemCount", totalItemCount);
+		return  newGoodsMap;
 	}
 	@Override
 	public Map goodsDetail(int goods_id) throws Exception {

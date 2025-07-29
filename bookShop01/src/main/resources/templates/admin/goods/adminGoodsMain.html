@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 조회</title>
+
+</head>
+<body>
+<section>
+<script th:inline="javascript">
+function search_goods_list(fixedSearchPeriod){
+	var formObj=document.createElement("form");
+	var i_fixedSearch_period = document.createElement("input");
+	i_fixedSearch_period.name="fixedSearchPeriod";
+	i_fixedSearch_period.value=fixedSearchPeriod;
+    formObj.appendChild(i_fixedSearch_period);
+    document.body.appendChild(formObj); 
+    formObj.method="get";
+    formObj.action="/admin/goods/adminGoodsMain.do";
+    formObj.submit();
+}
+
+
+function  calcPeriod(search_period){
+	var dt = new Date();
+	var beginYear,endYear;
+	var beginMonth,endMonth;
+	var beginDay,endDay;
+	var beginDate,endDate;
+	
+	endYear = dt.getFullYear();
+	endMonth = dt.getMonth()+1;
+	endDay = dt.getDate();
+	if(search_period=='today'){
+		beginYear=endYear;
+		beginMonth=endMonth;
+		beginDay=endDay;
+	}else if(search_period=='one_week'){
+		beginYear=dt.getFullYear();
+		beginMonth=dt.getMonth()+1;
+		dt.setDate(endDay-7);
+		beginDay=dt.getDate();
+		
+	}else if(search_period=='two_week'){
+		beginYear = dt.getFullYear();
+		beginMonth = dt.getMonth()+1;
+		dt.setDate(endDay-14);
+		beginDay=dt.getDate();
+	}else if(search_period=='one_month'){
+		beginYear = dt.getFullYear();
+		dt.setMonth(endMonth-1);
+		beginMonth = dt.getMonth();
+		beginDay = dt.getDate();
+	}else if(search_period=='two_month'){
+		beginYear = dt.getFullYear();
+		dt.setMonth(endMonth-2);
+		beginMonth = dt.getMonth();
+		beginDay = dt.getDate();
+	}else if(search_period=='three_month'){
+		beginYear = dt.getFullYear();
+		dt.setMonth(endMonth-3);
+		beginMonth = dt.getMonth();
+		beginDay = dt.getDate();
+	}else if(search_period=='four_month'){
+		beginYear = dt.getFullYear();
+		dt.setMonth(endMonth-4);
+		beginMonth = dt.getMonth();
+		beginDay = dt.getDate();
+	}
+	
+	if(beginMonth <10){
+		beginMonth='0'+beginMonth;
+		if(beginDay<10){
+			beginDay='0'+beginDay;
+		}
+	}
+	if(endMonth <10){
+		endMonth='0'+endMonth;
+		if(endDay<10){
+			endDay='0'+endDay;
+		}
+	}
+	endDate=endYear+'-'+endMonth +'-'+endDay;
+	beginDate=beginYear+'-'+beginMonth +'-'+beginDay;
+	//alert(beginDate+","+endDate);
+	return beginDate+","+endDate;
+}
+</script>	
+  <h3>상품 조회</h3>
+  <form method="post">
+    <table cellpadding="10" cellspacing="10">
+      <tbody>
+        <tr>
+          <td>
+            <input type="radio" name="r_search" checked /> 등록일로조회 &nbsp;&nbsp;&nbsp;
+            <input type="radio" name="r_search" />상세조회 &nbsp;&nbsp;&nbsp;
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <select name="curYear">
+              <th:block th:each="i : ${#numbers.sequence(0,5)}">
+                <option th:value="${endYear - i}" th:selected="${endYear == endYear - i}" th:text="${endYear - i}"></option>
+              </th:block>
+            </select>년
+            <select name="curMonth">
+              <th:block th:each="i : ${#numbers.sequence(1,12)}">
+                <option th:value="${i}" th:selected="${endMonth == i}" th:text="${i}"></option>
+              </th:block>
+            </select>월
+            <select name="curDay">
+              <th:block th:each="i : ${#numbers.sequence(1,31)}">
+                <option th:value="${i}" th:selected="${endDay == i}" th:text="${i}"></option>
+              </th:block>
+            </select>일 &nbsp;이전&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <a href="javascript:search_goods_list('today')">
+              <img src="/image/btn_search_one_day.jpg">
+            </a>
+            <a href="javascript:search_goods_list('one_week')">
+              <img src="/image/btn_search_1_week.jpg">
+            </a>
+            <a href="javascript:search_goods_list('two_week')">
+              <img src="/image/btn_search_2_week.jpg">
+            </a>
+            <a href="javascript:search_goods_list('one_month')">
+              <img src="/image/btn_search_1_month.jpg">
+            </a>
+            <a href="javascript:search_goods_list('two_month')">
+              <img src="/image/btn_search_2_month.jpg">
+            </a>
+            <a href="javascript:search_goods_list('three_month')">
+              <img src="/image/btn_search_3_month.jpg">
+            </a>
+            <a href="javascript:search_goods_list('four_month')">
+              <img src="/image/btn_search_4_month.jpg">
+            </a>
+            &nbsp;까지 조회
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <select name="search_condition" disabled>
+              <option value="전체" selected>전체</option>
+              <option value="제품번호">상품번호</option>
+              <option value="제품이름">상품이름</option>
+              <option value="제조사">제조사</option>
+            </select>
+            <input type="text" size="30" disabled />
+            <input type="button" value="조회" disabled />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            조회한 기간:
+            <input type="text" size="4" th:value="${beginYear}" />년
+            <input type="text" size="4" th:value="${beginMonth}" />월
+            <input type="text" size="4" th:value="${beginDay}" />일
+            &nbsp; ~
+            <input type="text" size="4" th:value="${endYear}" />년
+            <input type="text" size="4" th:value="${endMonth}" />월
+            <input type="text" size="4" th:value="${endDay}" />일
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  <div class="clear"></div>
+
+  <table class="list_view">
+    <thead>
+      <tr style="background:#33ff00; height: 30px;">
+        <th>상품번호</th>
+        <th>상품이름</th>
+        <th>저자</th>
+        <th>출판사</th>
+        <th>상품가격</th>
+        <th>입고일자</th>
+        <th>출판일</th>
+      </tr>
+    </thead>
+    <tbody align="center">
+      <tr th:if="${#lists.isEmpty(newGoodsList)}">
+        <td colspan="8" class="fixed"><strong>조회된 상품이 없습니다.</strong></td>
+      </tr>
+      <tr th:each="item : ${newGoodsList}">
+        <td><strong th:text="${item.goods_id}"></strong></td>
+        <td>
+          <a th:href="@{/admin/goods/modifyGoodsForm.do(goods_id=${item.goods_id})}">
+            <strong th:text="${item.goods_title}"></strong>
+          </a>
+        </td>
+        <td><strong th:text="${item.goods_writer}"></strong></td>
+        <td><strong th:text="${item.goods_publisher}"></strong></td>
+        <td><strong th:text="${item.goods_sales_price + '원'}"></strong></td>
+        <td><strong th:text="${item.goods_credate}"></strong></td>
+        <td><strong th:text="${#dates.format(item.goods_published_date, 'yyyy-MM-dd')}"></strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="clear"></div>
+ <br><br>
+ 
+ <div style="text-align: center; margin-top: 20px;">
+     <span th:each="page : ${#numbers.sequence(1, 10)}"
+           th:if="${(section - 1) * 10 + page <= totalPage}">
+         
+         <!-- 이전 페이지로 이동 -->
+         <a th:if="${section > 1 and page == 1}"
+            th:href="@{/admin/goods/adminGoodsMain.do(chapter=${section-1}, pageNum=${(section-1)*10 +1})}">
+             &laquo;
+         </a>
+         
+         <!-- 현재 페이지 번호 -->
+         <a th:href="@{/admin/goods/adminGoodsMain.do(chapter=${section}, pageNum=${page})}"
+            th:text="${(section - 1) * 10 + page}"
+            style="margin: 0 5px;"></a>
+
+         <!-- 다음 페이지로 이동 -->
+         <a th:if="${page == 10 and totalPage > section * 10}"
+            th:href="@{/admin/goods/adminGoodsMain.do(chapter=${section+1}, pageNum=${section*10 + 1})}">
+             &raquo;
+         </a>
+     </span>
+ </div>
+ 
+ <!--<div style="text-align: center; margin-top: 20px;">
+    <span th:each="page : ${#numbers.sequence(1, 10)}">
+      <a th:if="${section > 1 and page == 1}" th:href="@{/admin/goods/adminGoodsMain.do(chapter=${section-1}, pageNum=${(section-1)*10 +1})}">&laquo;</a>
+      <a th:href="@{/admin/goods/adminGoodsMain.do(chapter=${section}, pageNum=${page})}" 
+         th:text="${(section-1)*10 + page}"></a>
+      <a th:if="${page == 10}" th:href="@{/admin/goods/adminGoodsMain.do(chapter=${section+1}, pageNum=${section*10 + 1})}">&raquo;</a>
+    </span>
+ </div>-->
+  <div class="clear"></div>
+  <br><br><br>
+
+  <h3>상품 등록하기</h3>
+  <div id="search">
+    <form th:action="@{/admin/goods/addNewGoodsForm.do}">
+      <input type="submit" value="상품 등록하기">
+    </form>
+  </div>
+</section>
+</body>
+</html>

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bookshop01.common.base.BaseController;
 import com.bookshop01.member.service.MemberService;
@@ -35,7 +36,9 @@ public class MemberControllerImpl extends BaseController implements MemberContro
 	@Override
 	@RequestMapping(value="/login.do" ,method = RequestMethod.POST)
 	public ModelAndView login(@RequestParam Map<String, String> loginMap,
-			                  HttpServletRequest request, HttpServletResponse response) throws Exception {
+							                  HttpServletRequest request, 
+							                  HttpServletResponse response,
+							                  RedirectAttributes redirectAttributes) throws Exception {
 		ModelAndView mav = new ModelAndView();
 		 memberVO = memberService.login(loginMap);
 		if(memberVO!= null && memberVO.getMember_id()!=null){
@@ -50,8 +53,13 @@ public class MemberControllerImpl extends BaseController implements MemberContro
 			}else{
 				mav.setViewName("redirect:/main/main.do");	
 			}
-			
-			
+
+//			//관리자로 로그인 시 사이드 메뉴를 관리자 메뉴로 표시
+//			if(memberVO.getMember_id().equals("admin")) {
+//				session.setAttribute("side_menu", "admin_mode");
+////				mav.addObject("side_menu", "admin_mode");
+//				redirectAttributes.addFlashAttribute("side_menu", "admin_mode");
+//			}
 			
 		}else{
 			String message="아이디나  비밀번호가 틀립니다. 다시 로그인해주세요";
