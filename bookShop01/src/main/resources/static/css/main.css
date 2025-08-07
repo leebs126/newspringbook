@@ -298,7 +298,7 @@ article h4 {
 	padding: 0px 30px 0px 0px; width: auto; text-align: center;
 }
 #goods_image figure img {
-	border: 1px solid rgb(255, 255, 255); border-image: none; width: 150px; height: auto; box-shadow: 2px 2px 25px #666;
+	border: 1px solid rgb(255, 255, 255); border-image: none; width: 121; height: 154; box-shadow: 2px 2px 25px #666;
 }
 #detail_table {
 	width: 590px; font-size: 0.75em; float: left;

@@ -110,7 +110,8 @@
 
   <div id="goods_image">
     <figure>
-      <img th:src="@{/thumbnails.do(goods_id=${goodsMap.goodsVO.goods_id},fileName=${goodsMap.goodsVO.goods_fileName})}" alt="책 이미지">
+      <img width="121" height="154" 
+	       th:src="@{/thumbnails.do(goods_id=${goodsMap.goodsVO.goods_id},fileName=${goodsMap.goodsVO.goods_fileName})}" alt="책 이미지">
     </figure>
   </div>
 

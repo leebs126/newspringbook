@@ -138,7 +138,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 				}
 			}
 			message= "<script>";
-			message += " alert('����ǰ�� �߰��߽��ϴ�.');";
+			message += " alert('새상품을 추가했습니다.');";
 			message +=" location.href='"+multipartRequest.getContextPath()+"/admin/goods/addNewGoodsForm.do';";
 			message +=("</script>");
 		}catch(Exception e) {
@@ -151,7 +151,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 			}
 			
 			message= "<script>";
-			message += " alert('������ �߻��߽��ϴ�. �ٽ� �õ��� �ּ���');";
+			message += " alert('오류가 발생했습니다. 다시 시도해 주세요');";
 			message +=" location.href='"+multipartRequest.getContextPath()+"/admin/goods/addNewGoodsForm.do';";
 			message +=("</script>");
 			e.printStackTrace();

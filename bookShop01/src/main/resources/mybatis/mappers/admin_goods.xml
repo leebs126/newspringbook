@@ -126,7 +126,30 @@
 					 			 )
 		]]>
 	</insert> 
-		<insert id="insertGoodsImageFile" parameterType="imageFileVO"   >
+	
+<insert id="insertGoodsImageFile" parameterType="java.util.List">
+    <selectKey resultType="int" keyProperty="image_id" order="BEFORE">
+      SELECT seq_image_id.NEXTVAL FROM dual
+    </selectKey>
+    INSERT INTO t_goods_detail_image (
+   <foreach collection="list" item="imageFile" index="index" separator=";">
+      image_id,
+      goods_id,
+      fileName,
+      fileType,
+      reg_id
+    ) VALUES (
+      #{image_id},
+      #{imageFile.goods_id},
+      #{imageFile.fileName},
+      #{imageFile.fileType},
+      #{imageFile.reg_id}
+    )
+  </foreach>
+</insert>
+	
+	<!--
+		<insert id="insertGoodsImageFile" parameterType="java.util.List">
 		<selectKey resultType="int" keyProperty="image_id" order="BEFORE">
 	    	select seq_image_id.nextval from dual
 	    </selectKey>
@@ -142,7 +165,7 @@
 		   								 #{fileType},
 		   								 #{reg_id} )
 		]]>
-	</insert> 
+	</insert> -->
 	<select id="selectNewGoodsList" resultMap="goodsResult"   parameterType="java.util.Map"  >
 	    <![CDATA[
 		  select * from (
@@ -290,16 +313,18 @@
 	    goods_id=#{goods_id}
 	
 	</update>	
-	<update id="updateGoodsImage" parameterType="imageFileVO">
-		update t_goods_detail_image
-		set fileName=#{fileName}
-		where	 
-		goods_id=#{goods_id} and image_id=#{image_id}
+	<update id="updateGoodsImage" parameterType="java.util.List">
+		<foreach collection="list" item="image" separator=";">
+		    UPDATE t_goods_detail_image
+		    SET fileName = #{image.fileName}
+		    WHERE goods_id = #{image.goods_id}
+		      AND image_id = #{image.image_id}
+  		</foreach>
 	</update>
 	
-	<delete id="deleteGoodsImage" parameterType="String">
-	  delete from t_goods_detail_image
-	  where image_id=#{image_id}
+	<delete id="deleteGoodsImage" parameterType="int">
+	  DELETE FROM t_goods_detail_image
+	  WHERE image_id=#{image_id}
 	</delete>
 	
 <update id="updateOrderGoods" parameterType="java.util.HashMap" >

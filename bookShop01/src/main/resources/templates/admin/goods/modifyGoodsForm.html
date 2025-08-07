@@ -49,29 +49,70 @@
       const container = document.getElementById("d_file");
       container.insertAdjacentHTML("beforeend",
         `<br><input type='file' name='detail_image${cnt}' id='detail_image${cnt}' onchange="readURL(this, 'previewImage${cnt}')" />
-         <img id='previewImage${cnt}' width='200' height='200' />
-         <input type='button' value='추가' onclick="addNewImageFile('detail_image${cnt}', [[${ goodsMap.imageFileList[0].goods_id}]], 'detail_image')" />`
+         <img id='previewImage${cnt}' width='80%' />
+         <input type='button' value='상세이미지추가' onclick="addNewImageFile('detail_image${cnt}', [[${ goodsMap.imageFileList[0].goods_id}]], 'detail_image')" />`
       );
       cnt++;
     }
+	
+	function addNewImageFile(fileId, goods_id, fileType) {
+	    var formData = new FormData();
+	    formData.append("uploadFile", document.getElementById(fileId).files[0]);
+	    formData.append("goods_id", goods_id);
+	    formData.append("fileType", fileType);
 
-    function addNewImageFile(fileId, goods_id, fileType) {
-      var formData = new FormData();
-      formData.append("uploadFile", document.getElementById(fileId).files[0]);
-      formData.append("goods_id", goods_id);
-      formData.append("fileType", fileType);
+	    $.ajax({
+	      url: '/admin/goods/addNewGoodsImage.do',
+	      processData: false,
+	      contentType: false,
+	      data: formData,
+	      type: 'post',
+	      success: function () {
+	        alert("이미지를 추가했습니다!");
+	      }
+	    });
+	  }
+	
+	function onClickModifyImageFile(button) {
+	  const goodsId = button.getAttribute('data-goods-id');
+	  const imageId = button.getAttribute('data-image-id');
+	  const fileType = button.getAttribute('data-file-type');
+	  const fileId = button.getAttribute('data-file-id');
+	  modifyImageFile(fileId, goodsId, imageId, fileType);
+	}
 
-      $.ajax({
-        url: '/admin/goods/addNewGoodsImage.do}',
-        processData: false,
-        contentType: false,
-        data: formData,
-        type: 'post',
-        success: function () {
-          alert("이미지를 추가했습니다!");
-        }
-      });
-    }
+	
+	function modifyImageFile(fileId, goods_id, image_id, fileType){
+	   alert(fileId);
+	  var form = $('#FILE_FORM')[0];
+	    var formData = new FormData(form);
+	    formData.append("fileName", $('#'+fileId)[0].files[0]);
+	    formData.append("goods_id", goods_id);
+	    formData.append("image_id", image_id);
+	    formData.append("fileType", fileType);
+	    
+	    $.ajax({
+	      url: '/admin/goods/modifyGoodsImageInfo.do',
+	      processData: false,
+	      contentType: false,
+	      data: formData,
+	      type: 'POST',
+	      success: function(result){
+	          alert("이미지를 수정했습니다!");
+	       }
+	    });
+	}
+
+	function onClickDeleteImageFile(button) {
+	  const goodsId = button.dataset.goodsId;
+	  const imageId = button.dataset.imageId;
+	  const fileName = button.dataset.fileName;
+	  const rowId = button.dataset.rowId;
+
+	  deleteImageFile(goodsId, imageId, fileName, rowId);
+	}
+
+  
 
     function deleteImageFile(goods_id, image_id, imageFileName, trId) {
       const row = document.getElementById(trId);
@@ -376,17 +417,36 @@
 		        </td>
 		        <td>
 		          <img th:id="'preview' + ${stat.index}"
-		               width="200"
-		               height="200"
+		               width="80%"
+		               
 		               th:src="@{/download.do(goods_id=${image.goods_id}, fileName=${image.fileName})}"/>
 		        </td>
-		        <!--<td>
-					<input type="button" value="수정"
-					       th:onclick="|modifyImageFile('file_${stat.index}', ${image.goods_id}, ${image.image_id}, '${image.fileType}')|"/>
-				    <input type="button" value="삭제"
+		        <td>
+					<input type="button" value="수정반영하기"
+					       th:id="'btn_' + ${stat.index}"
+					       th:data-goods-id="${image.goods_id}"
+					       th:data-image-id="${image.image_id}"
+					       th:data-file-type="${image.fileType}"
+						   th:data-file-id="'file_' + ${stat.index}"
+					       onclick="onClickModifyImageFile(this)" />
+					
+				   <input type="button" value="이미지삭제"
+				          th:if="${image.fileType != 'main_image'}"
+				          th:id="'delbtn_' + ${stat.index}"
+				          th:data-goods-id="${image.goods_id}"
+				          th:data-image-id="${image.image_id}"
+				          th:data-file-name="${image.fileName}"
+				          th:data-row-id="'row_' + ${stat.index}"
+				          onclick="onClickDeleteImageFile(this)" />
+	   
+					
+					<!--<input type="button" value="수정"
+					       th:onclick="|modifyImageFile('detail_image', ${image.goods_id}, ${image.image_id}, '${image.fileType}')|"/>-->
+				    <!--
+						<input type="button" value="삭제"
 						          th:if="${image.fileType != 'main_image'}"
-						          th:onclick="|deleteImageFile(${image.goods_id}, ${image.image_id}, '${image.fileName}', 'row_${stat.index}')|"/>
-		        </td>-->
+						          th:onclick="|deleteImageFile(${image.goods_id}, ${image.image_id}, '${image.fileName}', 'row_${stat.index}')|"/>-->
+		        </td>
 		      </tr>
 		    </table>
 		    <div id="d_file"></div>
