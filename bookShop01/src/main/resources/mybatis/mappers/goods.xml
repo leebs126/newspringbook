@@ -47,7 +47,7 @@
         	and d.filetype='main_image'
         	and goods_status=#{goodsStatus}
             order by g.goods_creDate desc)  t
-	             where   rowNum <16
+	             where   rowNum < 16
 	    ]]>
 	</select>
 	

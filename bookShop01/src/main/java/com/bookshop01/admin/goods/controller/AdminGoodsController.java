@@ -12,7 +12,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 public interface AdminGoodsController {
 	public ModelAndView adminGoodsMain(@RequestParam Map<String, String> dateMap,HttpServletRequest request, HttpServletResponse response)  throws Exception;
-	public ResponseEntity addNewGoods(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)  throws Exception;
+//	public ResponseEntity addNewGoods(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)  throws Exception;
+	public ResponseEntity addNewGoods(
+	        @RequestParam("goodsData") String goodsDataJson, // JSON 문자열
+	        MultipartHttpServletRequest multipartRequest,
+	        HttpServletResponse response) throws Exception;
 	public ResponseEntity modifyGoodsInfo( @RequestParam("goods_id") String goods_id,
                                  @RequestParam("mod_type") String mod_type,
                                  @RequestParam("value") String value,

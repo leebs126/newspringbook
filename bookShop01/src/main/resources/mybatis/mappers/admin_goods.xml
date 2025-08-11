@@ -74,15 +74,15 @@
 		
 		<result property="goods_fileName" column="goods_fileName" />
 	</resultMap>
-	<insert id="insertNewGoods" parameterType="java.util.Map"   >
+	<insert id="insertNewGoods" parameterType="java.util.Map" >
 		<selectKey resultType="String" keyProperty="goods_id" order="BEFORE">
 	    	select seq_goods_id.nextval from dual
 	    </selectKey>
 	    
 	    <![CDATA[
 		   insert into t_shopping_goods(
-		                goods_id, 
-		                goods_sort,
+		            goods_id, 
+		            goods_sort,
                     goods_title,
                     goods_writer,
                     goods_publisher,
@@ -99,7 +99,7 @@
 					goods_intro,
 					goods_publisher_comment,
 					goods_recommendation,
-			              goods_contents_order)
+			        goods_contents_order)
 					  			values(
 					  			      #{goods_id},
 					  			      #{goods_sort},
@@ -127,19 +127,17 @@
 		]]>
 	</insert> 
 	
-<insert id="insertGoodsImageFile" parameterType="java.util.List">
-    <selectKey resultType="int" keyProperty="image_id" order="BEFORE">
-      SELECT seq_image_id.NEXTVAL FROM dual
-    </selectKey>
+<!--<insert id="insertGoodsImageFile" parameterType="java.util.HashMap">
+  <foreach collection="imageFileList" item="imageFile" separator=";" close=";" >
+  
     INSERT INTO t_goods_detail_image (
-   <foreach collection="list" item="imageFile" index="index" separator=";">
       image_id,
       goods_id,
       fileName,
       fileType,
       reg_id
     ) VALUES (
-      #{image_id},
+      seq_image_id.NEXTVAL,
       #{imageFile.goods_id},
       #{imageFile.fileName},
       #{imageFile.fileType},
@@ -147,53 +145,138 @@
     )
   </foreach>
 </insert>
-	
-	<!--
-		<insert id="insertGoodsImageFile" parameterType="java.util.List">
-		<selectKey resultType="int" keyProperty="image_id" order="BEFORE">
-	    	select seq_image_id.nextval from dual
-	    </selectKey>
-	    <![CDATA[
-		   insert into t_goods_detail_image (image_id,
-		                                     goods_id,
-											 fileName,
-											 fileType,
-											 reg_id)
-		   					values(#{image_id},
-		   					 			 #{goods_id},
-		   							 	 #{fileName},
-		   								 #{fileType},
-		   								 #{reg_id} )
-		]]>
-	</insert> -->
-	<select id="selectNewGoodsList" resultMap="goodsResult"   parameterType="java.util.Map"  >
-	    <![CDATA[
-		  select * from (
-			   select rowNum as recNum,
-			   		  goods_id,
-			          goods_title,
-			          goods_writer,
-			          goods_publisher,
-			          goods_sales_price,
-			          to_char(goods_creDate,'YYYY-MM-DD')  as goods_creDate,
-			          to_char(goods_published_date,'YYYY-MM-DD') as goods_published_date
-			       from (
-			             select  goods_id,
-			             		 goods_title,
-			             		 goods_writer,
-			             		 goods_publisher,
-			             		 goods_sales_price,
-			             		 goods_creDate,
-			             		 goods_published_date
-			              from t_shopping_goods 
-			                where  to_char(goods_creDate,'YYYY-MM-DD')  between #{beginDate} and #{endDate}
-			               order by goods_creDate desc
-					    )
-				)							
-			where				
-		recNum between (#{section}-1)*100+ (#{pageNum}-1)*10+1 and (#{section}-1)*100+(#{pageNum})*10				        
-    	]]>
-	</select>
+-->
+<!--<insert id="insertGoodsImageFile" parameterType="java.util.HashMap">
+  INSERT ALL
+  <foreach collection="imageFileList" item="imageFile" separator=" ">
+    INTO t_goods_detail_image (
+      image_id,
+      goods_id,
+      fileName,
+      fileType,
+      reg_id
+    )
+    VALUES (
+      seq_image_id.NEXTVAL,
+      #{imageFile.goods_id},
+      #{imageFile.fileName},
+      #{imageFile.fileType},
+      #{imageFile.reg_id}
+    )
+  </foreach>
+ SELECT 1 FROM dual
+</insert>-->
+
+<!--<insert id="insertGoodsImageFile" parameterType="java.util.List">
+  INSERT ALL
+  <foreach collection="list" item="imageFile">
+    INTO t_goods_detail_image (
+      image_id,
+      goods_id,
+      fileName,
+      fileType,
+      reg_id
+    )
+    VALUES (
+      seq_image_id.NEXTVAL,
+      #{imageFile.goods_id},
+      #{imageFile.fileName},
+      #{imageFile.fileType},
+      #{imageFile.reg_id}
+    )
+  </foreach>
+  SELECT * FROM dual
+</insert>-->
+
+<insert id="insertGoodsImageFile" parameterType="imageFileVO">
+    INSERT INTO t_goods_detail_image (
+      image_id,
+      goods_id,
+      fileName,
+      fileType,
+      reg_id
+    )
+    VALUES (
+      seq_image_id.NEXTVAL,
+      #{goods_id},
+      #{fileName},
+      #{fileType},
+      #{reg_id}
+    )
+</insert>
+
+
+<!--<insert id="insertGoodsImageFile" parameterType="java.util.HashMap">
+  INSERT ALL
+  <foreach collection="imageFileList" item="imageFile" separator=" ">
+    INTO t_goods_detail_image (
+      image_id,
+      goods_id,
+      fileName,
+      fileType,
+      reg_id
+    )
+    VALUES (
+      seq_image_id.NEXTVAL,
+      #{imageFile.goods_id},
+      #{imageFile.fileName},
+      #{imageFile.fileType},
+      #{imageFile.reg_id}
+    )
+  </foreach>
+  SELECT 1 FROM dual
+</insert>-->
+
+<!--<insert id="insertGoodsImageFile" parameterType="java.util.HashMap">
+    <selectKey resultType="int" keyProperty="image_id" order="BEFORE">
+      SELECT seq_image_id.NEXTVAL FROM dual
+    </selectKey>
+    
+   <foreach collection="imageFileList" item="imageFile" index="index"  separator=";" >
+     INSERT INTO t_goods_detail_image (
+      image_id,
+      goods_id,
+      fileName,
+      fileType,
+      reg_id
+    ) VALUES (
+      seq_image_id.NEXTVAL,
+      #{imageFile.goods_id},
+      #{imageFile.fileName},
+      #{imageFile.fileType},
+      #{imageFile.reg_id}
+    )
+  </foreach>
+</insert>-->
+
+<select id="selectNewGoodsList" resultMap="goodsResult"   parameterType="java.util.Map"  >
+    <![CDATA[
+	  select * from (
+		   select rowNum as recNum,
+		   		  goods_id,
+		          goods_title,
+		          goods_writer,
+		          goods_publisher,
+		          goods_sales_price,
+		          to_char(goods_creDate,'YYYY-MM-DD')  as goods_creDate,
+		          to_char(goods_published_date,'YYYY-MM-DD') as goods_published_date
+		       from (
+		             select  goods_id,
+		             		 goods_title,
+		             		 goods_writer,
+		             		 goods_publisher,
+		             		 goods_sales_price,
+		             		 goods_creDate,
+		             		 goods_published_date
+		              from t_shopping_goods 
+		                where  to_char(goods_creDate,'YYYY-MM-DD')  between #{beginDate} and #{endDate}
+		               order by goods_creDate desc
+				    )
+			)							
+		where				
+	recNum between (#{section}-1)*100+ (#{pageNum}-1)*10+1 and (#{section}-1)*100+(#{pageNum})*10				        
+	]]>
+</select>
 	
 	<select id="selectTotalNewGoods" resultType="int" parameterType="java.util.Map">
 	  <![CDATA[

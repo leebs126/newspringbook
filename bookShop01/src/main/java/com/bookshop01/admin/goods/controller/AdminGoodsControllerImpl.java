@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.bookshop01.common.base.BaseController;
 import com.bookshop01.goods.vo.GoodsVO;
 import com.bookshop01.goods.vo.ImageFileVO;
 import com.bookshop01.member.vo.MemberVO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -97,68 +99,108 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		
 	}
 	
-	@RequestMapping(value="/addNewGoods.do" ,method={RequestMethod.POST})
-	public ResponseEntity addNewGoods(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)  throws Exception {
-		multipartRequest.setCharacterEncoding("utf-8");
-		response.setContentType("text/html; charset=UTF-8");
-		String imageFileName=null;
-		
-		Map newGoodsMap = new HashMap();
-		Enumeration enu=multipartRequest.getParameterNames();
-		while(enu.hasMoreElements()){
-			String name=(String)enu.nextElement();
-			String value=multipartRequest.getParameter(name);
-			newGoodsMap.put(name,value);
-		}
-		
-		HttpSession session = multipartRequest.getSession();
-		MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
-		String reg_id = memberVO.getMember_id();
-		
-		List<ImageFileVO> imageFileList =upload(multipartRequest);
-		if(imageFileList!= null && imageFileList.size()!=0) {
-			for(ImageFileVO imageFileVO : imageFileList) {
-				imageFileVO.setReg_id(reg_id);
-			}
-			newGoodsMap.put("imageFileList", imageFileList);
-		}
-		
-		String message = null;
-		ResponseEntity resEntity = null;
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
-		try {
-			int goods_id = adminGoodsService.addNewGoods(newGoodsMap);
-			if(imageFileList!=null && imageFileList.size()!=0) {
-				for(ImageFileVO  imageFileVO:imageFileList) {
-					imageFileName = imageFileVO.getFileName();
-					File srcFile = new File(CURR_IMAGE_REPO_PATH+"\\"+"temp"+"\\"+imageFileName);
-					File destDir = new File(CURR_IMAGE_REPO_PATH+"\\"+goods_id);
-					FileUtils.moveFileToDirectory(srcFile, destDir,true);
-				}
-			}
-			message= "<script>";
-			message += " alert('새상품을 추가했습니다.');";
-			message +=" location.href='"+multipartRequest.getContextPath()+"/admin/goods/addNewGoodsForm.do';";
-			message +=("</script>");
-		}catch(Exception e) {
-			if(imageFileList!=null && imageFileList.size()!=0) {
-				for(ImageFileVO  imageFileVO:imageFileList) {
-					imageFileName = imageFileVO.getFileName();
-					File srcFile = new File(CURR_IMAGE_REPO_PATH+"\\"+"temp"+"\\"+imageFileName);
-					srcFile.delete();
-				}
-			}
-			
-			message= "<script>";
-			message += " alert('오류가 발생했습니다. 다시 시도해 주세요');";
-			message +=" location.href='"+multipartRequest.getContextPath()+"/admin/goods/addNewGoodsForm.do';";
-			message +=("</script>");
-			e.printStackTrace();
-		}
-		resEntity =new ResponseEntity(message, responseHeaders, HttpStatus.OK);
-		return resEntity;
+	@RequestMapping(value = "/addNewGoods.do", method = {RequestMethod.POST})
+	public ResponseEntity addNewGoods(@RequestParam("goodsData") String goodsDataJson, // JSON 문자열
+								        MultipartHttpServletRequest multipartRequest,
+								        HttpServletResponse response) throws Exception {
+
+	    multipartRequest.setCharacterEncoding("utf-8");
+	    response.setContentType("text/html; charset=UTF-8");
+
+	    String imageFileName = null;
+
+	    // 1) JSON → Map 변환
+	    ObjectMapper mapper = new ObjectMapper();
+	    Map<String, Object> newGoodsMap = mapper.readValue(goodsDataJson, Map.class);
+
+	    // 2) 개행문자 변환 대상 키 목록
+	    Set<String> newlineKeys = Set.of(
+	        "goods_contents_order",
+	        "goods_writer_intro",
+	        "goods_intro",
+	        "goods_publisher_comment",
+	        "goods_recommendation"
+	    );
+
+	    // 3) Map 데이터 후처리
+	    for (Map.Entry<String, Object> entry : newGoodsMap.entrySet()) {
+	        String key = entry.getKey();
+	        Object rawValue = entry.getValue();
+
+	        if (rawValue instanceof String value) {
+	            // 개행 변환 대상이면 줄바꿈을 <br/>로 변환
+	            if (newlineKeys.contains(key)) {
+	                value = value.replaceAll("(\r\n|\n|\r)", "<br/>");
+	            }
+	            newGoodsMap.put(key, value);
+	        }
+	    }
+	    
+	    // 2) 로그인 회원 정보
+	    HttpSession session = multipartRequest.getSession();
+	    MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
+	    String reg_id = memberVO.getMember_id();
+
+	    // 3) 파일 업로드 처리
+	    List<ImageFileVO> imageFileList = upload(multipartRequest);
+
+	    // 업로드 파일 개수 제한 검사
+	    if (imageFileList != null && imageFileList.size() > 10) {
+	        throw new IllegalArgumentException("최대 10개 파일만 업로드할 수 있습니다.");
+	    }
+
+	    if (imageFileList != null && !imageFileList.isEmpty()) {
+	        for (ImageFileVO imageFileVO : imageFileList) {
+	            imageFileVO.setReg_id(reg_id);
+	        }
+	        newGoodsMap.put("imageFileList", imageFileList);
+	    }
+
+	    String message;
+	    ResponseEntity resEntity;
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.add("Content-Type", "text/html; charset=utf-8");
+
+	    try {
+	        // 4) DB 저장
+	        int goods_id = adminGoodsService.addNewGoods(newGoodsMap);
+
+	        // 5) 파일 이동
+	        if (imageFileList != null && !imageFileList.isEmpty()) {
+	            for (ImageFileVO imageFileVO : imageFileList) {
+	                imageFileName = imageFileVO.getFileName();
+	                File srcFile = new File(CURR_IMAGE_REPO_PATH + "\\" + "temp" + "\\" + imageFileName);
+	                File destDir = new File(CURR_IMAGE_REPO_PATH + "\\" + goods_id);
+	                FileUtils.moveFileToDirectory(srcFile, destDir, true);
+	            }
+	        }
+
+	        message = "<script>";
+	        message += " alert('새상품을 추가했습니다.');";
+	        message += " location.href='" + multipartRequest.getContextPath() + "/admin/goods/addNewGoodsForm.do';";
+	        message += "</script>";
+
+	    } catch (Exception e) {
+	        // 업로드 실패 시 temp 파일 삭제
+	        if (imageFileList != null && !imageFileList.isEmpty()) {
+	            for (ImageFileVO imageFileVO : imageFileList) {
+	                imageFileName = imageFileVO.getFileName();
+	                File srcFile = new File(CURR_IMAGE_REPO_PATH + "\\" + "temp" + "\\" + imageFileName);
+	                srcFile.delete();
+	            }
+	        }
+
+	        message = "<script>";
+	        message += " alert('오류가 발생했습니다. 다시 시도해 주세요');";
+	        message += " location.href='" + multipartRequest.getContextPath() + "/admin/goods/addNewGoodsForm.do';";
+	        message += "</script>";
+	        e.printStackTrace();
+	    }
+
+	    resEntity = new ResponseEntity(message, responseHeaders, HttpStatus.OK);
+	    return resEntity;
 	}
+
 	
 	@RequestMapping(value="/modifyGoodsForm.do" ,method={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView modifyGoodsForm(@RequestParam("goods_id") int goods_id,
