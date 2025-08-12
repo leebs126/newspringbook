@@ -2,7 +2,7 @@
     <nav>
         <ul>
             <!-- 관리자 메뉴 -->
-            <li th:block th:if="${session.isLogOn != null and session.isLogOn and memberInfo != null and session.memberInfo.member_id == 'admin'}">
+            <li th:block th:if="${session.side_menu == 'admin_mode'}">
                 <h3>주요기능</h3>
                 <ul>
                     <li><a th:href="@{/admin/goods/adminGoodsMain.do}">상품관리</a></li>

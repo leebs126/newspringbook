@@ -58,7 +58,7 @@ public class MemberControllerImpl extends BaseController implements MemberContro
 //			if(memberVO.getMember_id().equals("admin")) {
 //				session.setAttribute("side_menu", "admin_mode");
 ////				mav.addObject("side_menu", "admin_mode");
-//				redirectAttributes.addFlashAttribute("side_menu", "admin_mode");
+////				redirectAttributes.addFlashAttribute("side_menu", "admin_mode");
 //			}
 			
 		}else{

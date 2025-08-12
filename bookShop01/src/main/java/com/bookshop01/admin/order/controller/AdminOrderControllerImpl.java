@@ -1,11 +1,16 @@
 package com.bookshop01.admin.order.controller;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -59,20 +64,43 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		condMap.put("pageNum",pageNum);
 		condMap.put("beginDate",beginDate);
 		condMap.put("endDate", endDate);
-		List<OrderVO> newOrderList=adminOrderService.listNewOrder(condMap);
-		mav.addObject("newOrderList",newOrderList);
+		
+		List<OrderVO> _newOrderList=adminOrderService.listNewOrder(condMap);
+		Set<Integer> orderIdSet = new HashSet<>();
+		for (OrderVO orderVO : _newOrderList) {
+		    orderIdSet.add(orderVO.getOrder_id());
+		}		
+		
+		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
+		
+		Map<Integer, List<OrderVO>> newOrderMap = new TreeMap<>(Comparator.reverseOrder());
+		
+		for (int orderId : orderIdList) {
+			List<OrderVO> newOrderList = new ArrayList<>();
+		    for (OrderVO orderVO : _newOrderList) {
+		        if (orderId == orderVO.getOrder_id()) {
+		            newOrderList.add(orderVO);
+		        }
+		    }
+		    newOrderMap.put(orderId, newOrderList);
+		}	
+		 
+		mav.addObject("newOrderMap", newOrderMap);
+		
+		
+		//		mav.addObject("newOrderList",newOrderList);
 		
 		String beginDate1[]=beginDate.split("-");
 		String endDate2[]=endDate.split("-");
-		mav.addObject("beginYear",beginDate1[0]);
-		mav.addObject("beginMonth",beginDate1[1]);
-		mav.addObject("beginDay",beginDate1[2]);
-		mav.addObject("endYear",endDate2[0]);
-		mav.addObject("endMonth",endDate2[1]);
-		mav.addObject("endDay",endDate2[2]);
+		mav.addObject("beginYear", Integer.parseInt(beginDate1[0]));
+		mav.addObject("beginMonth", Integer.parseInt(beginDate1[1]));
+		mav.addObject("beginDay",  Integer.parseInt(beginDate1[2]));
+		mav.addObject("endYear",  Integer.parseInt(endDate2[0]));
+		mav.addObject("endMonth",  Integer.parseInt(endDate2[1]));
+		mav.addObject("endDay",  Integer.parseInt(endDate2[2]));
 		
-		mav.addObject("section", section);
-		mav.addObject("pageNum", pageNum);
+		mav.addObject("section",  Integer.parseInt(section));
+		mav.addObject("pageNum",  Integer.parseInt(pageNum));
 		return mav;
 		
 	}
@@ -93,7 +121,7 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 	}
 	
 	@Override
-	@RequestMapping(value="/orderDetail.do" ,method={RequestMethod.GET,RequestMethod.POST})
+	@RequestMapping(value="/adminOrderDetail.do" ,method={RequestMethod.GET,RequestMethod.POST})
 	public ModelAndView orderDetail(@RequestParam("order_id") int order_id, 
 			                      HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
