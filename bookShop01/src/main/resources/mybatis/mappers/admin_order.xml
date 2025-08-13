@@ -68,7 +68,8 @@
 		<result property="namujiAddress" column="namujiAddress" />
 		<result property="joinDate" column="joinDate" />
 	</resultMap>
-<select id="selectNewOrderList" resultMap="orderResult"   parameterType="java.util.HashMap"  >
+<!--
+<select id="selectNewOrdersList" resultMap="orderResult"   parameterType="java.util.HashMap"  >
 		  select * from (
 			    select rowNum as recNum,t.*
 			       from (
@@ -88,8 +89,52 @@
 				)							
 			where				
 		recNum between (#{section}-1)*100+ (#{pageNum}-1)*10+1 and (#{section}-1)*100+(#{pageNum})*10				        
-	</select>
-	
+</select>
+-->
+<select id="selectNewOrdersList" resultMap="orderResult"   parameterType="java.util.HashMap"  >
+select so.* from 
+t_shopping_order so
+WHERE so.order_id in(
+    select order_id 
+    from(
+        select * 
+        from
+            (select   rowNum as recNum, order_id
+                from(
+                     SELECT DISTINCT order_id 
+                            FROM t_shopping_order
+                            WHERE TO_CHAR(pay_order_time,'yyyy-mm-dd')  between #{beginDate} and #{endDate}
+			                <if test="search_type=='orderer_id'">
+			                  AND orderer_id=#{search_word}
+			                </if>
+			                <if test="search_type=='orderer_name'">
+			                  AND orderer_name=#{search_word}
+			                </if>
+			                <if test="search_type=='orderer_hp_num'">
+			                   AND pay_orderer_hp_num=#{search_word} 
+			                </if>                                    
+                            ORDER BY  order_id DESC
+                ) 
+                
+        )    
+        WHERE
+        1=1
+        AND
+        recNum between (#{section}-1)*100+ (#{pageNum}-1)*10+1 and (#{section}-1)*100+(#{pageNum})*10
+    )
+    
+)
+ORDER BY  order_id DESC          
+</select>
+
+<select id="selectTotalOrders" resultType="int" parameterType="java.util.Map">
+  <![CDATA[
+    SELECT COUNT(DISTINCT order_id) 
+    FROM t_shopping_order 
+    WHERE TO_CHAR(pay_order_time, 'YYYY-MM-DD') BETWEEN #{beginDate} AND #{endDate}
+  ]]>
+</select>
+
 <update id="updateDeliveryState" parameterType="java.util.Map" >
 	   update t_shopping_order
 	    <set> 

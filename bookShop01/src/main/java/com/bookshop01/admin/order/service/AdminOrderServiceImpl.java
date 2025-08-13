@@ -1,8 +1,5 @@
 package com.bookshop01.admin.order.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,13 +22,22 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	@Autowired
 	private AdminOrderDAO adminOrderDAO;
 	
-	public List<OrderVO>listNewOrder(Map condMap) throws Exception{
-		return adminOrderDAO.selectNewOrderList(condMap);
+	public Map<String, Object>  listNewOrders(Map condMap) throws Exception{
+		Map<String, Object> newOrderMap =new HashMap<String, Object>();
+		List<OrderVO> newOrdersList = adminOrderDAO.selectNewOrdersList(condMap);
+		int totalOrdersCount = adminOrderDAO.selectTotalOrders(condMap);
+		newOrderMap.put("newOrdersList", newOrdersList);
+		newOrderMap.put("totalOrdersCount", totalOrdersCount);
+		
+		
+		return newOrderMap;
 	}
+	
 	@Override
-	public void  modifyDeliveryState(Map deliveryMap) throws Exception{
+	public void  modifyDeliveryState(Map deliveryMap) throws Exception {
 		adminOrderDAO.updateDeliveryState(deliveryMap);
 	}
+	
 	@Override
 	public Map orderDetail(int order_id) throws Exception{
 		Map orderMap=new HashMap();
@@ -44,8 +50,5 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 		orderMap.put("orderer", orderer);
 		return orderMap;
 	}
-
-	
-	
 
 }

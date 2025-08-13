@@ -65,30 +65,36 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		condMap.put("beginDate",beginDate);
 		condMap.put("endDate", endDate);
 		
-		List<OrderVO> _newOrderList=adminOrderService.listNewOrder(condMap);
+		Map<String, Object> _newOrdersMap = adminOrderService.listNewOrders(condMap);
+		List<OrderVO> _newOrdersList = (List<OrderVO>)_newOrdersMap.get("newOrdersList");
 		Set<Integer> orderIdSet = new HashSet<>();
-		for (OrderVO orderVO : _newOrderList) {
+		for (OrderVO orderVO : _newOrdersList) {
 		    orderIdSet.add(orderVO.getOrder_id());
 		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
 		
-		Map<Integer, List<OrderVO>> newOrderMap = new TreeMap<>(Comparator.reverseOrder());
+		Map<Integer, List<OrderVO>> newOrdersMap = new TreeMap<>(Comparator.reverseOrder());
 		
 		for (int orderId : orderIdList) {
-			List<OrderVO> newOrderList = new ArrayList<>();
-		    for (OrderVO orderVO : _newOrderList) {
+			List<OrderVO> newOrdersList = new ArrayList<>();
+		    for (OrderVO orderVO : _newOrdersList) {
 		        if (orderId == orderVO.getOrder_id()) {
-		            newOrderList.add(orderVO);
+		        	newOrdersList.add(orderVO);
 		        }
 		    }
-		    newOrderMap.put(orderId, newOrderList);
+		    newOrdersMap.put(orderId, newOrdersList);
 		}	
 		 
-		mav.addObject("newOrderMap", newOrderMap);
+		mav.addObject("newOrdersMap", newOrdersMap);
 		
+		//페이징 기능 구현 코드 추가
+		int totalOrdersCount = (Integer)_newOrdersMap.get("totalOrdersCount");
+		int OrdersPerPage = 10;  //한 페이지당 표시되는 데이터 수 
+		int totalPage = (int) Math.ceil((double)totalOrdersCount / OrdersPerPage);
+		mav.addObject("totalPage", totalPage);
+				
 		
-		//		mav.addObject("newOrderList",newOrderList);
 		
 		String beginDate1[]=beginDate.split("-");
 		String endDate2[]=endDate.split("-");
