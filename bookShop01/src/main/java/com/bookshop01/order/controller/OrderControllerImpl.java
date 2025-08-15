@@ -98,9 +98,11 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 					String goods_title=goodsVO.getGoods_title();
 					int goods_sales_price=goodsVO.getGoods_sales_price();
 					String goods_fileName=goodsVO.getGoods_fileName();
+					int goods_price = goodsVO.getGoods_price();
 					_orderVO.setGoods_id(goods_id);
 					_orderVO.setGoods_title(goods_title);
 					_orderVO.setGoods_sales_price(goods_sales_price);
+					_orderVO.setGoods_price(goods_price);
 					_orderVO.setGoods_fileName(goods_fileName);
 					_orderVO.setOrder_goods_qty(Integer.parseInt(cart_goods[1]));
 					myOrderList.add(_orderVO);
@@ -187,7 +189,7 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		int orderGoodsQty = 0;			//총주문수량
 		for (OrderVO orderVO : myOrderList) {
 			orderGoodsQty = orderVO.getOrder_goods_qty();
-			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
+			totalOrderPrice+= orderVO.getGoods_price() * orderGoodsQty;
 			totalDeliveryPrice += orderVO.getGoods_delivery_price();
 			totalOrderGoodsQty+= orderGoodsQty;
 		}

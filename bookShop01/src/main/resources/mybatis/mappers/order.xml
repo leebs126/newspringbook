@@ -40,6 +40,7 @@
 		<result property="goods_qty" column="goods_qty" />
 		<result property="orderer_hp" column="orderer_hp" />
 		<result property="goods_fileName" column="goods_fileName" />
+		<result property="goods_price" column="goods_price" />
 	</resultMap>
 	
 	 <select id="selectMyOrderList" resultMap="orderGoodsResult"  parameterType="orderVO"  >
@@ -62,6 +63,7 @@
 									    goods_title,
 									    goods_fileName,
 									    order_goods_qty,
+									    goods_price,
 									    goods_sales_price,
 									    orderer_name,
 									    receiver_name,
@@ -88,6 +90,7 @@
 									    #{goods_fileName},
 									    #{order_goods_qty},
 									    #{goods_sales_price},
+									    #{goods_price},
 									    #{orderer_name},
 									    #{receiver_name},
 									    #{receiver_hp1},

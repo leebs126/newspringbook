@@ -35,25 +35,32 @@ function init() {
 </script>
 
 <script>
-function search_order_history(search_period){	
-	temp=calcPeriod(search_period);
-	var date=temp.split(",");
-	beginDate=date[0];
-	endDate=date[1];
+function search_order_history(fixedSearchPeriod){	
+	//temp=calcPeriod(search_period);
+	//var date=temp.split(",");
+	//beginDate=date[0];
+	//endDate=date[1];
 	
     
+	//var formObj=document.createElement("form");
+	//var i_command = document.createElement("input");
+	//var i_beginDate = document.createElement("input"); 
+	//var i_endDate = document.createElement("input");
+	//i_beginDate.name="beginDate";
+	//i_beginDate.value=beginDate;
+	//i_endDate.name="endDate";
+	//i_endDate.value=endDate;
+		
+	//formObj.appendChild(i_beginDate);
+	//formObj.appendChild(i_endDate);
+	
 	var formObj=document.createElement("form");
-	var i_command = document.createElement("input");
-	var i_beginDate = document.createElement("input"); 
-	var i_endDate = document.createElement("input");
+	var i_fixedSearch_period = document.createElement("input");
+	i_fixedSearch_period.name="fixedSearchPeriod";
+	i_fixedSearch_period.value=fixedSearchPeriod;
+	 formObj.appendChild(i_fixedSearch_period);
     
-	i_beginDate.name="beginDate";
-	i_beginDate.value=beginDate;
-	i_endDate.name="endDate";
-	i_endDate.value=endDate;
 	
-    formObj.appendChild(i_beginDate);
-    formObj.appendChild(i_endDate);
     document.body.appendChild(formObj); 
     formObj.method="get";
     formObj.action="/admin/order/adminOrderMain.do";
@@ -120,9 +127,9 @@ function  calcPeriod(search_period){
 			endDay='0'+endDay;
 		}
 	}
-	endDate=endYear+'-'+endMonth +'-'+endDay;
-	beginDate=beginYear+'-'+beginMonth +'-'+beginDay;
-	//alert(beginDate+","+endDate);
+	endDate=endYear+'-' + endMonth +'-' + endDay;
+	beginDate=beginYear+'-' + beginMonth +'-' + beginDay;
+	alert(beginDate+","+endDate);
 	return beginDate+","+endDate;
 }
 
@@ -141,7 +148,7 @@ function fn_modify_order_state(order_id, select_id){
 		},
 		success : function(data, textStatus) {
 			if(data.trim()=='mod_success'){
-				alert("주문 정보를 수정했습니다.");
+				alert("배송 정보를 수정했습니다.");
 				location.href="/admin/order/adminOrderMain.do";
 			}else if(data.trim()=='failed'){
 				alert("다시 시도해 주세요.");	
@@ -218,6 +225,7 @@ function fn_detail_order(order_id){
 
 	//상세조회 버튼 클릭 시 수행
 function fn_detail_search(){
+	//alert("order_id");
 	var frm_delivery_list=document.frm_delivery_list;
 	
 	beginYear=frm_delivery_list.beginYear.value;
@@ -235,28 +243,37 @@ function fn_detail_search(){
 	var i_endDate = document.createElement("input");
 	var i_search_type = document.createElement("input");
 	var i_search_word = document.createElement("input");
-    
+    var i_search_section = document.createElement("input");
+	var i_search_pageNum = document.createElement("input");
 	
     i_command.name="command";
     i_beginDate.name="beginDate";
     i_endDate.name="endDate";
     i_search_type.name="search_type";
     i_search_word.name="search_word";
-    
+    i_search_section.name="section";
+	i_search_pageNum.name="pageNum";
+	
     i_command.value="list_detail_order_goods";
 	i_beginDate.value=beginYear+"-"+beginMonth+"-"+beginDay;
     i_endDate.value=endYear+"-"+endMonth+"-"+endDay;
     i_search_type.value=search_type;
     i_search_word.value=search_word;
-	
+	i_search_section.value="1";
+	i_search_pageNum.value="1";
+
+		
     formObj.appendChild(i_command);
     formObj.appendChild(i_beginDate);
     formObj.appendChild(i_endDate);
     formObj.appendChild(i_search_type);
     formObj.appendChild(i_search_word);
-    document.body.appendChild(formObj); 
+	formObj.appendChild(i_search_section);
+	formObj.appendChild(i_search_pageNum);
+	
+	document.body.appendChild(formObj); 
     formObj.method="post";
-    formObj.action="/admin/order/adminOrderDetail.do";
+    formObj.action="/admin/order/searchOrderDetail.do";
     formObj.submit();
 	
 }
@@ -332,6 +349,24 @@ function fn_detail_search(){
                                 th:text="${i < 10 ? '0'+i : i}"></option>
                     </select>일 &nbsp; ~
                     <!-- endYear / endMonth / endDay도 동일 패턴 -->
+					<select name="endYear" disabled>
+                        <option th:each="i : ${#numbers.sequence(0,5)}"
+                                th:value="${endYear - i}"
+                                th:selected="${endYear == (endYear - i)}"
+                                th:text="${endYear - i}"></option>
+                    </select>년
+                    <select name="endMonth" disabled>
+                        <option th:each="i : ${#numbers.sequence(1,12)}"
+                                th:value="${i < 10 ? '0'+i : i}"
+                                th:selected="${endMonth == i}"
+                                th:text="${i < 10 ? '0'+i : i}"></option>
+                    </select>월
+                    <select name="endDay" disabled>
+                        <option th:each="i : ${#numbers.sequence(1,31)}"
+                                th:value="${i < 10 ? '0'+i : i}"
+                                th:selected="${endDay == i}"
+                                th:text="${i < 10 ? '0'+i : i}"></option>
+                    </select>일
                 </td>
             </tr>
 
@@ -401,17 +436,6 @@ function fn_detail_search(){
 				  </th:block>
 				</tr>
             <tr>
-
-               <!-- <td colspan="8" class="fixed">
-                    <span th:each="page : ${#numbers.sequence(1,10)}">
-                        <a th:if="${section > 1 and page == 1}"
-                           th:href="@{/admin/order/adminOrderMain.do(chapter=${section-1}, pageNum=${(section-1)*10 + 1})}">&nbsp;&nbsp;</a>
-                        <a th:href="@{/admin/order/adminOrderMain.do(chapter=${section}, pageNum=${page})}"
-                           th:text="${(section-1)*10 + page}"></a>
-                        <a th:if="${page == 10}"
-                           th:href="@{/admin/order/adminOrderMain.do(chapter=${section+1}, pageNum=${section*10 + 1})}">&nbsp;next</a>
-                    </span>
-                </td>-->
             </tr>
         </tbody>
     </table>
@@ -428,7 +452,8 @@ function fn_detail_search(){
         <!-- 현재 페이지 번호 -->
         <a th:href="@{/admin/order/adminOrderMain.do(chapter=${section}, pageNum=${page})}"
            th:text="${(section - 1) * 10 + page}"
-           style="margin: 0 5px;"></a>
+           th:style="${pageNum == page} ? 'margin: 0 5px; font-size: 20px; color: red; font-weight: bold;' : 'margin: 0 5px;'">
+		</a>
 
         <!-- 다음 페이지로 이동 -->
         <a th:if="${page == 10 and totalPage > section * 10}"

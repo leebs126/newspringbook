@@ -72,10 +72,10 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
 		adminGoodsDAO.updateGoodsImage(imageFileList); 
 	}
 	
-	@Override
-	public List<OrderVO> listOrderGoods(Map condMap) throws Exception{
-		return adminGoodsDAO.selectOrderGoodsList(condMap);
-	}
+//	@Override
+//	public List<OrderVO> listOrderGoods(Map condMap) throws Exception{
+//		return adminGoodsDAO.selectOrderGoodsList(condMap);
+//	}
 	@Override
 	public void modifyOrderGoods(Map orderMap) throws Exception{
 		adminGoodsDAO.updateOrderGoods(orderMap);

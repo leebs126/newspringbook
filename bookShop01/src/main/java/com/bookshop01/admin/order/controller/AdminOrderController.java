@@ -14,8 +14,10 @@ public interface AdminOrderController {
             HttpServletRequest request, HttpServletResponse response)  throws Exception;
 	public ResponseEntity modifyDeliveryState(@RequestParam Map<String, String> deliveryMap, 
             HttpServletRequest request, HttpServletResponse response)  throws Exception;
-	public ModelAndView orderDetail(@RequestParam("order_id") int order_id, 
+	public ModelAndView adminOrderDetail(@RequestParam("order_id") int order_id, 
             HttpServletRequest request, HttpServletResponse response)  throws Exception;
 	
+	public ModelAndView searchOrderDetail(@RequestParam Map<String, String> searchCondMap, 
+									HttpServletRequest request, HttpServletResponse response)  throws Exception;
 	
 }

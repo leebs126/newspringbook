@@ -25,7 +25,7 @@
 	        },
 	        success : function(data) {
 	            if(data.trim() === 'mod_success'){
-	                alert("주문 정보를 수정했습니다.");
+	                alert("배송 정보를 수정했습니다.");
 	               // location.href = "/admin/order/admiinOrderDetail.do?order_id=" + _order_id;
 	            } else if(data.trim() === 'failed'){
 	                alert("다시 시도해 주세요.");
@@ -96,7 +96,7 @@
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">주소</td>
-                    <td th:text="${orderMap.deliveryInfo.delivery_address}"></td>
+                    <td th:utext="${orderMap.deliveryInfo.delivery_address}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">배송 메시지</td>
@@ -138,7 +138,7 @@
             <tbody>
                 <tr class="dot_line">
                     <td class="fixed_join">결제방법</td>
-                    <td th:text="${orderMap.deliveryInfo.pay_method}"></td>
+                    <td th:utext="${orderMap.deliveryInfo.pay_method}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">결제카드</td>

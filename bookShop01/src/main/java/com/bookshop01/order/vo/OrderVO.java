@@ -38,7 +38,7 @@ public class OrderVO {
 	private String goods_fileName;
 	private String orderer_hp;
 	private int goods_delivery_price;
-	
+	private int goods_price;
 	
 	
 	
@@ -248,6 +248,12 @@ public class OrderVO {
 	}
 	public void setGoods_delivery_price(int goods_delivery_price) {
 		this.goods_delivery_price = goods_delivery_price;
+	}
+	public int getGoods_price() {
+		return goods_price;
+	}
+	public void setGoods_price(int goods_price) {
+		this.goods_price = goods_price;
 	}
 	
 	

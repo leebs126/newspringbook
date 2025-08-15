@@ -14,6 +14,8 @@ public interface AdminOrderDAO {
 	public ArrayList<OrderVO> selectNewOrdersList(Map condMap) throws DataAccessException;
 	public int selectTotalOrders(Map condMap) throws DataAccessException;
 	public void  updateDeliveryState(Map deliveryMap) throws DataAccessException;
-	public ArrayList<OrderVO> selectOrderDetail(int order_id) throws DataAccessException;
+	public ArrayList<OrderVO> selectSearchOrderDetail(Map<String, String> condMap) throws DataAccessException;
 	public MemberVO selectOrderer(String member_id) throws DataAccessException;
+	
+	public ArrayList<OrderVO> selectAdminOrderDetail(int order_id) throws DataAccessException;
 }

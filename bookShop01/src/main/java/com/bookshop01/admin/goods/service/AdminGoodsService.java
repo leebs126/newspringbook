@@ -18,7 +18,7 @@ public interface AdminGoodsService {
 	public List goodsImageFile(int goods_id) throws Exception;
 	public void modifyGoodsInfo(Map goodsMap) throws Exception;
 	public void modifyGoodsImage(List<ImageFileVO> imageFileList) throws Exception;
-	public List<OrderVO> listOrderGoods(Map condMap) throws Exception;
+//	public List<OrderVO> listOrderGoods(Map condMap) throws Exception;
 	public void modifyOrderGoods(Map orderMap) throws Exception;
 	public void removeGoodsImage(int image_id) throws Exception;
 	public void addNewGoodsImage(List<ImageFileVO> imageFileList) throws Exception;

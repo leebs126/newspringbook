@@ -44,14 +44,12 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		String fixedSearchPeriod = dateMap.get("fixedSearchPeriod");
 		String section = dateMap.get("section");
 		String pageNum = dateMap.get("pageNum");
-		String beginDate=null,endDate=null;
+		String beginDate=dateMap.get("beginDate");
+		String endDate=dateMap.get("beginDate");
 		
 		String [] tempDate=calcSearchPeriod(fixedSearchPeriod).split(",");
-		beginDate=tempDate[0];
-		endDate=tempDate[1];
-		dateMap.put("beginDate", beginDate);
-		dateMap.put("endDate", endDate);
-		
+		beginDate= tempDate[0];
+		endDate =tempDate[1];
 		
 		HashMap<String,Object> condMap=new HashMap<String,Object>();
 		if(section== null) {
@@ -127,12 +125,68 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 	}
 	
 	@Override
+	@RequestMapping(value="/searchOrderDetail.do" ,method={RequestMethod.GET,RequestMethod.POST})
+	public ModelAndView searchOrderDetail(@RequestParam Map<String, String> searchCondMap,
+									HttpServletRequest request, HttpServletResponse response)  throws Exception {
+//		String viewName=(String)request.getAttribute("viewName");
+		String viewName = "/admin/order/adminOrderMain";
+		ModelAndView mav = new ModelAndView(viewName);
+		
+		String search_type = searchCondMap.get("search_type");
+		String orderer_id = searchCondMap.get("search_word");
+		String section = searchCondMap.get("section");
+		String pageNum = searchCondMap.get("pageNum");
+		String beginDate=searchCondMap.get("beginDate");
+		String endDate=searchCondMap.get("beginDate");
+		
+		
+		Map<String, Object> _newOrdersMap =adminOrderService.searchOrderDetail(searchCondMap);
+		List<OrderVO> _newOrdersList = (List<OrderVO>)_newOrdersMap.get("newOrdersList");
+		Set<Integer> orderIdSet = new HashSet<>();
+		for (OrderVO orderVO : _newOrdersList) {
+		    orderIdSet.add(orderVO.getOrder_id());
+		}		
+		
+		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
+		
+		Map<Integer, List<OrderVO>> newOrdersMap = new TreeMap<>(Comparator.reverseOrder());
+		
+		for (int orderId : orderIdList) {
+			List<OrderVO> newOrdersList = new ArrayList<>();
+		    for (OrderVO orderVO : _newOrdersList) {
+		        if (orderId == orderVO.getOrder_id()) {
+		        	newOrdersList.add(orderVO);
+		        }
+		    }
+		    newOrdersMap.put(orderId, newOrdersList);
+		}	
+		 
+		
+		
+		mav.addObject("newOrdersMap", newOrdersMap);
+		
+		String beginDate1[]=beginDate.split("-");
+		String endDate2[]=endDate.split("-");
+		mav.addObject("beginYear", Integer.parseInt(beginDate1[0]));
+		mav.addObject("beginMonth", Integer.parseInt(beginDate1[1]));
+		mav.addObject("beginDay",  Integer.parseInt(beginDate1[2]));
+		mav.addObject("endYear",  Integer.parseInt(endDate2[0]));
+		mav.addObject("endMonth",  Integer.parseInt(endDate2[1]));
+		mav.addObject("endDay",  Integer.parseInt(endDate2[2]));
+		
+		mav.addObject("section",  Integer.parseInt(section));
+		mav.addObject("pageNum",  Integer.parseInt(pageNum));
+		
+		return mav;
+	}
+
+	@Override
 	@RequestMapping(value="/adminOrderDetail.do" ,method={RequestMethod.GET,RequestMethod.POST})
-	public ModelAndView orderDetail(@RequestParam("order_id") int order_id, 
-			                      HttpServletRequest request, HttpServletResponse response)  throws Exception {
+	public ModelAndView adminOrderDetail(int order_id, HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
-		Map orderMap =adminOrderService.orderDetail(order_id);
+		Map orderMap =adminOrderService.adminOrderDetail(order_id);
 		mav.addObject("orderMap", orderMap);
 		return mav;
 	}

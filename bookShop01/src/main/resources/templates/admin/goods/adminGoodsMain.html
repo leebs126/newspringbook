@@ -217,7 +217,8 @@ function  calcPeriod(search_period){
          <!-- 현재 페이지 번호 -->
          <a th:href="@{/admin/goods/adminGoodsMain.do(chapter=${section}, pageNum=${page})}"
             th:text="${(section - 1) * 10 + page}"
-            style="margin: 0 5px;"></a>
+             th:style="${pageNum == page} ? 'margin: 0 5px; font-size: 20px; color: red; font-weight: bold;' : 'margin: 0 5px;'">
+		  </a>
 
          <!-- 다음 페이지로 이동 -->
          <a th:if="${page == 10 and totalPage > section * 10}"

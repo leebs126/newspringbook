@@ -89,11 +89,11 @@
 	        <td >
 				<!--<h2 th:text="${#numbers.formatDecimal(item.goods_sales_price,0,'COMMA')} ">금액</h2>-->
 				<!--<span th:text="${item.goods_sales_price != null ? #numbers.formatDecimal(item.goods_sales_price, 0, 'COMMA') : 0}">0</span>-->
-				<h2 th:text="${item.goods_sales_price} + '원'">0</h2>
+				<h2 th:text="${item.goods_price} + '원'">0</h2>
 			</td>
 	        <td><h2 th:text="${item.goods_delivery_price} + '원'">0</h2></td>
 	        <td><h2 th:text="${1500 * item.order_goods_qty} + '원'">적립금</h2></td>
-			<td><h2 th:text="${T(java.lang.Math).round(item.goods_sales_price * 0.9)} + '원'"></h2></td>
+			<td><h2 th:text="${item.goods_sales_price} + '원'"></h2></td>
 			<td th:if="${iterStat.index == 0}"  th:rowspan="${#lists.size(myOrderList)}"  style="background-color: #e0f7da;">
 		    	<h2 th:text="${session.finalTotalOrderPrice} + '원'"></h2>
 				<input  type="hidden" id="h_each_goods_price"  name="h_each_goods_price" th:value="${session.finalTotalOrderPrice}  + '원'" />
