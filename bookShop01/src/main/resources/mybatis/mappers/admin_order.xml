@@ -9,6 +9,7 @@
 		<result property="member_id" column="member_id" />
 		<result property="goods_id" column="goods_id" />
 		<result property="goods_title" column="goods_title" />
+		<result property="goods_price" column="goods_price" />
 		<result property="goods_sales_price" column="goods_sales_price" />
 		<result property="order_total_price" column="order_total_price" />
 		<result property="order_goods_qty" column="order_goods_qty" />

@@ -186,8 +186,36 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 			throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
-		Map orderMap =adminOrderService.adminOrderDetail(order_id);
+		Map orderDataMap =adminOrderService.adminOrderDetail(order_id);
+		List<OrderVO> orderList= (List<OrderVO>)orderDataMap.get("orderList");
+		Map<String, List<OrderVO>> orderMap = new HashMap<>();
+		orderMap.put("orderList", orderList);
 		mav.addObject("orderMap", orderMap);
+		mav.addObject("orderDataMap", orderDataMap);
+		
+		
+		int finalTotalOrderPrice = 0;  //최종결제금액
+		int totalOrderPrice = 0; 		//총주문액
+		int totalDeliveryPrice = 0;		//총배송비
+		int totalDiscountedPrice = 0;	//총할인액
+		int totalOrderGoodsQty = 0; 	//총주문개수
+		int orderGoodsQty = 0;			//총주문수량
+		for (OrderVO orderVO : orderList) {
+			orderGoodsQty = orderVO.getOrder_goods_qty();
+			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
+			totalDeliveryPrice += orderVO.getGoods_delivery_price();
+			totalOrderGoodsQty+= orderGoodsQty;
+		}
+		
+		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
+		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
+		
+		mav.addObject("finalTotalOrderPrice", finalTotalOrderPrice);
+		mav.addObject("totalOrderPrice", totalOrderPrice);
+		mav.addObject("totalOrderGoodsQty", totalOrderGoodsQty);
+		mav.addObject("totalDeliveryPrice", totalDeliveryPrice);
+		mav.addObject("totalDiscountedPrice", totalDiscountedPrice);
+		
 		return mav;
 	}
 	

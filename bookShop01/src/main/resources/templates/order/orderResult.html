@@ -20,7 +20,7 @@
             <td>최종주문금액</td>
         </tr>
 		<th:block th:each="entry : ${session.myOrderMap}">
-					<th:block th:with="myOrderList=${entry.value}">
+		  <th:block th:with="myOrderList=${entry.value}">
         <tr th:each="item, iterStat : ${myOrderList}">
             <!--<td th:text="${orderId}"></td>-->
 			<td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" style="background-color: #d0ebff;" >
@@ -47,7 +47,7 @@
 		    	<h2 th:text="${session.finalTotalOrderPrice} + '원(10%할인)'"></h2>
 		 	</td>
           </tr>
-		 </th:block>
+		   </th:block>
 		</th:block>
     </tbody>
 </table>

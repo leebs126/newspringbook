@@ -65,6 +65,7 @@
 	      const goodsId = el.getAttribute("data-goods-id");
 	      const title = el.getAttribute("data-title");
 	      const price = el.getAttribute("data-price");
+		  const sales_price = el.getAttribute("data-sales_price");
 	      const file = el.getAttribute("data-file");
 	      const qty = document.getElementById("order_goods_qty").value;
 
@@ -75,7 +76,8 @@
 	      const fields = {
 	        goods_id: goodsId,
 	        goods_title: title,
-	        goods_sales_price: price,
+			goods_price: price,
+			goods_sales_price: sales_price,
 	        goods_fileName: file,
 	        order_goods_qty: qty
 	      };
@@ -126,7 +128,7 @@
       <tr class="dot_line">
         <td class="fixed">판매가</td>
         <td class="active">
-          <span th:text="${#numbers.formatInteger(goodsMap.goodsVO.goods_price * 0.9, 3, 'COMMA')}"></span><span>원(10%할인)</span>
+          <span th:text="${#numbers.formatInteger(goodsMap.goodsVO.goods_sales_price , 3, 'COMMA')}"></span><span>원(10%할인)</span>
         </td>
       </tr>
       <tr>
@@ -179,7 +181,8 @@
 	       href="javascript:void(0);"
 	       th:attr="data-goods-id=${goodsMap.goodsVO.goods_id},
 	                data-title=${goodsMap.goodsVO.goods_title},
-	                data-price=${goodsMap.goodsVO.goods_sales_price},
+	                data-price=${goodsMap.goodsVO.goods_price},
+					data-sales_price=${goodsMap.goodsVO.goods_sales_price},
 	                data-file=${goodsMap.goodsVO.goods_fileName}"
 	       onclick="handleBuyClick(this)">구매하기</a>
 	  </li>

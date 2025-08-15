@@ -66,8 +66,6 @@
 		<th:block th:each="entry : ${session.myOrderMap}">
 			<th:block th:with="myOrderList=${entry.value}">
 		  <tr th:each="item, iterStat : ${myOrderList}"  >
-			<!--<td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" th:text="${entry.key}" style="background-color: #d0ebff;" >주문번호</td>-->
-		    <!--<td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" th:text="${item.pay_order_time}"  style="background-color: rgb(255, 255, 128);">주문일자</td>-->
 			<td></td>
 			<td>
 	          <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
@@ -87,8 +85,6 @@
 	            <input   type="hidden" id="h_order_goods_qty" name="h_order_goods_qty" th:value="${item.order_goods_qty}" />
 			</td>
 	        <td >
-				<!--<h2 th:text="${#numbers.formatDecimal(item.goods_sales_price,0,'COMMA')} ">금액</h2>-->
-				<!--<span th:text="${item.goods_sales_price != null ? #numbers.formatDecimal(item.goods_sales_price, 0, 'COMMA') : 0}">0</span>-->
 				<h2 th:text="${item.goods_price} + '원'">0</h2>
 			</td>
 	        <td><h2 th:text="${item.goods_delivery_price} + '원'">0</h2></td>
