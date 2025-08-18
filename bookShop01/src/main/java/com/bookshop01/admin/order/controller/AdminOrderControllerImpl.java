@@ -83,7 +83,6 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		    }
 		    newOrdersMap.put(orderId, newOrdersList);
 		}	
-		 
 		mav.addObject("newOrdersMap", newOrdersMap);
 		
 		//페이징 기능 구현 코드 추가
@@ -132,8 +131,6 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		String viewName = "/admin/order/adminOrderMain";
 		ModelAndView mav = new ModelAndView(viewName);
 		
-		String search_type = searchCondMap.get("search_type");
-		String orderer_id = searchCondMap.get("search_word");
 		String section = searchCondMap.get("section");
 		String pageNum = searchCondMap.get("pageNum");
 		String beginDate=searchCondMap.get("beginDate");

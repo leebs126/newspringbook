@@ -95,21 +95,27 @@
         <tr>
           <td class="fixed_join">법정생년월일</td>
           <td>
-            <select name="member_birth_y">
-              <option th:each="year : ${#numbers.sequence(1921, 2020)}"
-                      th:value="${year}" th:text="${year}"
-                      th:selected="${year == 2000}">2000</option>
-            </select>년
-            <select name="member_birth_m">
-              <option th:each="month : ${#numbers.sequence(1,12)}"
-                      th:value="${month}" th:text="${month}"
-                      th:selected="${month == 5}">5</option>
-            </select>월
-            <select name="member_birth_d">
-              <option th:each="day : ${#numbers.sequence(1,31)}"
-                      th:value="${day}" th:text="${day}"
-                      th:selected="${day == 10}">10</option>
-            </select>일
+			<select name="member_birth_y">
+			  <option th:each="year : ${#numbers.sequence(1921, 2025)}"
+			          th:value="${year}" th:text="${year}"
+			          th:selected="${year == #temporals.year(#temporals.createNow())}">
+			  </option>
+			</select>년
+
+			<select name="member_birth_m">
+			  <option th:each="month : ${#numbers.sequence(1,12)}"
+			          th:value="${month}" th:text="${month}"
+			          th:selected="${month == #temporals.month(#temporals.createNow())}">
+			  </option>
+			</select>월
+
+			<select name="member_birth_d">
+			  <option th:each="day : ${#numbers.sequence(1,31)}"
+			          th:value="${day}" th:text="${day}"
+			          th:selected="${day == #temporals.day(#temporals.createNow())}">
+			  </option>
+			</select>일
+
             <input type="radio" name="member_birth_gn" value="2" checked />양력
             <input type="radio" name="member_birth_gn" value="1" />음력
           </td>

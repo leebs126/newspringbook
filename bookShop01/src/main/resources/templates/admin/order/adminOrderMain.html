@@ -36,24 +36,6 @@ function init() {
 
 <script>
 function search_order_history(fixedSearchPeriod){	
-	//temp=calcPeriod(search_period);
-	//var date=temp.split(",");
-	//beginDate=date[0];
-	//endDate=date[1];
-	
-    
-	//var formObj=document.createElement("form");
-	//var i_command = document.createElement("input");
-	//var i_beginDate = document.createElement("input"); 
-	//var i_endDate = document.createElement("input");
-	//i_beginDate.name="beginDate";
-	//i_beginDate.value=beginDate;
-	//i_endDate.name="endDate";
-	//i_endDate.value=endDate;
-		
-	//formObj.appendChild(i_beginDate);
-	//formObj.appendChild(i_endDate);
-	
 	var formObj=document.createElement("form");
 	var i_fixedSearch_period = document.createElement("input");
 	i_fixedSearch_period.name="fixedSearchPeriod";
@@ -439,25 +421,27 @@ function fn_detail_search(){
             </tr>
         </tbody>
     </table>
+	
+	
 <div style="text-align: center; margin-top: 20px;">
     <span th:each="page : ${#numbers.sequence(1, 10)}"
           th:if="${(section - 1) * 10 + page <= totalPage}">
         
         <!-- 이전 페이지로 이동 -->
         <a th:if="${section > 1 and page == 1}"
-           th:href="@{/admin/order/adminOrderMain.do(chapter=${section-1}, pageNum=${(section-1)*10 +1})}">
+           th:href="@{/admin/order/adminOrderMain.do(section=${section-1}, pageNum=${(section-1)*10 +1})}">
             &laquo;
         </a>
         
         <!-- 현재 페이지 번호 -->
-        <a th:href="@{/admin/order/adminOrderMain.do(chapter=${section}, pageNum=${page})}"
+        <a th:href="@{/admin/order/adminOrderMain.do(section=${section}, pageNum=${page})}"
            th:text="${(section - 1) * 10 + page}"
            th:style="${pageNum == page} ? 'margin: 0 5px; font-size: 20px; color: red; font-weight: bold;' : 'margin: 0 5px;'">
 		</a>
 
         <!-- 다음 페이지로 이동 -->
         <a th:if="${page == 10 and totalPage > section * 10}"
-           th:href="@{/admin/order/adminOrderMain.do(chapter=${section+1}, pageNum=${section*10 + 1})}">
+           th:href="@{/admin/order/adminOrderMain.do(section=${section+1}, pageNum=${section*10 + 1})}">
             &raquo;
         </a>
     </span>

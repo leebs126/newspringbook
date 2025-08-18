@@ -21,15 +21,15 @@ public class AdminMemberServiceImpl implements AdminMemberService {
 	private AdminMemberDAO adminMemberDAO;
 	
 	public ArrayList<MemberVO> listMember(HashMap condMap) throws Exception{
-		return adminMemberDAO.listMember(condMap);
+		return adminMemberDAO.selectListMember(condMap);
 	}
 
 	public MemberVO memberDetail(String member_id) throws Exception{
-		 return adminMemberDAO.memberDetail(member_id);
+		 return adminMemberDAO.selectMemberDetail(member_id);
 	}
 	
 	public void  modifyMemberInfo(HashMap memberMap) throws Exception{
 		 String member_id=(String)memberMap.get("member_id");
-		 adminMemberDAO.modifyMemberInfo(memberMap);
+		 adminMemberDAO.updateMemberInfo(memberMap);
 	}
 }

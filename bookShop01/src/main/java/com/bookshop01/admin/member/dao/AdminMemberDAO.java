@@ -10,7 +10,7 @@ import com.bookshop01.member.vo.MemberVO;
 
 @Mapper
 public interface AdminMemberDAO {
-	public ArrayList<MemberVO> listMember(HashMap condMap) throws DataAccessException;
-	public MemberVO memberDetail(String member_id) throws DataAccessException;
-	public void modifyMemberInfo(HashMap memberMap) throws DataAccessException;
+	public ArrayList<MemberVO> selectListMember(HashMap condMap) throws DataAccessException;
+	public MemberVO selectMemberDetail(String member_id) throws DataAccessException;
+	public void updateMemberInfo(HashMap memberMap) throws DataAccessException;
 }

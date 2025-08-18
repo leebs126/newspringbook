@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -56,20 +57,27 @@ public class AdminMemberControllerImpl extends BaseController  implements AdminM
 		condMap.put("pageNum",pageNum);
 		condMap.put("beginDate",beginDate);
 		condMap.put("endDate", endDate);
-		ArrayList<MemberVO> member_list=adminMemberService.listMember(condMap);
-		mav.addObject("member_list", member_list);
+		ArrayList<MemberVO> memberList=adminMemberService.listMember(condMap);
+		mav.addObject("memberList", memberList);
+		
+		//페이징 기능 구현 코드 추가
+		int totalMemberCount = memberList.size();
+		int OrdersPerPage = 10;  //한 페이지당 표시되는 데이터 수 
+		int totalPage = (int) Math.ceil((double)totalMemberCount / OrdersPerPage);
+		mav.addObject("totalPage", totalPage);
+//		mav.addObject("totalPage", 100);
 		
 		String beginDate1[]=beginDate.split("-");
 		String endDate2[]=endDate.split("-");
-		mav.addObject("beginYear",beginDate1[0]);
-		mav.addObject("beginMonth",beginDate1[1]);
-		mav.addObject("beginDay",beginDate1[2]);
-		mav.addObject("endYear",endDate2[0]);
-		mav.addObject("endMonth",endDate2[1]);
-		mav.addObject("endDay",endDate2[2]);
+		mav.addObject("beginYear", Integer.parseInt(beginDate1[0]));
+		mav.addObject("beginMonth", Integer.parseInt(beginDate1[1]));
+		mav.addObject("beginDay",  Integer.parseInt(beginDate1[2]));
+		mav.addObject("endYear",  Integer.parseInt(endDate2[0]));
+		mav.addObject("endMonth",  Integer.parseInt(endDate2[1]));
+		mav.addObject("endDay",  Integer.parseInt(endDate2[2]));
 		
-		mav.addObject("section", section);
-		mav.addObject("pageNum", pageNum);
+		mav.addObject("section",  Integer.parseInt(section));
+		mav.addObject("pageNum",  Integer.parseInt(pageNum));
 		return mav;
 		
 	}
