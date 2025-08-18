@@ -56,7 +56,7 @@
 		recNum between (#{section}-1)*100+ (#{pageNum}-1)*10+1 and (#{section}-1)*100+(#{pageNum})*10				        
 	</select>
 	
-    <select id="memberDetail" resultMap="memberResult"   parameterType="String"  >
+    <select id="selectMemberDetail" resultMap="memberResult"   parameterType="String"  >
 	    <![CDATA[
 		    select * from t_shopping_member
             where member_id=#{member_id}
@@ -64,7 +64,7 @@
 	</select>	
 	
 
-	<update id="modifyMemberInfo" parameterType="java.util.HashMap">
+	<update id="updateMemberInfo" parameterType="java.util.HashMap">
 	   update t_shopping_member
 			   <set>
 			      <if test=" member_pw!='' and member_pw!=null">

@@ -308,9 +308,10 @@
 					<td colspan="6"><strong>조회된 회원이 없습니다.</strong></td>
 				</tr>
 
-				<tr th:each="item : ${memberList}">
+				<tr th:each="item, stat : ${memberList}"
+				    th:style="${stat.even}? 'background-color:#f2f2f2;' : 'background-color:#ffffff;'">
 					<td>
-						<a th:href="@{/admin/member/memberDetail.do(member_id=${item.member_id})}">
+						<a th:href="@{/admin/member/adminMemberDetail.do(member_id=${item.member_id})}">
 							<strong th:text="${item.member_id}"></strong>
 						</a>
 					</td>
@@ -354,20 +355,6 @@
 		        </a>
 		    </span>
 		</div>
-		
-		<!--<div style="text-align:center;">
-			<span th:each="page : ${#numbers.sequence(1,10)}"
-			      th:if="${(chapter-1)*10 + page <= totalPage}">
-				<a th:if="${chapter > 1 and page == 1}"
-				   th:href="@{/admin/member/adminMemberMain.do(chapter=${chapter-1}, pageNum=${(chapter-1)*10 + 1})}">&laquo;</a>
-
-				<a th:href="@{/admin/member/adminMemberMain.do(chapter=${chapter}, pageNum=${page})}"
-				   th:text="${(chapter-1)*10 + page}"></a>
-
-				<a th:if="${page == 10}"
-				   th:href="@{/admin/member/adminMemberMain.do(chapter=${chapter+1}, pageNum=${chapter*10 + 1})}">&raquo;</a>
-			</span>
-		</div>-->
 	</form>
 </section>
 </body>
