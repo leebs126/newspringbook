@@ -44,39 +44,85 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 	@Override
 	@GetMapping(value="/myPageMain.do")
 	public ModelAndView myPageMain(@RequestParam(required = false,value="message")  String message,
-			   HttpServletRequest request, HttpServletResponse response)  throws Exception {
+									@RequestParam Map<String, String> pagingMap,   
+									HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		HttpSession session=request.getSession();
 		session=request.getSession();
 		session.setAttribute("side_menu", "my_page"); //마이페이지 사이드 메뉴로 설정한다.
+		HashMap<String,String> condMap=new HashMap<String, String>();
 		
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
 		String member_id=memberVO.getMember_id();
+		condMap.put("member_id", member_id);
 		
-		List<OrderVO> _myOrderList=myPageService.listMyOrderGoods(member_id);
+		String section = pagingMap.get("section");
+		String pageNum = pagingMap.get("pageNum");
+//		String beginDate=pagingMap.get("beginDate");
+//		String endDate=pagingMap.get("beginDate");
 		
+//		String [] tempDate=calcSearchPeriod(fixedSearchPeriod).split(",");
+//		beginDate= tempDate[0];
+//		endDate =tempDate[1];
+		
+		
+		if(section== null) {
+			section = "1";
+		}
+		condMap.put("section",section);
+		if(pageNum== null) {
+			pageNum = "1";
+		}
+		condMap.put("pageNum",pageNum);
+//		condMap.put("beginDate",beginDate);
+//		condMap.put("endDate", endDate);
+		
+		
+		
+		Map<String, Object> _myOrdersMap = myPageService.listMyOrderGoods(condMap);
+		List<OrderVO> _myOrdersList = (List<OrderVO>)_myOrdersMap.get("myOrdersList");
 		Set<Integer> orderIdSet = new HashSet<>();
-		for (OrderVO orderVO : _myOrderList) {
+		for (OrderVO orderVO : _myOrdersList) {
 		    orderIdSet.add(orderVO.getOrder_id());
 		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
 		
-		Map<Integer, List<OrderVO>> myOrderMap = new TreeMap<>(Comparator.reverseOrder());
+		Map<Integer, List<OrderVO>> myOrdersMap = new TreeMap<>(Comparator.reverseOrder());
 		
 		for (int orderId : orderIdList) {
 			List<OrderVO> myOrderList = new ArrayList<>();
-		    for (OrderVO orderVO : _myOrderList) {
+		    for (OrderVO orderVO : _myOrdersList) {
 		        if (orderId == orderVO.getOrder_id()) {
 		            myOrderList.add(orderVO);
 		        }
 		    }
-		    myOrderMap.put(orderId, myOrderList);
+		    myOrdersMap.put(orderId, myOrderList);
 		}	
 		 
 		mav.addObject("message", message);
-		mav.addObject("myOrderMap", myOrderMap);
+		mav.addObject("myOrdersMap", myOrdersMap);
+		
+		//페이징 기능 구현 코드 추가
+		int totalOrdersCount = (Integer)_myOrdersMap.get("totalOrdersCount");
+		int totalPage = (int) Math.ceil((double)totalOrdersCount / ORDERS_PER_PAGE);
+		mav.addObject("totalPage", totalPage);
+				
+		
+		
+//		String beginDate1[]=beginDate.split("-");
+//		String endDate2[]=endDate.split("-");
+//		mav.addObject("beginYear", Integer.parseInt(beginDate1[0]));
+//		mav.addObject("beginMonth", Integer.parseInt(beginDate1[1]));
+//		mav.addObject("beginDay",  Integer.parseInt(beginDate1[2]));
+//		mav.addObject("endYear",  Integer.parseInt(endDate2[0]));
+//		mav.addObject("endMonth",  Integer.parseInt(endDate2[1]));
+//		mav.addObject("endDay",  Integer.parseInt(endDate2[2]));
+		
+		mav.addObject("section",  Integer.parseInt(section));
+		mav.addObject("pageNum",  Integer.parseInt(pageNum));
+				
 		return mav;
 	}
 	
@@ -146,17 +192,35 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
 		String  member_id=memberVO.getMember_id();
 		
+		HashMap<String,String> condMap=new HashMap<String, String>();
+		condMap.put("member_id", member_id);
+		
 		String fixedSearchPeriod = dateMap.get("fixedSearchPeriod");
 		String beginDate=null,endDate=null;
 		
 		String [] tempDate=calcSearchPeriod(fixedSearchPeriod).split(",");
 		beginDate=tempDate[0];
 		endDate=tempDate[1];
-		dateMap.put("beginDate", beginDate);
-		dateMap.put("endDate", endDate);
-		dateMap.put("member_id", member_id);
-		List<OrderVO> _myOrderHistList=myPageService.listMyOrderHistory(dateMap);
+		condMap.put("beginDate", beginDate);
+		condMap.put("endDate", endDate);
+		condMap.put("member_id", member_id);
 		
+		String section = dateMap.get("section");
+		String pageNum = dateMap.get("pageNum");
+		
+		
+		if(section== null) {
+			section = "1";
+		}
+		condMap.put("section",section);
+		
+		if(pageNum== null) {
+			pageNum = "1";
+		}
+		condMap.put("pageNum",pageNum);
+		
+//		List<OrderVO> _myOrderHistList=myPageService.listMyOrderHistory(dateMap);
+		Map<String, Object> _myOrdersHistMap =myPageService.listMyOrderHistory(condMap);
 		String beginDate1[]=beginDate.split("-"); //검색일자를 년,월,일로 분리해서 화면에 전달합니다.
 		int[] beginDateInts = new int[beginDate1.length];
 		for (int i = 0; i < beginDate1.length; i++) {
@@ -177,18 +241,17 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		mav.addObject("endMonth", endDateInts[1]);
 		mav.addObject("endDay", endDateInts[2]);
 		
-		
+		List<OrderVO> _myOrdersHistList = (List<OrderVO>)_myOrdersHistMap.get("myOrdersHistList");
 		Set<Integer> orderIdSet = new HashSet<>();
-		for (OrderVO orderVO : _myOrderHistList) {
+		for (OrderVO orderVO : _myOrdersHistList) {
 		    orderIdSet.add(orderVO.getOrder_id());
 		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
 		Map<Integer, List<OrderVO>> myOrderHistMap = new TreeMap<>(Comparator.reverseOrder());
-		
 		for (int orderId : orderIdList) {
 			List<OrderVO> myOrderHistList = new ArrayList<>();
-		    for (OrderVO orderVO : _myOrderHistList) {
+		    for (OrderVO orderVO : _myOrdersHistList) {
 		        if (orderId == orderVO.getOrder_id()) {
 		        	myOrderHistList.add(orderVO);
 		        }
@@ -197,6 +260,15 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		}	
 		 
 		mav.addObject("myOrderHistMap", myOrderHistMap);
+		
+		
+		//페이징 기능 구현 코드 추가
+		int totalOrdersCount = (Integer)_myOrdersHistMap.get("totalOrdersCount");
+		int totalPage = (int) Math.ceil((double)totalOrdersCount / ORDERS_PER_PAGE);
+		mav.addObject("totalPage", totalPage);
+		
+		mav.addObject("section",  Integer.parseInt(section));
+		mav.addObject("pageNum",  Integer.parseInt(pageNum));
 		return mav;
 	}	
 	

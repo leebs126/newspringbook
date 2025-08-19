@@ -45,7 +45,6 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		HttpSession session=request.getSession();
-		session=request.getSession();
 		session.setAttribute("side_menu", "admin_mode"); //관리자 사이드 메뉴를 표시한다.
 		
 		String fixedSearchPeriod = dateMap.get("fixedSearchPeriod");
@@ -77,8 +76,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		
 		//페이징 기능 구현 코드 추가
 		int totalItemCount = (Integer)newGoodsMap.get("totalItemCount");
-		int itemsPerPage = 10;  //한 페이지당 표시되는 데이터 수 
-		int totalPage = (int) Math.ceil((double)totalItemCount / itemsPerPage);
+		int totalPage = (int) Math.ceil((double)totalItemCount / ORDERS_PER_PAGE);
 		mav.addObject("totalPage", totalPage);
 		
 		String beginDate1[]=beginDate.split("-");

@@ -11,7 +11,8 @@ import com.bookshop01.order.vo.OrderVO;
 
 @Mapper
 public interface MyPageDAO {
-	public List<OrderVO> selectMyOrderGoodsList(String member_id) throws DataAccessException;
+	public List<OrderVO> selectMyOrderGoodsList(Map<String, String> condMap) throws DataAccessException;
+	public int selectTotalOrders(Map<String, String> condMap) throws DataAccessException;
 	public List selectMyOrderInfo(String order_id) throws DataAccessException;
 	public List<OrderVO> selectMyOrderHistoryList(Map dateMap) throws DataAccessException;
 	public void updateMyInfo(Map memberMap) throws DataAccessException;

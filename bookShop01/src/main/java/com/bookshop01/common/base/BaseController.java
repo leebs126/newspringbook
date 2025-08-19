@@ -23,7 +23,8 @@ import jakarta.servlet.http.HttpServletResponse;
 //@RequestMapping("/book")
 public abstract class BaseController {
 	private static final String CURR_IMAGE_REPO_PATH = "C:\\shopping\\file_repo";
-
+	public static int  ORDERS_PER_PAGE = 10;  //한 페이지당 표시되는 데이터 수 
+	
 	protected List<ImageFileVO> upload(MultipartHttpServletRequest multipartRequest) throws Exception {
 		List<ImageFileVO> fileList = new ArrayList<ImageFileVO>();
 		Iterator<String> fileNames = multipartRequest.getFileNames();

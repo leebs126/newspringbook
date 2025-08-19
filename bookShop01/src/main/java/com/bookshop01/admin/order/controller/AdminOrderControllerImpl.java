@@ -87,10 +87,8 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		
 		//페이징 기능 구현 코드 추가
 		int totalOrdersCount = (Integer)_newOrdersMap.get("totalOrdersCount");
-		int OrdersPerPage = 10;  //한 페이지당 표시되는 데이터 수 
-		int totalPage = (int) Math.ceil((double)totalOrdersCount / OrdersPerPage);
+		int totalPage = (int) Math.ceil((double)totalOrdersCount / ORDERS_PER_PAGE);
 		mav.addObject("totalPage", totalPage);
-				
 		
 		
 		String beginDate1[]=beginDate.split("-");
@@ -158,7 +156,6 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		    newOrdersMap.put(orderId, newOrdersList);
 		}	
 		 
-		
 		
 		mav.addObject("newOrdersMap", newOrdersMap);
 		

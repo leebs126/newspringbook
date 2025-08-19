@@ -155,7 +155,30 @@
 				</tr>
       </tbody>
   </table>
+  <!-- 페이징 -->
+  <div style="text-align: center; margin-top: 20px;">
+      <span th:each="page : ${#numbers.sequence(1, 10)}"
+            th:if="${(section - 1) * 10 + page <= totalPage}">
+          
+          <!-- 이전 페이지로 이동 -->
+          <a th:if="${section > 1 and page == 1}"
+             th:href="@{/mypage/listMyOrderHistory.do(section=${section-1}, pageNum=${(section-1)*10 +1})}">
+              &laquo;
+          </a>
+          
+          <!-- 현재 페이지 번호 -->
+          <a th:href="@{/mypage/listMyOrderHistory.do(section=${section}, pageNum=${page})}"
+             th:text="${(section - 1) * 10 + page}"
+             th:style="${pageNum == page} ? 'margin: 0 5px; font-size: 20px; color: red; font-weight: bold;' : 'margin: 0 5px;'">
+  		</a>
 
+          <!-- 다음 페이지로 이동 -->
+          <a th:if="${page == 10 and totalPage > section * 10}"
+             th:href="@{/mypage/listMyOrderHistory.do(section=${section+1}, pageNum=${section*10 + 1})}">
+              &raquo;
+          </a>
+      </span>
+  </div>
 </section>
 </body>
 </html>
