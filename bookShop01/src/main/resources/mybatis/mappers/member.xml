@@ -6,16 +6,16 @@
 <mapper namespace="com.bookshop01.member.dao.MemberDAO">
 <!-- 리절트 맵 정의 -->	
 	<resultMap id="memberResult" type="MemberVO">
-		<result property="member_id" column="member_id" />
-		<result property="member_pw" column="member_pw" />
-		<result property="member_name" column="member_name" />
-		<result property="member_gender" column="member_gender" />
+		<result property="memberId" column="member_id" />
+		<result property="memberPw" column="member_pw" />
+		<result property="memberName" column="member_name" />
+		<result property="memberGender" column="member_gender" />
 		
-		<result property="member_birth_y" column="member_birth_y" />
-		<result property="member_birth_m" column="member_birth_m" />
-		<result property="member_birth_d" column="member_birth_d" />
+		<result property="memberBirthY" column="member_birth_y" />
+		<result property="memberBirthM" column="member_birth_m" />
+		<result property="memberBirthD" column="member_birth_d" />
 		
-		<result property="member_birth_gn" column="member_birth_gn" />
+		<result property="memberBirthGn" column="member_birth_gn" />
 		<result property="tel1" column="tel1" />
 		<result property="tel2" column="tel2" />
 		<result property="tel3" column="tel3" />
@@ -23,10 +23,10 @@
 		<result property="hp1" column="hp1" />
 		<result property="hp2" column="hp2" />
 		<result property="hp3" column="hp3" />
-		<result property="smssts_yn" column="smssts_yn" />
+		<result property="smsstsYn" column="smssts_yn" />
 		<result property="email1" column="email1" />
 		<result property="email2" column="email2" />
-		<result property="emailsts_yn" column="emailsts_yn" />
+		<result property="emailstsYn" column="emailsts_yn" />
 		
 		<result property="zipcode" column="zipcode" />
 		<result property="roadAddress" column="roadAddress" />
@@ -38,8 +38,8 @@
 	<select id="login" resultType="memberVO"  parameterType="java.util.Map"  >
 	    <![CDATA[
 			select * from t_shopping_member 
-			 where member_id=#{member_id}
-			 and member_pw=#{member_pw}			
+			 where member_id=#{memberId}
+			 and member_pw=#{memberPw}			
 			 
 		]]>
 	</select>
@@ -53,7 +53,7 @@
   <insert id="insertNewMember"  parameterType="memberVO">
   <![CDATA[
     	insert into t_shopping_member(member_id,
-				 					                  member_pw,
+				 					  member_pw,
                                      member_name,
                                      member_gender,
                                      member_birth_y,
@@ -74,24 +74,24 @@
                                      roadAddress,
                                      jibunAddress,
                                      namujiAddress)
-							 values(#{member_id},
-									#{member_pw},
-									#{member_name},
-                                 	#{member_gender},
-                                   	#{member_birth_y},
-                                   	#{member_birth_m},
-                                    #{member_birth_d},
-                                    #{member_birth_gn},
+							 values(#{memberId},
+									#{memberPw},
+									#{memberName},
+                                 	#{memberGender},
+                                   	#{memberBirthY},
+                                   	#{memberBirthM},
+                                    #{memberBirthD},
+                                    #{memberBirthGn},
                                     #{tel1},
                                     #{tel2},
                                     #{tel3},
                                     #{hp1},
                                     #{hp2},
                                     #{hp3},
-                                    #{smssts_yn},
+                                    #{smsstsYn},
                                     #{email1},
                                     #{email2},
-                                    #{emailsts_yn},
+                                    #{emailstsYn},
                                     #{zipcode},
                                     #{roadAddress},
                                     #{jibunAddress},

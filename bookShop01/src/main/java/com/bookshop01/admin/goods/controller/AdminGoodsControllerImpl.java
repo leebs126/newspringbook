@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -137,7 +138,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 	    // 2) 로그인 회원 정보
 	    HttpSession session = multipartRequest.getSession();
 	    MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
-	    String reg_id = memberVO.getMember_id();
+	    String reg_id = memberVO.getMemberId();
 
 	    // 3) 파일 업로드 처리
 	    List<ImageFileVO> imageFileList = upload(multipartRequest);
@@ -258,7 +259,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
-		String reg_id = memberVO.getMember_id();
+		String reg_id = memberVO.getMemberId();
 		
 		List<ImageFileVO> imageFileList=null;
 		int goods_id=0;
@@ -297,7 +298,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 	
 
 	@Override
-	@RequestMapping(value="/addNewGoodsImage.do" ,method={RequestMethod.POST})
+	@PostMapping("/addNewGoodsImage.do")
 	public void addNewGoodsImage(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)
 			throws Exception {
 		System.out.println("addNewGoodsImage");
@@ -315,7 +316,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
-		String reg_id = memberVO.getMember_id();
+		String reg_id = memberVO.getMemberId();
 		
 		List<ImageFileVO> imageFileList=null;
 		int goods_id=0;

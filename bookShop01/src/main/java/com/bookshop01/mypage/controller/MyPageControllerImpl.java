@@ -18,7 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -54,18 +53,11 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
-		String member_id=memberVO.getMember_id();
+		String member_id=memberVO.getMemberId();
 		condMap.put("member_id", member_id);
 		
 		String section = pagingMap.get("section");
 		String pageNum = pagingMap.get("pageNum");
-//		String beginDate=pagingMap.get("beginDate");
-//		String endDate=pagingMap.get("beginDate");
-		
-//		String [] tempDate=calcSearchPeriod(fixedSearchPeriod).split(",");
-//		beginDate= tempDate[0];
-//		endDate =tempDate[1];
-		
 		
 		if(section== null) {
 			section = "1";
@@ -109,17 +101,7 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		int totalPage = (int) Math.ceil((double)totalOrdersCount / ORDERS_PER_PAGE);
 		mav.addObject("totalPage", totalPage);
 				
-		
-		
-//		String beginDate1[]=beginDate.split("-");
-//		String endDate2[]=endDate.split("-");
-//		mav.addObject("beginYear", Integer.parseInt(beginDate1[0]));
-//		mav.addObject("beginMonth", Integer.parseInt(beginDate1[1]));
-//		mav.addObject("beginDay",  Integer.parseInt(beginDate1[2]));
-//		mav.addObject("endYear",  Integer.parseInt(endDate2[0]));
-//		mav.addObject("endMonth",  Integer.parseInt(endDate2[1]));
-//		mav.addObject("endDay",  Integer.parseInt(endDate2[2]));
-		
+
 		mav.addObject("section",  Integer.parseInt(section));
 		mav.addObject("pageNum",  Integer.parseInt(pageNum));
 				
@@ -127,7 +109,7 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 	}
 	
 	@Override
-	@RequestMapping(value="/myOrderDetail.do" ,method = RequestMethod.GET)
+	@GetMapping("/myOrderDetail.do")
 	public ModelAndView myOrderDetail(@RequestParam("order_id")  String order_id,HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
@@ -190,7 +172,7 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		ModelAndView mav = new ModelAndView(viewName);
 		HttpSession session=request.getSession();
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
-		String  member_id=memberVO.getMember_id();
+		String  member_id=memberVO.getMemberId();
 		
 		HashMap<String,String> condMap=new HashMap<String, String>();
 		condMap.put("member_id", member_id);
@@ -284,16 +266,16 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 	}
 	
 	@Override
-	@RequestMapping(value="/myDetailInfo.do" ,method = RequestMethod.GET)
+	@GetMapping("/myDetailInfo.do")
 	public ModelAndView myDetailInfo(HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		
 		HttpSession session=request.getSession();
 		MemberVO memberVO =(MemberVO)session.getAttribute("memberInfo");
-		int member_birth_y = Integer.parseInt(memberVO.getMember_birth_y());
-		int member_birth_m = Integer.parseInt(memberVO.getMember_birth_m());
-		int member_birth_d = Integer.parseInt(memberVO.getMember_birth_d());
+		int member_birth_y = Integer.parseInt(memberVO.getMemberBirthY());
+		int member_birth_m = Integer.parseInt(memberVO.getMemberBirthM());
+		int member_birth_d = Integer.parseInt(memberVO.getMemberBirthD());
 		mav.addObject("member_birth_y", member_birth_y);  //생년월일의 년,월,일을 정수로 변환해서 상세페이지로 전달한다.
 		mav.addObject("member_birth_m", member_birth_m);
 		mav.addObject("member_birth_d", member_birth_d);
@@ -302,7 +284,7 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 	}	
 	
 	@Override
-	@RequestMapping(value="/modifyMyInfo.do" ,method = RequestMethod.POST)
+	@PostMapping("/modifyMyInfo.do")
 	public ResponseEntity modifyMyInfo(@RequestParam("attribute")  String attribute,
 			                 @RequestParam("value")  String value,
 			               HttpServletRequest request, HttpServletResponse response)  throws Exception {
@@ -310,7 +292,7 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		String val[]=null;
 		HttpSession session=request.getSession();
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
-		String  member_id=memberVO.getMember_id();
+		String  member_id=memberVO.getMemberId();
 		if(attribute.equals("member_birth")){
 			val=value.split(",");
 			memberMap.put("member_birth_y",val[0]);

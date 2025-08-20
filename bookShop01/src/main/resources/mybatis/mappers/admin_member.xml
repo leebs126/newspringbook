@@ -5,16 +5,15 @@
 
 <mapper namespace="com.bookshop01.admin.member.dao.AdminMemberDAO">
 <resultMap id="memberResult" type="MemberVO">
-		<result property="member_id" column="member_id" />
-		<result property="member_pw" column="member_pw" />
-		<result property="member_name" column="member_name" />
-		<result property="member_gender" column="member_gender" />
+		<result property="memberId" column="member_id" />
+		<result property="memberPw" column="member_pw" />
+		<result property="memberName" column="member_name" />
+		<result property="memberGender" column="member_gender" />
 		
-		<result property="member_birth_y" column="member_birth_y" />
-		<result property="member_birth_m" column="member_birth_m" />
-		<result property="member_birth_d" column="member_birth_d" />
-		
-		<result property="member_birth_gn" column="member_birth_gn" />
+		<result property="memberBirthY" column="member_birth_y" />
+		<result property="memberBirthM" column="member_birth_m" />
+		<result property="memberBirthD" column="member_birth_d" />
+		<result property="memberBirthGn" column="member_birth_gn" />
 		<result property="tel1" column="tel1" />
 		<result property="tel2" column="tel2" />
 		<result property="tel3" column="tel3" />
@@ -22,17 +21,17 @@
 		<result property="hp1" column="hp1" />
 		<result property="hp2" column="hp2" />
 		<result property="hp3" column="hp3" />
-		<result property="smssts_yn" column="smssts_yn" />
+		<result property="smsstsYn" column="smssts_yn" />
 		<result property="email1" column="email1" />
 		<result property="email2" column="email2" />
-		<result property="emailsts_yn" column="emailsts_yn" />
+		<result property="emailstsYn" column="emailsts_yn" />
 		
 		<result property="zipcode" column="zipcode" />
 		<result property="roadAddress" column="roadAddress" />
 		<result property="jibunAddress" column="jibunAddress" />
 		<result property="namujiAddress" column="namujiAddress" />
 		<result property="joinDate" column="joinDate" />
-		<result property="del_yn" column="del_yn" />
+		<result property="delYn" column="del_yn" />
 	</resultMap>
 <select id="selectListMember" resultMap="memberResult"   parameterType="java.util.HashMap"  >
 	  select * from (
@@ -40,14 +39,14 @@
 		       from (
 		              select  *  from t_shopping_member 
 		              where to_char(joinDate,'yyyy-mm-dd')  between #{beginDate} and #{endDate}
-		                <if test="search_type=='member_id'">
-		                  AND member_id=#{search_word}
+		                <if test="searchType=='memberId'">
+		                  AND memberId=#{searchWord}
 		                </if>
-		                <if test="search_type=='member_name'">
-		                  AND member_name=#{search_word}
+		                <if test="searchType=='memberName'">
+		                  AND memberName=#{searchWord}
 		                </if>
-		                <if test="search_type=='member_hp_num'">
-		                   AND hp1||hp2||hp3=#{search_word} 
+		                <if test="searchType=='memberHpNum'">
+		                   AND hp1||hp2||hp3=#{searchWord} 
 		                </if>
 		              order by joinDate desc
 				    ) t
@@ -59,7 +58,7 @@
     <select id="selectMemberDetail" resultMap="memberResult"   parameterType="String"  >
 	    <![CDATA[
 		    select * from t_shopping_member
-            where member_id=#{member_id}
+            where member_Id=#{memberId}
     	]]>
 	</select>	
 	
@@ -67,20 +66,23 @@
 	<update id="updateMemberInfo" parameterType="java.util.HashMap">
 	   update t_shopping_member
 			   <set>
-			      <if test=" member_pw!='' and member_pw!=null">
-			        member_pw=#{member_pw},
+			      <if test=" memberPw!='' and memberPw!=null">
+			        member_pw=#{memberPw},
 			      </if>
-			      <if test=" member_gender!='' and member_gender!=null">
-			         member_gender=#{member_gender},
+			      <if test=" memberGender!='' and memberGender!=null">
+			         member_gender=#{memberGender},
 			      </if>
-			       <if test=" member_birth_y!='' and member_birth_y!=null">
-			         member_birth_y=#{member_birth_y},
+			       <if test=" memberBirthY!='' and memberBirthY!=null">
+			         member_birth_y=#{memberBirthY},
 			      </if>
-			      <if test=" member_birth_m!='' and member_birth_m!=null">
-			         member_birth_m=#{member_birth_m},
+			      <if test=" memberBirthM!='' and memberBirthM!=null">
+			         member_birth_m=#{memberBirthM},
 			      </if>
-			      <if test=" member_birth_d!='' and member_birth_d!=null">
-			         member_birth_d=#{member_birth_d},
+			      <if test=" memberBirthD!='' and memberBirthD!=null">
+			         member_birth_d=#{memberBirthD},
+			      </if>
+			      <if test=" memberBirthGn!='' and memberBirthGn!=null">
+			         member_birth_gn=#{memberBirthGn},
 			      </if>
 			      <if test=" tel1!='' and tel1!=null">
 			         tel1=#{tel1},
@@ -100,8 +102,8 @@
 			      <if test=" hp3!='' and hp3!=null">
 			         hp3=#{hp3},
 			      </if>
-			      <if test=" smssts_yn!='' and smssts_yn!=null">
-			         smssts_yn=#{smssts_yn},
+			      <if test=" smsstsYn!='' and smsstsYn!=null">
+			         smssts_yn=#{smsstsYn},
 			      </if>
 			      <if test=" email1!='' and email1!=null">
 			         email1=#{email1},
@@ -109,8 +111,8 @@
 			      <if test=" email2!='' and email2!=null">
 			         email2=#{email2},
 			      </if>
-			      <if test=" emailsts_yn!='' and emailsts_yn!=null">
-			         emailsts_yn=#{emailsts_yn},
+			      <if test=" emailstsYn!='' and emailstsYn!=null">
+			         emailsts_yn=#{emailstsYn},
 			      </if>
 			      <if test=" zipcode!='' and zipcode!=null">
 			         zipcode=#{zipcode},
@@ -124,12 +126,12 @@
 			      <if test=" namujiAddress!='' and namujiAddress!=null">
 			         namujiAddress=#{namujiAddress}
 			      </if>
-			      <if test=" del_yn!='' and del_yn!=null">
-			         del_yn=#{del_yn}
+			      <if test=" delYn!='' and delYn!=null">
+			         del_yn=#{delYn}
 			      </if>
 			   </set>
 		where 
-		member_id=#{member_id}
+		member_id=#{memberId}
 	</update>	
 </mapper>
 

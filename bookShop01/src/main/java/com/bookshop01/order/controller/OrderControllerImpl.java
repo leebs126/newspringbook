@@ -127,8 +127,8 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		
 		HttpSession session=request.getSession();
 		MemberVO memberVO=(MemberVO)session.getAttribute("orderer");
-		String member_id=memberVO.getMember_id();
-		String orderer_name=memberVO.getMember_name();
+		String member_id=memberVO.getMemberId();
+		String orderer_name=memberVO.getMemberName();
 		String orderer_hp = memberVO.getHp1()+"-"+memberVO.getHp2()+"-"+memberVO.getHp3();
 		Map<Integer, List<OrderVO>> myOrderMap=(Map)session.getAttribute("myOrderMap");
 		

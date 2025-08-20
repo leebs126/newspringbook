@@ -60,6 +60,12 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
 	compileOnly 'javax.servlet:javax.servlet-api:4.0.1'  // 또는 필요한 버전
+	
+	implementation 'org.projectlombok:lombok'
+    testImplementation('org.projectlombok:lombok') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    annotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {

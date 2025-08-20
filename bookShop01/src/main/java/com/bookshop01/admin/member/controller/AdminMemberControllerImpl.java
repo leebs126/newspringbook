@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,10 +63,8 @@ public class AdminMemberControllerImpl extends BaseController  implements AdminM
 		
 		//페이징 기능 구현 코드 추가
 		int totalMemberCount = memberList.size();
-		int OrdersPerPage = 10;  //한 페이지당 표시되는 데이터 수 
-		int totalPage = (int) Math.ceil((double)totalMemberCount / OrdersPerPage);
+		int totalPage = (int) Math.ceil((double)totalMemberCount / ORDERS_PER_PAGE);
 		mav.addObject("totalPage", totalPage);
-//		mav.addObject("totalPage", 100);
 		
 		String beginDate1[]=beginDate.split("-");
 		String endDate2[]=endDate.split("-");
@@ -85,16 +84,16 @@ public class AdminMemberControllerImpl extends BaseController  implements AdminM
 	public ModelAndView memberDetail(HttpServletRequest request, HttpServletResponse response)  throws Exception{
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
-		String member_id=request.getParameter("member_id");
-		MemberVO member_info=adminMemberService.memberDetail(member_id);
+		String memberId=request.getParameter("memberId");
+		MemberVO memberInfo=adminMemberService.memberDetail(memberId);
 		
-		int member_birth_y = Integer.parseInt(member_info.getMember_birth_y());
-		int member_birth_m = Integer.parseInt(member_info.getMember_birth_m());
-		int member_birth_d = Integer.parseInt(member_info.getMember_birth_d());
-		mav.addObject("member_birth_y", member_birth_y);  //생년월일의 년,월,일을 정수로 변환해서 상세페이지로 전달한다.
-		mav.addObject("member_birth_m", member_birth_m);
-		mav.addObject("member_birth_d", member_birth_d);
-		mav.addObject("member_info",member_info);
+		int memberBirthY = Integer.parseInt(memberInfo.getMemberBirthY());
+		int memberBirthM = Integer.parseInt(memberInfo.getMemberBirthM());
+		int memberBirthD = Integer.parseInt(memberInfo.getMemberBirthD());
+		mav.addObject("memberBirthY", memberBirthY);  //생년월일의 년,월,일을 정수로 변환해서 상세페이지로 전달한다.
+		mav.addObject("memberBirthM", memberBirthM);
+		mav.addObject("memberBirthD", memberBirthD);
+		mav.addObject("memberInfo",memberInfo);
 		return mav;
 	}
 	
@@ -106,62 +105,58 @@ public class AdminMemberControllerImpl extends BaseController  implements AdminM
 		String val[]=null;
 		PrintWriter pw=response.getWriter();
 		
-		String member_id=memDataMap.get("member_id");
-		String mod_type=memDataMap.get("mod_type");
+		String memberId=memDataMap.get("memberId");
+		String modType=memDataMap.get("modType");
 		String value =memDataMap.get("value");
 		
-//		String member_id=request.getParameter("member_id");
-//		String mod_type=request.getParameter("mod_type");
-//		String value =request.getParameter("value");
-		if(mod_type.equals("member_birth")){
+		if(modType.equals("memberBirth")){
 			val=value.split(",");
-			memberMap.put("member_birth_y",val[0]);
-			memberMap.put("member_birth_m",val[1]);
-			memberMap.put("member_birth_d",val[2]);
-			memberMap.put("member_birth_gn",val[3]);
-		}else if(mod_type.equals("tel")){
+			memberMap.put("memberBirthY",val[0]);
+			memberMap.put("memberBirthM",val[1]);
+			memberMap.put("memberBirthD",val[2]);
+			memberMap.put("memberBirthGn",val[3]);
+		}else if(modType.equals("tel")){
 			val=value.split(",");
 			memberMap.put("tel1",val[0]);
 			memberMap.put("tel2",val[1]);
 			memberMap.put("tel3",val[2]);
 			
-		}else if(mod_type.equals("hp")){
+		}else if(modType.equals("hp")){
 			val=value.split(",");
 			memberMap.put("hp1",val[0]);
 			memberMap.put("hp2",val[1]);
 			memberMap.put("hp3",val[2]);
-			memberMap.put("smssts_yn", val[3]);
-		}else if(mod_type.equals("email")){
+			memberMap.put("smsstsYn", val[3]);
+		}else if(modType.equals("email")){
 			val=value.split(",");
 			memberMap.put("email1",val[0]);
 			memberMap.put("email2",val[1]);
-			memberMap.put("emailsts_yn", val[2]);
-		}else if(mod_type.equals("address")){
+			memberMap.put("emailstsYn", val[2]);
+		}else if(modType.equals("address")){
 			val=value.split(",");
 			memberMap.put("zipcode",val[0]);
 			memberMap.put("roadAddress",val[1]);
 			memberMap.put("jibunAddress", val[2]);
 			memberMap.put("namujiAddress", val[3]);
 		}else {
-			memberMap.put(mod_type, value);
+			memberMap.put(modType, value);
 		}
 		
-		memberMap.put("member_id", member_id);
-		
+		memberMap.put("memberId", memberId);
 		adminMemberService.modifyMemberInfo(memberMap);
-		pw.print("mod_success");
+		pw.print("modSuccess");
 		pw.close();		
 		
 	}
 	
-	@RequestMapping(value="/deleteMember.do" ,method={RequestMethod.POST})
+	@PostMapping("/deleteOrRecoverMembership.do")
 	public ModelAndView deleteMember(HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		ModelAndView mav = new ModelAndView();
 		HashMap<String,String> memberMap=new HashMap<String,String>();
-		String member_id=request.getParameter("member_id");
-		String del_yn=request.getParameter("del_yn");
-		memberMap.put("del_yn", del_yn);
-		memberMap.put("member_id", member_id);
+		String memberId=request.getParameter("memberId");
+		String delYn=request.getParameter("delYn");
+		memberMap.put("delYn", delYn);
+		memberMap.put("memberId", memberId);
 		
 		adminMemberService.modifyMemberInfo(memberMap);
 		mav.setViewName("redirect:/admin/member/adminMemberMain.do");

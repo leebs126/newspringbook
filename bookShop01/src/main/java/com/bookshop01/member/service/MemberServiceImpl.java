@@ -19,7 +19,7 @@ public class MemberServiceImpl implements MemberService {
 	private MemberDAO memberDAO;
 	
 	@Override
-	public MemberVO login(Map  loginMap) throws Exception{
+	public MemberVO login(Map<String, String>  loginMap) throws Exception{
 		return memberDAO.login(loginMap);
 	}
 	

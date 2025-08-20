@@ -78,7 +78,7 @@
             <li th:unless="${session.isLogOn}"><a th:href="@{/member/memberForm.do}">회원가입</a></li>
             <li><a href="#">고객센터</a></li>
 			<!-- 관리자 전용 링크: null 체크 추가 -->
-	       <li th:if="${session.isLogOn != null and session.isLogOn and session.memberInfo != null and session.memberInfo.member_id == 'admin'}">
+	       <li th:if="${session.isLogOn != null and session.isLogOn and session.memberInfo != null and session.memberInfo.memberId == 'admin'}">
 	           <a th:href="@{/admin/goods/adminGoodsMain.do}">관리자</a>
 	       </li>
         </ul>

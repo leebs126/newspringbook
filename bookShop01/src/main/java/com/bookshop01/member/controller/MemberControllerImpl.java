@@ -34,14 +34,15 @@ public class MemberControllerImpl extends BaseController implements MemberContro
 	private MemberVO memberVO;
 	
 	@Override
-	@RequestMapping(value="/login.do" ,method = RequestMethod.POST)
+	@PostMapping("/login.do")
 	public ModelAndView login(@RequestParam Map<String, String> loginMap,
 							                  HttpServletRequest request, 
 							                  HttpServletResponse response,
 							                  RedirectAttributes redirectAttributes) throws Exception {
 		ModelAndView mav = new ModelAndView();
 		 memberVO = memberService.login(loginMap);
-		if(memberVO!= null && memberVO.getMember_id()!=null){
+		 memberVO.getMemberId();
+		if(memberVO!= null && memberVO.getMemberId()!=null){
 			HttpSession session=request.getSession();
 			session=request.getSession();
 			session.setAttribute("isLogOn", true);

@@ -53,16 +53,16 @@
         }).open();
     }
 	
-	function fn_modify_member_info(member_id,mod_type){
+	function fn_modify_member_info(memberId,modType){
 		var value;
 		// alert(member_id);
 		// alert("mod_type:"+mod_type);
 			var frm_mod_member=document.frm_mod_member;
-			if(mod_type=='member_pw'){
-				value=frm_mod_member.member_pw.value;
+			if(modType=='memberPw'){
+				value=frm_mod_member.memberPw.value;
 			//	alert("member_pw:"+value);
-			}else if(mod_type=='member_gender'){
-				var member_gender=frm_mod_member.member_gender;
+			}else if(modType=='memberGender'){
+				var member_gender=frm_mod_member.memberGender;
 				for(var i=0; member_gender.length;i++){
 				 	if(member_gender[i].checked){
 						value=member_gender[i].value;
@@ -71,11 +71,11 @@
 				}
 				//alert("member_gender111:"+value);
 				
-			}else if(mod_type=='member_birth'){
-				var member_birth_y=frm_mod_member.member_birth_y;
-				var member_birth_m=frm_mod_member.member_birth_m;
-				var member_birth_d=frm_mod_member.member_birth_d;
-				var member_birth_gn=frm_mod_member.member_birth_gn;
+			}else if(modType=='memberBirth'){
+				var member_birth_y=frm_mod_member.memberBirthY;
+				var member_birth_m=frm_mod_member.memberBirthM;
+				var member_birth_d=frm_mod_member.memberBirthD;
+				var member_birth_gn=frm_mod_member.memberBirthGn;
 				
 				for(var i=0; member_birth_y.length;i++){
 				 	if(member_birth_y[i].selected){
@@ -106,7 +106,7 @@
 				}
 				//alert("생년 양음년 "+value_gn);
 				value=+value_y+","+value_m+","+value_d+","+value_gn;
-			}else if(mod_type=='tel'){
+			}else if(modType=='tel'){
 				var tel1=frm_mod_member.tel1;
 				var tel2=frm_mod_member.tel2;
 				var tel3=frm_mod_member.tel3;
@@ -121,11 +121,11 @@
 				value_tel3=tel3.value;
 				
 				value=value_tel1+","+value_tel2+", "+value_tel3;
-			}else if(mod_type=='hp'){
+			}else if(modType=='hp'){
 				var hp1=frm_mod_member.hp1;
 				var hp2=frm_mod_member.hp2;
 				var hp3=frm_mod_member.hp3;
-				var smssts_yn=frm_mod_member.smssts_yn;
+				var smssts_yn=frm_mod_member.smsstsYn;
 				
 				for(var i=0; hp1.length;i++){
 				 	if(hp1[i].selected){
@@ -139,10 +139,10 @@
 				
 				value=value_hp1+","+value_hp2+", "+value_hp3+","+value_smssts_yn;
 				
-			}else if(mod_type=='email'){
+			}else if(modType=='email'){
 				var email1=frm_mod_member.email1;
 				var email2=frm_mod_member.email2;
-				var emailsts_yn=frm_mod_member.emailsts_yn;
+				var emailsts_yn=frm_mod_member.emailstsYn;
 				
 				value_email1=email1.value;
 				value_email2=email2.value;
@@ -150,7 +150,7 @@
 				
 				value=value_email1+","+value_email2+","+value_emailsts_yn;
 				//alert(value);
-			}else if(mod_type=='address'){
+			}else if(modType=='address'){
 				var zipcode=frm_mod_member.zipcode;
 				var roadAddress=frm_mod_member.roadAddress;
 				var jibunAddress=frm_mod_member.jibunAddress;
@@ -169,12 +169,12 @@
 				async : false, //false인 경우 동기식으로 처리한다.
 				url : "/admin/member/modifyMemberInfo.do",
 				data : {
-					member_id:member_id,
-					mod_type:mod_type,
+					memberId:memberId,
+					modType:modType,
 					value:value
 				},
 				success : function(data, textStatus) {
-					if(data.trim()=='mod_success'){
+					if(data.trim()=='modSuccess'){
 						alert("회원 정보를 수정했습니다.");
 					}else if(data.trim()=='failed'){
 						alert("다시 시도해 주세요.");	
@@ -191,21 +191,21 @@
 			}); //end ajax
 	}
 
-	function fn_delete_member(member_id ,del_yn){
+	function delete_or_recover_membership(memberId ,delYn){
 		var frm_mod_member=document.frm_mod_member;
 		var i_member_id = document.createElement("input");
 		var i_del_yn = document.createElement("input");
 	    
 		
-	    i_member_id.name="member_id";
-	    i_del_yn.name="del_yn";
-	    i_member_id.value=member_id;
-	    i_del_yn.value=del_yn;
+	    i_member_id.name="memberId";
+	    i_del_yn.name="delYn";
+	    i_member_id.value=memberId;
+	    i_del_yn.value=delYn;
 	    
 	    frm_mod_member.appendChild(i_member_id);
 	    frm_mod_member.appendChild(i_del_yn);
 	    frm_mod_member.method="post";
-	    frm_mod_member.action="/admin/member/deleteMember.do";
+	    frm_mod_member.action="/admin/member/deleteOrRecoverMembership.do";
 	    frm_mod_member.submit();
 	}
 	</script>	
@@ -219,8 +219,8 @@
                 <tr class="dot_line">
                     <td class="fixed_join">아이디</td>
                     <td>
-                        <input name="member_id" type="text" size="20" 
-                               th:value="${member_info.member_id}" disabled/>
+                        <input name="memberId" type="text" size="20" 
+                               th:value="${memberInfo.memberId}" disabled/>
                     </td>
                     <td>
                         <input type="button" value="수정하기" disabled/>
@@ -231,13 +231,13 @@
                 <tr class="dot_line">
                     <td class="fixed_join">비밀번호</td>
                     <td>
-                        <input name="member_pw" type="password" size="20" 
-                               th:value="${member_info.member_pw}" />
+                        <input name="memberPw" type="password" size="20" 
+                               th:value="${memberInfo.memberPw}" />
                     </td>
                     <td>
 						<input type="button" value="수정하기" 
-						      th:data-member-id="${member_info.member_id}" 
-						       onclick="fn_modify_member_info(this.dataset.memberId,'member_pw')" />
+						      th:data-member-id="${memberInfo.memberId}" 
+						       onclick="fn_modify_member_info(this.dataset.memberId,'memberPw')" />
                     </td>
                 </tr>
 
@@ -245,15 +245,15 @@
                 <tr class="dot_line">
                     <td class="fixed_join">성별</td>
                     <td>
-                        <input type="radio" name="member_gender" value="102" 
-                               th:checked="${member_info.member_gender=='102'}"/> 여성
-                        <input type="radio" name="member_gender" value="101" 
-                               th:checked="${member_info.member_gender=='101'}"/> 남성
+                        <input type="radio" name="memberGender" value="102" 
+                               th:checked="${memberInfo.memberGender=='102'}"/> 여성
+                        <input type="radio" name="memberGender" value="101" 
+                               th:checked="${memberInfo.memberGender=='101'}"/> 남성
                     </td>
                     <td>
 						<input type="button" value="수정하기" 
-						       th:data-member-id="${member_info.member_id}" 
-						       onclick="fn_modify_member_info(this.dataset.memberId,'member_gender')" />
+						       th:data-member-id="${memberInfo.memberId}" 
+						       onclick="fn_modify_member_info(this.dataset.memberId,'memberGender')" />
 
                     </td>
                 </tr>
@@ -262,70 +262,70 @@
                 <tr class="dot_line">
                     <td class="fixed_join">법정생년월일</td>
                     <td>
-                        <select name="member_birth_y">
+                        <select name="memberBirthY">
                             <option th:each="year : ${#numbers.sequence(1921, 2020)}"
                                     th:value="${year}" th:text="${year}"
-                                    th:selected="${year ==member_birth_y}"></option>
+                                    th:selected="${year ==memberBirthY}"></option>
                         </select>년 
-                        <select name="member_birth_m">
+                        <select name="memberBirthM">
                             <option th:each="m : ${#numbers.sequence(1,12)}"
                                     th:value="${m}" th:text="${m}"
-                                    th:selected="${m == member_birth_m}"></option>
+                                    th:selected="${m == memberBirthM}"></option>
                         </select>월
-                        <select name="member_birth_d">
+                        <select name="memberBirthD">
                             <option th:each="d : ${#numbers.sequence(1,31)}"
                                     th:value="${d}" th:text="${d}"
-                                    th:selected="${d == member_birth_d}"></option>
+                                    th:selected="${d == memberBirthD}"></option>
                         </select>일
-                        <input type="radio" name="member_birth_gn" value="2"
-                               th:checked="${member_info.member_birth_gn=='2'}"/>양력
-                        <input type="radio" name="member_birth_gn" value="1"
-                               th:checked="${member_info.member_birth_gn=='1'}"/>음력
+                        <input type="radio" name="memberBirthGn" value="2"
+                               th:checked="${memberInfo.memberBirthGn=='2'}"/>양력
+                        <input type="radio" name="memberBirthGn" value="1"
+                               th:checked="${memberInfo.memberBirthGn=='1'}"/>음력
                     </td>
 					<td>
 						<input type="button" value="수정하기" 
-						       th:data-member-id="${member_info.member_id}" 
-						       onclick="fn_modify_member_info(this.dataset.memberId,'member_birth')" />
+						       th:data-member-id="${memberInfo.memberId}" 
+						       onclick="fn_modify_member_info(this.dataset.memberId,'memberBirth')" />
 					</td>
                 </tr>
 				<tr class="dot_line">
 				    <td class="fixed_join">전화번호</td>
 				    <td>
 				        <select name="tel1">
-				            <option value="없음" th:selected="${member_info.tel1 == '없음'}">없음</option>
-				            <option value="02" th:selected="${member_info.tel1 == '02'}">02</option>
-				            <option value="031" th:selected="${member_info.tel1 == '031'}">031</option>
-				            <option value="032" th:selected="${member_info.tel1 == '032'}">032</option>
-				            <option value="033" th:selected="${member_info.tel1 == '033'}">033</option>
-				            <option value="041" th:selected="${member_info.tel1 == '041'}">041</option>
-				            <option value="042" th:selected="${member_info.tel1 == '042'}">042</option>
-				            <option value="043" th:selected="${member_info.tel1 == '043'}">043</option>
-				            <option value="044" th:selected="${member_info.tel1 == '044'}">044</option>
-				            <option value="051" th:selected="${member_info.tel1 == '051'}">051</option>
-				            <option value="052" th:selected="${member_info.tel1 == '052'}">052</option>
-				            <option value="053" th:selected="${member_info.tel1 == '053'}">053</option>
-				            <option value="054" th:selected="${member_info.tel1 == '054'}">054</option>
-				            <option value="055" th:selected="${member_info.tel1 == '055'}">055</option>
-				            <option value="061" th:selected="${member_info.tel1 == '061'}">061</option>
-				            <option value="062" th:selected="${member_info.tel1 == '062'}">062</option>
-				            <option value="063" th:selected="${member_info.tel1 == '063'}">063</option>
-				            <option value="064" th:selected="${member_info.tel1 == '064'}">064</option>
-				            <option value="0502" th:selected="${member_info.tel1 == '0502'}">0502</option>
-				            <option value="0503" th:selected="${member_info.tel1 == '0503'}">0503</option>
-				            <option value="0505" th:selected="${member_info.tel1 == '0505'}">0505</option>
-				            <option value="0506" th:selected="${member_info.tel1 == '0506'}">0506</option>
-				            <option value="0507" th:selected="${member_info.tel1 == '0507'}">0507</option>
-				            <option value="0508" th:selected="${member_info.tel1 == '0508'}">0508</option>
-				            <option value="070" th:selected="${member_info.tel1 == '070'}">070</option>
+				            <option value="없음" th:selected="${memberInfo.tel1 == '없음'}">없음</option>
+				            <option value="02" th:selected="${memberInfo.tel1 == '02'}">02</option>
+				            <option value="031" th:selected="${memberInfo.tel1 == '031'}">031</option>
+				            <option value="032" th:selected="${memberInfo.tel1 == '032'}">032</option>
+				            <option value="033" th:selected="${memberInfo.tel1 == '033'}">033</option>
+				            <option value="041" th:selected="${memberInfo.tel1 == '041'}">041</option>
+				            <option value="042" th:selected="${memberInfo.tel1 == '042'}">042</option>
+				            <option value="043" th:selected="${memberInfo.tel1 == '043'}">043</option>
+				            <option value="044" th:selected="${memberInfo.tel1 == '044'}">044</option>
+				            <option value="051" th:selected="${memberInfo.tel1 == '051'}">051</option>
+				            <option value="052" th:selected="${memberInfo.tel1 == '052'}">052</option>
+				            <option value="053" th:selected="${memberInfo.tel1 == '053'}">053</option>
+				            <option value="054" th:selected="${memberInfo.tel1 == '054'}">054</option>
+				            <option value="055" th:selected="${memberInfo.tel1 == '055'}">055</option>
+				            <option value="061" th:selected="${memberInfo.tel1 == '061'}">061</option>
+				            <option value="062" th:selected="${memberInfo.tel1 == '062'}">062</option>
+				            <option value="063" th:selected="${memberInfo.tel1 == '063'}">063</option>
+				            <option value="064" th:selected="${memberInfo.tel1 == '064'}">064</option>
+				            <option value="0502" th:selected="${memberInfo.tel1 == '0502'}">0502</option>
+				            <option value="0503" th:selected="${memberInfo.tel1 == '0503'}">0503</option>
+				            <option value="0505" th:selected="${memberInfo.tel1 == '0505'}">0505</option>
+				            <option value="0506" th:selected="${memberInfo.tel1 == '0506'}">0506</option>
+				            <option value="0507" th:selected="${memberInfo.tel1 == '0507'}">0507</option>
+				            <option value="0508" th:selected="${memberInfo.tel1 == '0508'}">0508</option>
+				            <option value="070" th:selected="${memberInfo.tel1 == '070'}">070</option>
 				        </select>
 				        -
-				        <input type="text" size="4" name="tel2" th:value="${member_info.tel2}">
+				        <input type="text" size="4" name="tel2" th:value="${memberInfo.tel2}">
 				        -
-				        <input type="text" size="4" name="tel3" th:value="${member_info.tel3}">
+				        <input type="text" size="4" name="tel3" th:value="${memberInfo.tel3}">
 				    </td>
 				    <td>
 				        <input type="button" value="수정하기"
-				               th:data-member-id="${member_info.member_id}"
+				               th:data-member-id="${memberInfo.memberId}"
 				               onclick="fn_modify_member_info(this.dataset.memberId,'tel')" />
 				    </td>
 				</tr>
@@ -337,20 +337,20 @@
                     <td class="fixed_join">휴대폰번호</td>
                     <td>
                         <select name="hp1">
-                            <option value="010" th:selected="${member_info.hp1=='010'}">010</option>
-                            <option value="011" th:selected="${member_info.hp1=='011'}">011</option>
-                            <option value="016" th:selected="${member_info.hp1=='016'}">016</option>
-                            <option value="017" th:selected="${member_info.hp1=='017'}">017</option>
+                            <option value="010" th:selected="${memberInfo.hp1=='010'}">010</option>
+                            <option value="011" th:selected="${memberInfo.hp1=='011'}">011</option>
+                            <option value="016" th:selected="${memberInfo.hp1=='016'}">016</option>
+                            <option value="017" th:selected="${memberInfo.hp1=='017'}">017</option>
                         </select>
-                        - <input type="text" name="hp2" size="4" th:value="${member_info.hp2}"/>
-                        - <input type="text" name="hp3" size="4" th:value="${member_info.hp3}"/>
+                        - <input type="text" name="hp2" size="4" th:value="${memberInfo.hp2}"/>
+                        - <input type="text" name="hp3" size="4" th:value="${memberInfo.hp3}"/>
                         <br>
-                        <input type="checkbox" name="smssts_yn" value="Y"
-                               th:checked="${member_info.smssts_yn}"/>쇼핑몰에서 발송하는 SMS를 수신합니다.
+                        <input type="checkbox" name="smsstsYn" value="Y"
+                               th:checked="${memberInfo.smsstsYn}"/>쇼핑몰에서 발송하는 SMS를 수신합니다.
                     </td>
 					<td>
 						<input type="button" value="수정하기"
-				               th:data-member-id="${member_info.member_id}"
+				               th:data-member-id="${memberInfo.memberId}"
 				               onclick="fn_modify_member_info(this.dataset.memberId,'hp')" />
 					</td>
                 </tr>
@@ -359,31 +359,31 @@
                 <tr class="dot_line">
                     <td class="fixed_join">이메일</td>
                     <td>
-						<input type="text" name="email1" size="10" th:value="${member_info.email1}" /> 
+						<input type="text" name="email1" size="10" th:value="${memberInfo.email1}" /> 
 						@ 
-						<input type="text" name="email2" size="10" th:value="${member_info.email2}" />
+						<input type="text" name="email2" size="10" th:value="${memberInfo.email2}" />
 
 						<select name="select_email2" title="직접입력" onchange="/* 필요시 JS 함수 연결 */">
-						    <option value="non" th:selected="${member_info.email2 == null or member_info.email2 == ''}">직접입력</option>
-						    <option value="hanmail.net" th:selected="${member_info.email2 == 'hanmail.net'}">hanmail.net</option>
-						    <option value="naver.com" th:selected="${member_info.email2 == 'naver.com'}">naver.com</option>
-						    <option value="yahoo.co.kr" th:selected="${member_info.email2 == 'yahoo.co.kr'}">yahoo.co.kr</option>
-						    <option value="hotmail.com" th:selected="${member_info.email2 == 'hotmail.com'}">hotmail.com</option>
-						    <option value="paran.com" th:selected="${member_info.email2 == 'paran.com'}">paran.com</option>
-						    <option value="nate.com" th:selected="${member_info.email2 == 'nate.com'}">nate.com</option>
-						    <option value="google.com" th:selected="${member_info.email2 == 'google.com'}">google.com</option>
-						    <option value="gmail.com" th:selected="${member_info.email2 == 'gmail.com'}">gmail.com</option>
-						    <option value="empal.com" th:selected="${member_info.email2 == 'empal.com'}">empal.com</option>
-						    <option value="korea.com" th:selected="${member_info.email2 == 'korea.com'}">korea.com</option>
-						    <option value="freechal.com" th:selected="${member_info.email2 == 'freechal.com'}">freechal.com</option>
+						    <option value="non" th:selected="${memberInfo.email2 == null or memberInfo.email2 == ''}">직접입력</option>
+						    <option value="hanmail.net" th:selected="${memberInfo.email2 == 'hanmail.net'}">hanmail.net</option>
+						    <option value="naver.com" th:selected="${memberInfo.email2 == 'naver.com'}">naver.com</option>
+						    <option value="yahoo.co.kr" th:selected="${memberInfo.email2 == 'yahoo.co.kr'}">yahoo.co.kr</option>
+						    <option value="hotmail.com" th:selected="${memberInfo.email2 == 'hotmail.com'}">hotmail.com</option>
+						    <option value="paran.com" th:selected="${memberInfo.email2 == 'paran.com'}">paran.com</option>
+						    <option value="nate.com" th:selected="${memberInfo.email2 == 'nate.com'}">nate.com</option>
+						    <option value="google.com" th:selected="${memberInfo.email2 == 'google.com'}">google.com</option>
+						    <option value="gmail.com" th:selected="${memberInfo.email2 == 'gmail.com'}">gmail.com</option>
+						    <option value="empal.com" th:selected="${memberInfo.email2 == 'empal.com'}">empal.com</option>
+						    <option value="korea.com" th:selected="${memberInfo.email2 == 'korea.com'}">korea.com</option>
+						    <option value="freechal.com" th:selected="${memberInfo.email2 == 'freechal.com'}">freechal.com</option>
 						</select>
 						<br><br>
-                        <input type="checkbox" name="emailsts_yn" value="Y"
-                               th:checked="${member_info.emailsts_yn}"/>  쇼핑몰에서 발송하는 e-mail을 수신합니다.
+                        <input type="checkbox" name="emailstsYn" value="Y"
+                               th:checked="${memberInfo.emailstsYn}"/>  쇼핑몰에서 발송하는 e-mail을 수신합니다.
                     </td>
 					<td>
 						<input type="button" value="수정하기"
-				               th:data-member-id="${member_info.member_id}"
+				               th:data-member-id="${memberInfo.memberId}"
 				               onclick="fn_modify_member_info(this.dataset.memberId,'email')" />
 					</td>
                 </tr>
@@ -393,19 +393,19 @@
                     <td class="fixed_join">주소</td>
                     <td>
                         <input type="text" id="zipcode" name="zipcode" size="5" 
-                               th:value="${member_info.zipcode}"/>
+                               th:value="${memberInfo.zipcode}"/>
                         <a href="javascript:execDaumPostcode()">우편번호검색</a>
                         <br><br>
 						<p> 
-	                        도로명: <input type="text" id="roadAddress" name="roadAddress" size="50" th:value="${member_info.roadAddress}"/><br><br>
-	                        지번: <input type="text" id="jibunAddress" name="jibunAddress" size="50" th:value="${member_info.jibunAddress}"/><br><br>
-	                        나머지: <input type="text" name="namujiAddress" size="50" th:value="${member_info.namujiAddress}"/>
+	                        도로명: <input type="text" id="roadAddress" name="roadAddress" size="50" th:value="${memberInfo.roadAddress}"/><br><br>
+	                        지번: <input type="text" id="jibunAddress" name="jibunAddress" size="50" th:value="${memberInfo.jibunAddress}"/><br><br>
+	                        나머지: <input type="text" name="namujiAddress" size="50" th:value="${memberInfo.namujiAddress}"/>
 							<span id="guide" style="color:#999"></span>
 						</p>
                     </td>
 					<td>
 						<input type="button" value="수정하기"
-				               th:data-member-id="${member_info.member_id}"
+				               th:data-member-id="${memberInfo.memberId}"
 				               onclick="fn_modify_member_info(this.dataset.memberId,'address')" />
 					</td>
                 </tr>
@@ -419,23 +419,19 @@
     <!-- 회원탈퇴/복원 -->
     <div>
 		<button type="button" 
-		        th:if="${member_info.del_yn=='Y'}"
-		        th:data-member-id="${member_info.member_id}"
-		        onclick="fn_delete_member(this.dataset.memberId,'N')">
+		        th:if="${memberInfo.delYn=='Y'}"
+		        th:data-member-id="${memberInfo.memberId}"
+		        onclick="delete_or_recover_membership(this.dataset.memberId,'N')">
 		    회원복원
 		</button>
 
 		<button type="button" 
-		        th:if="${member_info.del_yn=='N'}"
-		        th:data-member-id="${member_info.member_id}"
-		        onclick="fn_delete_member(this.dataset.memberId,'Y')">
+		        th:if="${memberInfo.delYn=='N'}"
+		        th:data-member-id="${memberInfo.memberId}"
+		        onclick="delete_or_recover_membership(this.dataset.memberId,'Y')">
 		    회원탈퇴
 		</button>
-
     </div>
-
-    <!--<input type="hidden" name="h_tel1" th:value="${member_info.tel1}"/>
-    <input type="hidden" name="h_hp1" th:value="${member_info.hp1}"/>-->
 </form>
 </section>
 </body>

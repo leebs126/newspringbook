@@ -36,7 +36,7 @@
 	    }
 
 	    function fn_overlapped() {
-	      let _id = $('#_member_id').val();
+	      let _id = $('#_memberId').val();
 	      if (_id === '') {
 	        alert("ID를 입력하세요");
 	        return;
@@ -49,8 +49,8 @@
 	          if (data === 'false') {
 	            alert("사용할 수 있는 ID입니다.");
 	            $('#btnOverlapped').prop("disabled", true);
-	            $('#_member_id').prop("disabled", true);
-	            $('#member_id').val(_id);
+	            $('#_memberId').prop("disabled", true);
+	            $('#memberId').val(_id);
 	          } else {
 	            alert("사용할 수 없는 ID입니다.");
 	          }
@@ -68,56 +68,56 @@
         <tr>
           <td class="fixed_join">아이디</td>
           <td>
-            <input type="text" name="_member_id" id="_member_id" />
-            <input type="hidden" name="member_id" id="member_id" />
+            <input type="text" name="_memberId" id="_memberId" />
+            <input type="hidden" name="memberId" id="memberId" />
             <input type="button" id="btnOverlapped" value="중복체크" onclick="fn_overlapped()" />
           </td>
         </tr>
 
         <tr>
           <td class="fixed_join">비밀번호</td>
-          <td><input type="password" name="member_pw" /></td>
+          <td><input type="password" name="memberPw" /></td>
         </tr>
 
         <tr>
           <td class="fixed_join">이름</td>
-          <td><input type="text" name="member_name" /></td>
+          <td><input type="text" name="memberName" /></td>
         </tr>
 
         <tr>
           <td class="fixed_join">성별</td>
           <td>
-            <input type="radio" name="member_gender" value="102" />여성
-            <input type="radio" name="member_gender" value="101" checked />남성
+            <input type="radio" name="memberGender" value="102" />여성
+            <input type="radio" name="memberGender" value="101" checked />남성
           </td>
         </tr>
 
         <tr>
           <td class="fixed_join">법정생년월일</td>
           <td>
-			<select name="member_birth_y">
+			<select name="memberBirthY">
 			  <option th:each="year : ${#numbers.sequence(1921, 2025)}"
 			          th:value="${year}" th:text="${year}"
 			          th:selected="${year == #temporals.year(#temporals.createNow())}">
 			  </option>
 			</select>년
 
-			<select name="member_birth_m">
+			<select name="memberBirthM">
 			  <option th:each="month : ${#numbers.sequence(1,12)}"
 			          th:value="${month}" th:text="${month}"
 			          th:selected="${month == #temporals.month(#temporals.createNow())}">
 			  </option>
 			</select>월
 
-			<select name="member_birth_d">
+			<select name="memberBirthD">
 			  <option th:each="day : ${#numbers.sequence(1,31)}"
 			          th:value="${day}" th:text="${day}"
 			          th:selected="${day == #temporals.day(#temporals.createNow())}">
 			  </option>
 			</select>일
 
-            <input type="radio" name="member_birth_gn" value="2" checked />양력
-            <input type="radio" name="member_birth_gn" value="1" />음력
+            <input type="radio" name="memberBirthGn" value="2" checked />양력
+            <input type="radio" name="memberBirthGn" value="1" />음력
           </td>
         </tr>
 
@@ -146,7 +146,7 @@
             <input type="text" name="hp2" size="10" /> -
             <input type="text" name="hp3" size="10" />
             <br><br>
-            <input type="checkbox" name="smssts_yn" value="Y" checked /> 쇼핑몰에서 발송하는 SMS 수신
+            <input type="checkbox" name="smsstsYn" value="Y" checked /> 쇼핑몰에서 발송하는 SMS 수신
           </td>
         </tr>
 
@@ -162,7 +162,7 @@
               <!-- 생략 -->
             </select>
             <br><br>
-            <input type="checkbox" name="emailsts_yn" value="Y" checked /> 이메일 수신 동의
+            <input type="checkbox" name="emailstsYn" value="Y" checked /> 이메일 수신 동의
           </td>
         </tr>
 

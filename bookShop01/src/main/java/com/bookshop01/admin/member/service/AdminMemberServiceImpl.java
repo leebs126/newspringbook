@@ -2,6 +2,7 @@ package com.bookshop01.admin.member.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -20,16 +21,18 @@ public class AdminMemberServiceImpl implements AdminMemberService {
 	@Autowired
 	private AdminMemberDAO adminMemberDAO;
 	
-	public ArrayList<MemberVO> listMember(HashMap condMap) throws Exception{
+	@Override
+	public ArrayList<MemberVO> listMember(Map condMap) throws Exception{
 		return adminMemberDAO.selectListMember(condMap);
 	}
 
-	public MemberVO memberDetail(String member_id) throws Exception{
-		 return adminMemberDAO.selectMemberDetail(member_id);
+	@Override
+	public MemberVO memberDetail(String memberId) throws Exception{
+		 return adminMemberDAO.selectMemberDetail(memberId);
 	}
 	
-	public void  modifyMemberInfo(HashMap memberMap) throws Exception{
-		 String member_id=(String)memberMap.get("member_id");
+	@Override
+	public void  modifyMemberInfo(Map memberMap) throws Exception{
 		 adminMemberDAO.updateMemberInfo(memberMap);
 	}
 }

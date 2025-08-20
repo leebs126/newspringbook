@@ -164,8 +164,8 @@
 	    i_command.name="command";
 	    i_beginDate.name="beginDate";
 	    i_endDate.name="endDate";
-	    i_search_type.name="search_type";
-	    i_search_word.name="search_word";
+	    i_search_type.name="searchType";
+	    i_search_word.name="searchWord";
 	    
 	    i_command.value="list_detail_order_goods";
 		i_beginDate.value=beginYear+"-"+beginMonth+"-"+beginDay;
@@ -311,21 +311,20 @@
 				<tr th:each="item, stat : ${memberList}"
 				    th:style="${stat.even}? 'background-color:#f2f2f2;' : 'background-color:#ffffff;'">
 					<td>
-						<a th:href="@{/admin/member/adminMemberDetail.do(member_id=${item.member_id})}">
-							<strong th:text="${item.member_id}"></strong>
+						<a th:href="@{/admin/member/adminMemberDetail.do(memberId=${item.memberId})}">
+							<strong th:text="${item.memberId}"></strong>
 						</a>
 					</td>
-					<td><strong th:text="${item.member_name}"></strong></td>
+					<td><strong th:text="${item.memberName}"></strong></td>
 					<td><strong th:text="${item.hp1 + '-' + item.hp2 + '-' + item.hp3}"></strong></td>
 					<td style="text-align:left; padding-left:5px;">
 						<strong th:utext="${'도로명:<br>' + item.roadAddress}"></strong><br>
 						<strong th:utext="${'<br>지번명:<br>' +item.jibunAddress}"></strong><br>
 						<strong th:utext="${'<br>나머지:<br>' +item.namujiAddress}"></strong>
 					</td>
-					<!--<td><strong th:text="${#dates.format(item.joinDate, 'yyyy-MM-dd')}"></strong></td>-->
 					<td><strong th:text="${item.joinDate}"></strong></td>
 					<td>
-						<strong th:text="${item.del_yn == 'N' ? '활동중' : '탈퇴'}"></strong>
+						<strong th:text="${item.delYn == 'N' ? '활동중' : '탈퇴'}"></strong>
 					</td>
 				</tr>
 			</tbody>

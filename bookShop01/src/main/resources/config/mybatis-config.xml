@@ -2,13 +2,6 @@
 <!DOCTYPE configuration
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
-<!--<configuration>
- <mappers>
-   <mapper resource="mybatis/mappers/member.xml"/>
-    <mapper resource="mybatis/mappers/board.xml"/> 
- </mappers>
-</configuration>-->
-
 <configuration>
 	<settings>
 		<setting name="cacheEnabled" value="false" />
@@ -16,14 +9,6 @@
 		<setting name="defaultExecutorType" value="REUSE" />
 		<setting name="jdbcTypeForNull" value="NULL" />
 		<setting name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
+	    <setting name="mapUnderscoreToCamelCase" value="true"/>
 	</settings>
-	 
-	<!-- <typeAliases>
-	    <typeAlias type="com.bookshop01.goods.vo.GoodsVO" alias="goodsVO" />
-	    <typeAlias type="com.bookshop01.goods.vo.ImageFileVO" alias="imageFileVO" />
-	    <typeAlias type="com.bookshop01.member.vo.MemberVO" alias="memberVO" />
-	    <typeAlias type="com.bookshop01.cart.vo.CartVO" alias="cartVO" />
-	    <typeAlias type="com.bookshop01.order.vo.OrderVO" alias="orderVO" />
-	    <typeAlias type="com.bookshop01.mypage.vo.MyPageVO" alias="mypageVO" />
-  </typeAliases>-->
 </configuration>
