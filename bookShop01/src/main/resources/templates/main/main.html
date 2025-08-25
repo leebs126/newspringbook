@@ -21,13 +21,13 @@
         <h3>베스트셀러</h3>
         <div th:each="item, stat : ${goodsMap.bestseller}">
             <div class="book">
-                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
                     <img class="link" th:src="@{/image/1px.gif}" />
                 </a>
                 <img width="121" height="154"
-                     th:src="@{/thumbnails.do(goods_id=${item.goods_id}, fileName=${item.goods_fileName})}" />
-                <div class="title" th:text="${item.goods_title}">도서 제목</div>
-                <div class="price" th:text="${#numbers.formatInteger(item.goods_price, 3, 'COMMA')} + '원'">가격</div>
+                     th:src="@{/thumbnails.do(goodsId=${item.goodsId}, fileName=${item.goodsFileName})}" />
+                <div class="title" th:text="${item.goodsTitle}">도서 제목</div>
+                <div class="price" th:text="${#numbers.formatInteger(item.goodsPrice, 3, 'COMMA')} + '원'">가격</div>
             </div>
             <div class="book" th:if="${stat.index == 14}">
                 <font size="20"><a href="#">more</a></font>
@@ -45,13 +45,13 @@
         <h3>새로 출판된 책</h3>
         <div th:each="item, stat : ${goodsMap.newbook}">
             <div class="book">
-                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
                     <img class="link" th:src="@{/image/1px.gif}" />
                 </a>
                 <img width="121" height="154"
-                     th:src="@{/thumbnails.do(goods_id=${item.goods_id}, fileName=${item.goods_fileName})}" />
-                <div class="title" th:text="${item.goods_title}">도서 제목</div>
-                <div class="price" th:text="${#numbers.formatInteger(item.goods_price, 3, 'COMMA')} + '원'">가격</div>
+                     th:src="@{/thumbnails.do(goods_id=${item.goodsId}, fileName=${item.goodsFileName})}" />
+                <div class="title" th:text="${item.goodsTitle}">도서 제목</div>
+                <div class="price" th:text="${#numbers.formatInteger(item.goodsPrice, 3, 'COMMA')} + '원'">가격</div>
             </div>
             <div class="book" th:if="${stat.index == 14}">
                 <font size="20"><a href="#">more</a></font>
@@ -69,13 +69,13 @@
         <h3>스테디셀러</h3>
         <div th:each="item, stat : ${goodsMap.steadyseller}">
             <div class="book">
-                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
+                <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
                     <img class="link" th:src="@{/image/1px.gif}" />
                 </a>
                 <img width="121" height="154"
-                     th:src="@{/thumbnails.do(goods_id=${item.goods_id}, fileName=${item.goods_fileName})}" />
-                <div class="title" th:text="${item.goods_title}">도서 제목</div>
-                <div class="price" th:text="${#numbers.formatInteger(item.goods_price, 3, 'COMMA')} + '원'">가격</div>
+                     th:src="@{/thumbnails.do(goodsId=${item.goodsId}, fileName=${item.goodsFileName})}" />
+                <div class="title" th:text="${item.goodsTitle}">도서 제목</div>
+                <div class="price" th:text="${#numbers.formatInteger(item.goodsPrice, 3, 'COMMA')} + '원'">가격</div>
             </div>
             <div class="book" th:if="${stat.index == 14}">
                 <font size="20"><a href="#">more</a></font>

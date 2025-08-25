@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -67,7 +68,7 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		List<OrderVO> _newOrdersList = (List<OrderVO>)_newOrdersMap.get("newOrdersList");
 		Set<Integer> orderIdSet = new HashSet<>();
 		for (OrderVO orderVO : _newOrdersList) {
-		    orderIdSet.add(orderVO.getOrder_id());
+		    orderIdSet.add(orderVO.getOrderId());
 		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
@@ -77,7 +78,7 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		for (int orderId : orderIdList) {
 			List<OrderVO> newOrdersList = new ArrayList<>();
 		    for (OrderVO orderVO : _newOrdersList) {
-		        if (orderId == orderVO.getOrder_id()) {
+		        if (orderId == orderVO.getOrderId()) {
 		        	newOrdersList.add(orderVO);
 		        }
 		    }
@@ -107,7 +108,7 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 	}
 	
 	@Override
-	@RequestMapping(value="/modifyDeliveryState.do" ,method={RequestMethod.POST})
+	@PostMapping("/modifyDeliveryState.do")
 	public ResponseEntity modifyDeliveryState(@RequestParam Map<String, String> deliveryMap, 
 			                        HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		adminOrderService.modifyDeliveryState(deliveryMap);
@@ -139,7 +140,7 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		List<OrderVO> _newOrdersList = (List<OrderVO>)_newOrdersMap.get("newOrdersList");
 		Set<Integer> orderIdSet = new HashSet<>();
 		for (OrderVO orderVO : _newOrdersList) {
-		    orderIdSet.add(orderVO.getOrder_id());
+		    orderIdSet.add(orderVO.getOrderId());
 		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
@@ -149,7 +150,7 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		for (int orderId : orderIdList) {
 			List<OrderVO> newOrdersList = new ArrayList<>();
 		    for (OrderVO orderVO : _newOrdersList) {
-		        if (orderId == orderVO.getOrder_id()) {
+		        if (orderId == orderVO.getOrderId()) {
 		        	newOrdersList.add(orderVO);
 		        }
 		    }
@@ -176,11 +177,11 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 
 	@Override
 	@RequestMapping(value="/adminOrderDetail.do" ,method={RequestMethod.GET,RequestMethod.POST})
-	public ModelAndView adminOrderDetail(int order_id, HttpServletRequest request, HttpServletResponse response)
+	public ModelAndView adminOrderDetail(@RequestParam("orderId") int orderId, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
-		Map orderDataMap =adminOrderService.adminOrderDetail(order_id);
+		Map orderDataMap =adminOrderService.adminOrderDetail(orderId);
 		List<OrderVO> orderList= (List<OrderVO>)orderDataMap.get("orderList");
 		Map<String, List<OrderVO>> orderMap = new HashMap<>();
 		orderMap.put("orderList", orderList);
@@ -195,9 +196,9 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		int totalOrderGoodsQty = 0; 	//총주문개수
 		int orderGoodsQty = 0;			//총주문수량
 		for (OrderVO orderVO : orderList) {
-			orderGoodsQty = orderVO.getOrder_goods_qty();
-			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
-			totalDeliveryPrice += orderVO.getGoods_delivery_price();
+			orderGoodsQty = orderVO.getOrderGoodsQty();
+			totalOrderPrice+= orderVO.getGoodsPrice() * orderGoodsQty;
+			totalDeliveryPrice += orderVO.getGoodsDeliveryPrice();
 			totalOrderGoodsQty+= orderGoodsQty;
 		}
 		

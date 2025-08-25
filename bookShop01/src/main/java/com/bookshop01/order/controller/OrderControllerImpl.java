@@ -2,7 +2,6 @@ package com.bookshop01.order.controller;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -37,7 +36,7 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 	private OrderVO orderVO;
 	
 	@Override
-	@RequestMapping(value="/orderEachGoods.do" ,method = RequestMethod.POST)
+	@PostMapping("/orderEachGoods.do")
 	public ModelAndView orderEachGoods(@ModelAttribute("orderVO") OrderVO _orderVO,
 			                       HttpServletRequest request, HttpServletResponse response)  throws Exception{
 		
@@ -75,8 +74,8 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 	}
 	
 	@Override
-	@RequestMapping(value="/orderAllCartGoods.do" ,method = RequestMethod.POST)
-	public ModelAndView orderAllCartGoods( @RequestParam("cart_goods_qty")  String[] cart_goods_qty,
+	@PostMapping("/orderAllCartGoods.do")
+	public ModelAndView orderAllCartGoods( @RequestParam("cartGoodsQty")  String[] cartGoodsQty,
 			                 HttpServletRequest request, HttpServletResponse response)  throws Exception{
 //		String viewName=(String)request.getAttribute("viewName");
 		String viewName = "/order/orderGoodsForm";
@@ -88,23 +87,23 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		
 		List<GoodsVO> myGoodsList=(List<GoodsVO>)cartMap.get("myGoodsList");
 		
-		for(int i=0; i<cart_goods_qty.length;i++){
-			String[] cart_goods=cart_goods_qty[i].split(":");
+		for(int i=0; i<cartGoodsQty.length;i++){
+			String[] cartGoods=cartGoodsQty[i].split(":");
 			for(int j = 0; j< myGoodsList.size();j++) {
 				GoodsVO goodsVO = myGoodsList.get(j);
-				int goods_id = goodsVO.getGoods_id();
-				if(goods_id==Integer.parseInt(cart_goods[0])) {
+				int goodsId = goodsVO.getGoodsId();
+				if(goodsId==Integer.parseInt(cartGoods[0])) {
 					OrderVO _orderVO=new OrderVO();
-					String goods_title=goodsVO.getGoods_title();
-					int goods_sales_price=goodsVO.getGoods_sales_price();
-					String goods_fileName=goodsVO.getGoods_fileName();
-					int goods_price = goodsVO.getGoods_price();
-					_orderVO.setGoods_id(goods_id);
-					_orderVO.setGoods_title(goods_title);
-					_orderVO.setGoods_sales_price(goods_sales_price);
-					_orderVO.setGoods_price(goods_price);
-					_orderVO.setGoods_fileName(goods_fileName);
-					_orderVO.setOrder_goods_qty(Integer.parseInt(cart_goods[1]));
+					String goodsTitle=goodsVO.getGoodsTitle();
+					int goodsSalesPrice=goodsVO.getGoodsSalesPrice();
+					String goodsFileName=goodsVO.getGoodsFileName();
+					int goodsPrice = goodsVO.getGoodsPrice();
+					_orderVO.setGoodsId(goodsId);
+					_orderVO.setGoodsTitle(goodsTitle);
+					_orderVO.setGoodsSalesPrice(goodsSalesPrice);
+					_orderVO.setGoodsFileName(goodsFileName);
+					_orderVO.setGoodsPrice(goodsPrice);
+					_orderVO.setOrderGoodsQty(Integer.parseInt(cartGoods[1]));
 					myOrderList.add(_orderVO);
 					break;
 				}
@@ -118,7 +117,7 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 	}	
 	
 	@Override
-	@RequestMapping(value="/payToOrderGoods.do" ,method = RequestMethod.POST)
+	@PostMapping("/payToOrderGoods.do")
 	public ModelAndView payToOrderGoods(@RequestParam Map<String, String> receiverMap,
 			                       HttpServletRequest request, HttpServletResponse response)  throws Exception{
 //		String viewName=(String)request.getAttribute("viewName");
@@ -127,9 +126,9 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		
 		HttpSession session=request.getSession();
 		MemberVO memberVO=(MemberVO)session.getAttribute("orderer");
-		String member_id=memberVO.getMemberId();
-		String orderer_name=memberVO.getMemberName();
-		String orderer_hp = memberVO.getHp1()+"-"+memberVO.getHp2()+"-"+memberVO.getHp3();
+		String memberId=memberVO.getMemberId();
+		String ordererName=memberVO.getMemberName();
+		String ordererHp = memberVO.getHp1()+"-"+memberVO.getHp2()+"-"+memberVO.getHp3();
 		Map<Integer, List<OrderVO>> myOrderMap=(Map)session.getAttribute("myOrderMap");
 		
 				
@@ -142,26 +141,26 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		
 			for(int i=0; i<myOrderList.size();i++){
 				OrderVO orderVO=(OrderVO)myOrderList.get(i);
-				orderVO.setMember_id(member_id);
-				orderVO.setOrderer_name(orderer_name);
-				orderVO.setReceiver_name(receiverMap.get("receiver_name"));
+				orderVO.setMemberId(memberId);
+				orderVO.setOrdererName(ordererName);
+				orderVO.setReceiverName(receiverMap.get("receiverName"));
 				
-				orderVO.setReceiver_hp1(receiverMap.get("receiver_hp1"));
-				orderVO.setReceiver_hp2(receiverMap.get("receiver_hp2"));
-				orderVO.setReceiver_hp3(receiverMap.get("receiver_hp3"));
-				orderVO.setReceiver_tel1(receiverMap.get("receiver_tel1"));
-				orderVO.setReceiver_tel2(receiverMap.get("receiver_tel2"));
-				orderVO.setReceiver_tel3(receiverMap.get("receiver_tel3"));
+				orderVO.setReceiverHp1(receiverMap.get("receiverHp1"));
+				orderVO.setReceiverHp2(receiverMap.get("receiverHp2"));
+				orderVO.setReceiverHp3(receiverMap.get("receiverHp3"));
+				orderVO.setReceiverTel1(receiverMap.get("receiverTel1"));
+				orderVO.setReceiverTel2(receiverMap.get("receiverTel2"));
+				orderVO.setReceiverTel3(receiverMap.get("receiverTel3"));
 				
-				orderVO.setDelivery_address(receiverMap.get("delivery_address"));
-				orderVO.setDelivery_message(receiverMap.get("delivery_message"));
-				orderVO.setDelivery_method(receiverMap.get("delivery_method"));
-				orderVO.setGift_wrapping(receiverMap.get("gift_wrapping"));
-				orderVO.setPay_method(receiverMap.get("pay_method"));
-				orderVO.setCard_com_name(receiverMap.get("card_com_name"));
-				orderVO.setCard_pay_month(receiverMap.get("card_pay_month"));
-				orderVO.setPay_orderer_hp_num(receiverMap.get("pay_orderer_hp_num"));	
-				orderVO.setOrderer_hp(orderer_hp);	
+				orderVO.setDeliveryAddress(receiverMap.get("deliveryAddress"));
+				orderVO.setDeliveryMessage(receiverMap.get("deliveryMessage"));
+				orderVO.setDeliveryMethod(receiverMap.get("deliveryMethod"));
+				orderVO.setGiftWrapping(receiverMap.get("giftWrapping"));
+				orderVO.setPayMethod(receiverMap.get("payMethod"));
+				orderVO.setCardComName(receiverMap.get("cardComName"));
+				orderVO.setCardPayMonth(receiverMap.get("cardPayMonth"));
+				orderVO.setPayOrdererHpNum(receiverMap.get("payOrdererHpNum"));	
+				orderVO.setOrdererHp(ordererHp);	
 				myOrderList.set(i, orderVO); ; //각 orderVO에 주문자 정보를 세팅한 후 다시 myOrderList에 저장한다.
 			}//end for
 		}
@@ -188,13 +187,13 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		int totalOrderGoodsQty = 0; 	//총주문개수
 		int orderGoodsQty = 0;			//총주문수량
 		for (OrderVO orderVO : myOrderList) {
-			orderGoodsQty = orderVO.getOrder_goods_qty();
-			totalOrderPrice+= orderVO.getGoods_price() * orderGoodsQty;
-			totalDeliveryPrice += orderVO.getGoods_delivery_price();
+			orderGoodsQty = orderVO.getOrderGoodsQty();
+			totalOrderPrice+= orderVO.getGoodsPrice() * orderGoodsQty;
+			totalDeliveryPrice += orderVO.getGoodsDeliveryPrice();
 			totalOrderGoodsQty+= orderGoodsQty;
 		}
 		
-		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
+		totalDiscountedPrice = (int)(totalOrderPrice * GOODS_DISCOUNT_RATE);  //10프로 할인
 		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
 		
 		session.setAttribute("myOrderMap", myOrderMap);

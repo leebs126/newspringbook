@@ -23,7 +23,10 @@ import jakarta.servlet.http.HttpServletResponse;
 //@RequestMapping("/book")
 public abstract class BaseController {
 	private static final String CURR_IMAGE_REPO_PATH = "C:\\shopping\\file_repo";
-	public static int  ORDERS_PER_PAGE = 10;  //한 페이지당 표시되는 데이터 수 
+	public static final int AVAILABLE_DELIVERY_ORDER_PRICE = 15000; //무료 배송 주문 최소 금액
+	public static final int GOODS_DELIVERY_PRICE = 1500;  //1건당 배송료
+	public static final int ORDERS_PER_PAGE = 10;  //한 페이지당 표시되는 데이터 수 
+	public static final double GOODS_DISCOUNT_RATE = 0.1d; //상품 할인율 10%
 	
 	protected List<ImageFileVO> upload(MultipartHttpServletRequest multipartRequest) throws Exception {
 		List<ImageFileVO> fileList = new ArrayList<ImageFileVO>();

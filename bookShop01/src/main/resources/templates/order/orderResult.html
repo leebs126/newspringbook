@@ -17,7 +17,8 @@
             <td>정가</td>
             <td>배송비</td>
             <td>예상적립금</td>
-            <td>최종주문금액</td>
+			<td>할인액</td>
+            <td>최종결제금액</td>
         </tr>
 		<th:block th:each="entry : ${session.myOrderMap}">
 		  <th:block th:with="myOrderList=${entry.value}">
@@ -27,24 +28,25 @@
 				<h2 th:text="${orderId}"></h2>
 			</td>
             <td class="goods_image">
-                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
-                    <img width="75" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" alt="">
+                <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
+                    <img width="75" th:src="@{/thumbnails.do(goodsId=${item.goodsId},fileName=${item.goodsFileName})}" alt="">
                 </a>
             </td>
             <td>
                 <h2>
-                    <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" 
-                       th:text="${item.goods_title}"></a>
+                    <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}" 
+                       th:text="${item.goodsTitle}"></a>
                 </h2>
             </td>
-            <td><h2 th:text="${item.order_goods_qty} + '개'"></h2></td>
-            <td><h2 th:text="${item.goods_sales_price} + '원'"></h2></td>
+            <td><h2 th:text="${item.orderGoodsQty} + '개'"></h2></td>
+            <td><h2 th:text="${item.goodsPrice} + '원'"></h2></td>
             <td><h2>0원</h2></td>
-            <td><h2 th:text="${1500 * item.order_goods_qty} + '원'"></h2></td>
+            <td><h2 th:text="${1500 * item.orderGoodsQty} + '원'"></h2></td>
+			<td><h2 th:text="${session.totalDiscountedPrice} + '원'"></h2></td>
 			<td th:if="${iterStat.index == 0}" 
 		    	  th:rowspan="${#lists.size(myOrderList)}" 
 		     			 style="background-color: #e0f7da;">
-		    	<h2 th:text="${session.finalTotalOrderPrice} + '원(10%할인)'"></h2>
+		    	<h2 th:text="${session.finalTotalOrderPrice} + '원'"></h2>
 		 	</td>
           </tr>
 		   </th:block>
@@ -61,31 +63,31 @@
             <tbody>
                 <tr class="dot_line">
                     <td class="fixed_join">배송방법</td>
-                    <td th:text="${myOrderInfo.delivery_method}"></td>
+                    <td th:text="${myOrderInfo.deliveryMethod}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">받으실 분</td>
-                    <td th:text="${myOrderInfo.receiver_name}"></td>
+                    <td th:text="${myOrderInfo.receiverName}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">휴대폰번호</td>
-                    <td th:text="${myOrderInfo.receiver_hp1 + '-' + myOrderInfo.receiver_hp2 + '-' + myOrderInfo.receiver_hp3}"></td>
+                    <td th:text="${myOrderInfo.receiverHp1 +'-'+ myOrderInfo.receiverHp2 +'-'+ myOrderInfo.receiverHp3}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">유선전화(선택)</td>
-                    <td th:text="${myOrderInfo.receiver_tel1 + '-' + myOrderInfo.receiver_tel2 + '-' + myOrderInfo.receiver_tel3}"></td>
+                    <td th:text="${myOrderInfo.receiverTel1 +'-'+ myOrderInfo.receiverTel2 +'-'+ myOrderInfo.receiverTel3}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">주소</td>
-                    <td th:utext="${myOrderInfo.delivery_address}"></td>
+                    <td th:utext="${myOrderInfo.deliveryAddress}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">배송 메시지</td>
-                    <td th:text="${myOrderInfo.delivery_message}"></td>
+                    <td th:text="${myOrderInfo.deliveryMessage}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">선물 포장</td>
-                    <td th:text="${myOrderInfo.gift_wrapping}"></td>
+                    <td th:text="${myOrderInfo.giftWrapping}"></td>
                 </tr>
             </tbody>
         </table>
@@ -95,9 +97,13 @@
     <h2>주문고객</h2>
     <table>
         <tbody>
+			<tr class="dot_line">
+                <td><h2>아이디</h2></td>
+                <td><input type="text" th:value="${session.orderer.memberId}" size="15" disabled /></td>
+            </tr>
             <tr class="dot_line">
                 <td><h2>이름</h2></td>
-                <td><input type="text" th:value="${session.orderer.member_name}" size="15" disabled /></td>
+                <td><input type="text" th:value="${session.orderer.memberName}" size="15" disabled /></td>
             </tr>
             <tr class="dot_line">
                 <td><h2>핸드폰</h2></td>
@@ -123,15 +129,15 @@
             <tbody>
                 <tr class="dot_line">
                     <td class="fixed_join">결제방법</td>
-                    <td th:utext="${myOrderInfo.pay_method}"></td>
+                    <td th:utext="${myOrderInfo.payMethod}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">결제카드</td>
-                    <td th:text="${myOrderInfo.card_com_name}"></td>
+                    <td th:text="${myOrderInfo.cardComName}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">할부기간</td>
-                    <td th:text="${myOrderInfo.card_pay_month}"></td>
+                    <td th:text="${myOrderInfo.cardPayMonth}"></td>
                 </tr>
             </tbody>
         </table>

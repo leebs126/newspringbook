@@ -7,7 +7,7 @@
 </head>
 <body>
 <section>
-<script th:src="@{/js/cart.js}"></script>
+<script th:src="@{/js/cart.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
 
 <div th:unless="${session.cartMap != null}">
 	<table class="list_view">
@@ -28,7 +28,7 @@
             <td class="fixed">구분</td>
             <td colspan="2" class="fixed">상품명</td>
             <td>정가</td>
-            <td>판매가</td>
+            <td>판매가(10%할인)</td>
             <td>수량</td>
             <td>합계</td>
             <td>주문</td>
@@ -38,92 +38,92 @@
 	<form name="frm_order_all_cart">
     <tr th:each="item, iterStat : ${cartMap.myGoodsList}">
         <th:block th:with="cart=${myCartList[iterStat.index]}">
-                <td>
-                    <input type="checkbox" name="checked_goods"
-                           th:value="${item.goods_id}" checked
-                           th:onclick="'calcGoodsPrice(' + ${item.goods_sales_price} + ', this)'"/>
-                </td>
-                <td class="goods_image">
-                    <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
-                        <img width="75" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" />
-                    </a>
-                </td>
-                <td>
-                    <h2><a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" th:text="${item.goods_title}"></a></h2>
-                </td>
-                <td class="price" th:text="${item.goods_price} + '원'"></td>
-                <td>
-                    <!--<strong th:text="${#numbers.formatDecimal(item.goods_sales_price * 0.9, 0, 'COMMA')} + '원(10%할인)'"></strong>-->
-					<strong th:text="${item.goods_sales_price * 0.9} + '원(10%할인)'"></strong>
-                </td>
-                <td>
-                    <input type="text" id="cart_goods_qty" name="cart_goods_qty" size="3" th:value="${cart.cart_goods_qty}" />
-                    <br/>
-                    <a th:href="'javascript:modify_cart_qty(' + ${item.goods_id} + ',' + ${item.goods_sales_price*0.9} + ',' + ${iterStat.index} + ')'">
-                        <img width="25" src="/image/btn_modify_qty.jpg" alt="" />
-                    </a>
-                </td>
-                <td>
-                    <!--<strong th:text="${#numbers.formatDecimal(item.goods_sales_price*0.9*cart.cart_goods_qty, 0, 'COMMA')} + '원'"></strong>-->
-					<strong th:text="${item.goods_sales_price*0.9*cart.cart_goods_qty} + '원'"></strong>
-                </td>
-                <td>
-                    <a th:href="'javascript:fn_order_each_goods(' + ${item.goods_id} + ', \'' + ${item.goods_title} + '\', ' + ${item.goods_sales_price} + ', \'' + ${item.goods_fileName} + '\')'">
-                        <img width="75" src="/image/btn_order.jpg" alt="" />
-                    </a>
-                    <br/>
-                    <a href="#"><img width="75" src="/image/btn_order_later.jpg" alt="" /></a><br/>
-                    <a href="#"><img width="75" src="/resources/image/btn_add_list.jpg" alt="" /></a><br/>
-                    <a th:href="'javascript:delete_cart_goods(' + ${cart.cart_id} + ')'">
-                        <img width="75" src="/image/btn_delete.jpg" alt="" />
-                    </a>
-                </td>
+            <td>
+                <input type="checkbox" name="checked_goods"
+                       th:value="${item.goodsId}" checked
+                       th:onclick="'calcGoodsPrice(' + ${item.goodsPrice} + ', this)'"/>
+            </td>
+            <td class="goods_image">
+                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goodsId})}">
+                    <img width="75" th:src="@{/thumbnails.do(goodsId=${item.goodsId},fileName=${item.goodsFileName})}" />
+                </a>
+            </td>
+            <td>
+                <h2><a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}" th:text="${item.goodsTitle}"></a></h2>
+            </td>
+            <td class="price" th:text="${item.goodsPrice} + '원'"></td>
+            <td>
+                <!--<strong th:text="${#numbers.formatDecimal(item.goods_sales_price * 0.9, 0, 'COMMA')} + '원(10%할인)'"></strong>-->
+				<strong th:text="${item.goodsSalesPrice} + '원'"></strong>
+            </td>
+            <td>
+                <input type="text" id="cartGoodsQty" name="cartGoodsQty" size="3" th:value="${cart.cartGoodsQty}" />
+                <br/>
+                <a th:href="'javascript:modify_cart_qty(' + ${item.goodsId} + ',' + ${item.goodsSalesPrice} + ',' + ${iterStat.index} + ')'">
+                    <img width="25" src="/image/btn_modify_qty.jpg" alt="" />
+                </a>
+            </td>
+            <td>
+                <!--<strong th:text="${#numbers.formatDecimal(item.goods_sales_price*0.9*cart.cart_goods_qty, 0, 'COMMA')} + '원'"></strong>-->
+				<strong th:text="${item.goodsSalesPrice * cart.cartGoodsQty} + '원'"></strong>
+            </td>
+            <td>
+                <a th:href="'javascript:fn_order_each_goods(' + ${item.goodsId} + ', \'' + ${item.goodsTitle} + '\', ' + ${item.goodsPrice} + ',' + ${item.goodsSalesPrice} + ', \'' + ${item.goodsFileName} + '\')'">
+                    <img width="75" src="/image/btn_order.jpg" alt="" />
+                </a>
+                <br/>
+                <a href="#"><img width="75" src="/image/btn_order_later.jpg" alt="" /></a><br/>
+                <a href="#"><img width="75" src="/resources/image/btn_add_list.jpg" alt="" /></a><br/>
+                <a th:href="'javascript:delete_cart_goods(' + ${cart.cartId} + ')'">
+                    <img width="75" src="/image/btn_delete.jpg" alt="" />
+                </a>
+            </td>
 	    </tr>
 	</form>
 	</th:block>
     </tbody>
 </table>
-</div>
+
 <br/><br/>
 
 <!-- 요약 정보 -->
 <table width="80%" class="list_view" style="background:#cacaff">
     <tbody>
         <tr align="center" class="fixed">
-            <td class="fixed">총 상품수</td>
-            <td>총 상품금액</td>
+            <td class="fixed">총상품수</td>
+            <td>총상품금액</td>
             <td></td>
-            <td>총 배송비</td>
+            <td>총배송비</td>
             <td></td>
-            <td>총 할인 금액</td>
+            <td>총할인금액</td>
             <td></td>
-            <td>최종 결제금액</td>
+            <td>최종결제금액</td>
         </tr>
         <tr align="center">
             <td>
-                <p id="p_totalOrderGoodsQty" th:text="${session.totalOrderGoodsQty} + '개'"></p>
-                <input id="h_totalOrderGoodsQty" type="hidden" th:value="${session.totalOrderGoodsQty}" />
+                <p id="p_totalOrderGoodsQty" th:text="${totalOrderGoodsQty} + '개'"></p>
+                <input id="h_totalOrderGoodsQty" type="hidden" th:value="${totalOrderGoodsQty}" />
             </td>
             <td>
                 <!--<p id="p_totalGoodsPrice" th:text="${#numbers.formatDecimal(totalGoodsPrice, 0, 'COMMA')} + '원'"></p>-->
-				<p id="p_totalOrderGoodsPrice" th:text="${session.totalOrderGoodsPrice} + '원'"></p>
-				<input id="h_totalGoodsPrice" type="hidden" th:value="${session.totalOrderGoodsPrice}" />
+				<p id="p_totalOrderGoodsPrice" th:text="${totalOrderGoodsPrice} + '원'"></p>
+				<input id="h_totalGoodsPrice" type="hidden" th:value="${totalOrderGoodsPrice}" />
             </td>
             <td><img width="25" src="/image/plus.jpg" alt="" /></td>
             <td>
-                <p id="p_totalDeliveryPrice" th:text="${session.totalDeliveryPrice} + '원'"></p>
-                <input id="h_totalDeliveryPrice" type="hidden" th:value="${session.totalDeliveryPrice}" />
+                <p id="p_totalDeliveryPrice" th:text="${totalDeliveryPrice} + '원'"></p>
+                <input id="h_totalDeliveryPrice" type="hidden" th:value="${totalDeliveryPrice}" />
             </td>
             <td><img width="25" src="/resources/image/minus.jpg" alt="" /></td>
             <td>
-                <p id="p_totalDiscountedPrice" th:text="${session.totalDiscountedPrice} + '원'"></p>
-                <input id="p_totalDiscountedPrice" type="hidden" th:value="${session.totalDiscountedPrice}" />
+                <p id="p_totalDiscountedPrice" th:text="${totalDiscountedPrice} + '원'"></p>
+                <input id="p_totalDiscountedPrice" type="hidden" th:value="${totalDiscountedPrice}" />
             </td>
             <td><img width="25" src="/image/equal.jpg" alt="" /></td>
             <td>
                 <!--<p id="p_final_totalPrice" th:text="${#numbers.formatDecimal(totalGoodsPrice + totalDeliveryPrice - totalDiscountedPrice, 0, 'COMMA')} + '원'"></p>-->
-				<p id="p_final_totalOrderPrice" th:text="${session.finalTotalOrderPrice} + '원'"></p>
-                <input id="h_final_totalOrderPrice" type="hidden" th:value="${session.finalTotalOrderPrice}" />
+				<p id="p_final_totalOrderPrice" th:text="${finalTotalOrderPrice} + '원'"></p>
+                <input id="h_final_totalOrderPrice" type="hidden" th:value="${finalTotalOrderPrice}" />
             </td>
         </tr>
     </tbody>
@@ -138,6 +138,7 @@
         <img width="75" src="/image/btn_shoping_continue.jpg" alt="" />
     </a>
 </center>
+</div>
 </section>
 </body>
 </html>

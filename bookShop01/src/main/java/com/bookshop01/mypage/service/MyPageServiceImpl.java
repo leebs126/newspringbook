@@ -32,8 +32,8 @@ public class MyPageServiceImpl  implements MyPageService {
 	}
 	
 	@Override
-	public List findMyOrderInfo(String order_id) throws Exception{
-		return myPageDAO.selectMyOrderInfo(order_id);
+	public List findMyOrderInfo(String orderId) throws Exception{
+		return myPageDAO.selectMyOrderInfo(orderId);
 	}
 	
 	@Override
@@ -49,18 +49,18 @@ public class MyPageServiceImpl  implements MyPageService {
 	
 	@Override
 	public MemberVO  modifyMyInfo(Map memberMap) throws Exception{
-		 String member_id=(String)memberMap.get("member_id");
+		 String memberId=(String)memberMap.get("memberId");
 		 myPageDAO.updateMyInfo(memberMap);
-		 return myPageDAO.selectMyDetailInfo(member_id);
+		 return myPageDAO.selectMyDetailInfo(memberId);
 	}
 	
 	@Override
-	public void cancelOrder(String order_id) throws Exception{
-		myPageDAO.updateMyOrderCancel(order_id);
+	public void cancelOrder(String orderId) throws Exception{
+		myPageDAO.updateMyOrderCancel(orderId);
 	}
 	
 	@Override
-	public MemberVO myDetailInfo(String member_id) throws Exception{
-		return myPageDAO.selectMyDetailInfo(member_id);
+	public MemberVO myDetailInfo(String memberId) throws Exception{
+		return myPageDAO.selectMyDetailInfo(memberId);
 	}
 }

@@ -9,7 +9,7 @@
 <body>
 <section>
 	<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
-	<script th:src="@{/js/mypage.js}"></script>
+	<script th:src="@{/js/mypage.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
   <h3>내 상세 정보</h3>
 
   <form name="frm_mod_member" method="post" th:action="@{/mypage/modifyMyInfo.do}" th:with="memberInfo=${session.memberInfo}">
@@ -17,25 +17,25 @@
       <table>
         <tr>
           <td class="fixed_join">아이디</td>
-          <td><input type="text" name="member_id" th:value="${memberInfo.member_id}" disabled /></td>
+          <td><input type="text" name="member_id" th:value="${memberInfo.memberId}" disabled /></td>
         </tr>
         <tr>
           <td class="fixed_join">비밀번호</td>
-          <td><input type="password" name="member_pw" th:value="${memberInfo.member_pw}" /></td>
-          <td><input type="button" value="수정하기" onclick="fn_modify_member_info('member_pw')" /></td>
+          <td><input type="password" name="member_pw" th:value="${memberInfo.memberPw}" /></td>
+          <td><input type="button" value="수정하기" onclick="fn_modify_member_info('memberPw')" /></td>
         </tr>
         <tr>
           <td class="fixed_join">이름</td>
-          <td><input type="text" name="member_name" th:value="${memberInfo.member_name}" disabled /></td>
+          <td><input type="text" name="member_name" th:value="${memberInfo.memberName}" disabled /></td>
         </tr>
         <tr>
           <td class="fixed_join">성별</td>
           <td>
-            <input type="radio" name="member_gender" value="102" th:checked="${memberInfo.member_gender == '102'}" />여성
+            <input type="radio" name="member_gender" value="102" th:checked="${memberInfo.memberGender == '102'}" />여성
             <span style="padding-left:30px"></span>
-            <input type="radio" name="member_gender" value="101" th:checked="${memberInfo.member_gender == '101'}" />남성
+            <input type="radio" name="member_gender" value="101" th:checked="${memberInfo.memberGender == '101'}" />남성
           </td>
-          <td><input type="button" value="수정하기" onclick="fn_modify_member_info('member_gender')" /></td>
+          <td><input type="button" value="수정하기" onclick="fn_modify_member_info('memberGender')" /></td>
         </tr>
 		<tr>
 		  <td class="fixed_join">법정생년월일</td>
@@ -43,32 +43,32 @@
 		    <!-- 연도 -->
 		    <select name="member_birth_y">
 		      <th:block th:each="i : ${#numbers.sequence(1921, 2025)}">
-		        <option th:value="${i}" th:text="${i}" th:selected="${member_birth_y == i}"></option>
+		        <option th:value="${i}" th:text="${i}" th:selected="${memberBirthY == i}"></option>
 		      </th:block>
 		    </select>년
 
 		    <!-- 월 -->
 		    <select name="member_birth_m">
 		      <th:block th:each="i : ${#numbers.sequence(1, 12)}">
-		        <option th:value="${i}" th:text="${i}" th:selected="${member_birth_m == i}"></option>
+		        <option th:value="${i}" th:text="${i}" th:selected="${memberBirthM == i}"></option>
 		      </th:block>
 		    </select>월
 
 		    <!-- 일 -->
 		    <select name="member_birth_d">
 		      <th:block th:each="i : ${#numbers.sequence(1, 31)}">
-		        <option th:value="${i}" th:text="${i}" th:selected="${member_birth_d == i}"></option>
+		        <option th:value="${i}" th:text="${i}" th:selected="${memberBirthD == i}"></option>
 		      </th:block>
 		    </select>일
 
 		    <span style="padding-left:50px"></span>
 		    <input type="radio" name="member_birth_gn" value="2"
-		           th:checked="${memberInfo.member_birth_gn == '2'}" />양력
+		           th:checked="${memberInfo.memberBirthGn == '2'}" />양력
 		    <input type="radio" name="member_birth_gn" value="1"
-		           th:checked="${memberInfo.member_birth_gn == '1'}" />음력
+		           th:checked="${memberInfo.memberBirthGn == '1'}" />음력
 		  </td>
 		  <td>
-		    <input type="button" value="수정하기" onclick="fn_modify_member_info('member_birth')" />
+		    <input type="button" value="수정하기" onclick="fn_modify_member_info('memberBirth')" />
 		  </td>
 		</tr>
 
@@ -123,7 +123,7 @@
 		        - <input type="text" name="hp3" size="4" th:value="${memberInfo.hp3}" />
 		        <br><br>
 		        <input type="checkbox" name="smssts_yn" value="Y"
-		               th:checked="${memberInfo.smssts_yn}" />
+		               th:checked="${memberInfo.smsstsYn}" />
 		        쇼핑몰에서 발송하는 SMS 소식을 수신합니다.
 		    </td>
 		    <td>
@@ -153,7 +153,7 @@
 		        </select>
 		        <br><br>
 		        <input type="checkbox" name="emailsts_yn" value="Y"
-		               th:checked="${memberInfo.emailsts_yn} == true" />
+		               th:checked="${memberInfo.emailstsYn}" />
 		       			 쇼핑몰에서 발송하는 e-mail을 수신합니다.
 		    </td>
 		    <td><input type="button" value="수정하기" onclick="fn_modify_member_info('email')" /></td>

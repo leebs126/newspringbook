@@ -62,10 +62,10 @@ function fn_modify_member_info(attribute){
 	// alert(member_id);
 	// alert("mod_type:"+mod_type);
 		var frm_mod_member=document.frm_mod_member;
-		if(attribute=='member_pw'){
+		if(attribute=='memberPw'){
 			value=frm_mod_member.member_pw.value;
 			//alert("member_pw:"+value);
-		}else if(attribute=='member_gender'){
+		}else if(attribute=='memberGender'){
 			var member_gender=frm_mod_member.member_gender;
 			for(var i=0; member_gender.length;i++){
 			 	if(member_gender[i].checked){
@@ -74,7 +74,7 @@ function fn_modify_member_info(attribute){
 				} 
 			}
 			
-		}else if(attribute=='member_birth'){
+		}else if(attribute=='memberBirth'){
 			var member_birth_y=frm_mod_member.member_birth_y;
 			var member_birth_m=frm_mod_member.member_birth_m;
 			var member_birth_d=frm_mod_member.member_birth_d;

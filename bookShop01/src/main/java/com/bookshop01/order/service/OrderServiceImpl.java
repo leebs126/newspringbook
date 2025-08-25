@@ -28,7 +28,7 @@ public class OrderServiceImpl implements OrderService {
 		int orderId= orderDAO.selectOrderId();  //주문번호를 얻는다.
 		for(int i=0; i<myOrderList.size();i++){
 			OrderVO orderVO =(OrderVO)myOrderList.get(i);
-			orderVO.setOrder_id(orderId);
+			orderVO.setOrderId(orderId);
 			orderDAO.insertNewOrder(orderVO);
 			
 			//장바구니에서 주문 상품 제거한다.
@@ -37,8 +37,8 @@ public class OrderServiceImpl implements OrderService {
 		return orderId;
 	}	
 	
-	public OrderVO findMyOrder(String order_id) throws Exception{
-		return orderDAO.findMyOrder(order_id);
+	public OrderVO findMyOrder(String orderId) throws Exception{
+		return orderDAO.findMyOrder(orderId);
 	}
 
 }

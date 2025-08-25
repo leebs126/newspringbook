@@ -8,6 +8,14 @@
 </head>
 <body>
 <section>
+<style>
+.even-row {
+  background-color: rgb(128, 255, 0); /* 연한 회색 */
+}
+.odd-row {
+  background-color: rgb(0, 255, 255); /* 흰색 */
+}
+</style>
 <script  th:inline="javascript">
    function search_order_history(fixedSearchPeriod){
        const formObj = document.createElement("form");
@@ -26,8 +34,8 @@
        if(answer){
            const formObj = document.createElement("form");
            const i_order_id = document.createElement("input");
-           i_order_id.name = "order_id";
-           i_order_id.value = order_id;
+           i_order_id.name = "orderId";
+           i_order_id.value = orderId;
            formObj.appendChild(i_order_id);
            document.body.appendChild(formObj);
            formObj.method = "post";
@@ -115,44 +123,49 @@
           <th>수령자</th>
           <th>주문취소</th>
         </tr>
-		<tr th:each="entry : ${myOrderHistMap}">
-				  <td th:text="${entry.key}">주문번호</td>
-				  <th:block th:with="orderList=${entry.value}">
-				  <td th:if="${#lists.size(orderList) > 0}" th:text="${orderList[0].pay_order_time}">주문일자</td>
-				  <td align='left' style="padding-left:30px;">
-				    <ul>
-				      <li th:each="item : ${entry.value}">
-				        <span th:text="${item.goods_title}"></span> /
-				        <span th:text="${item.order_goods_qty}"></span>개
-				      </li>
-				    </ul>
-				  </td>
-				  <td>
-	  				<div th:each="item2 : ${orderList}">
-	  		              <span th:text="${item2.goods_sales_price * item2.order_goods_qty + '원 / ' + item2.order_goods_qty + '개'}"></span><br/>
-	  	            </div>
-	  	          </td>
-				  <td>
-					<strong>
-						<span th:switch="${orderList[0].delivery_state}">
-			                <span th:case="'delivery_prepared'">배송준비중</span>
-			                <span th:case="'delivering'">배송중</span>
-			                <span th:case="'finished_delivering'">배송완료</span>
-			                <span th:case="'cancel_order'">주문취소</span>
-			                <span th:case="'returning_goods'">반품완료</span>
-			                <span th:case="*">기타</span>
-			            </span>
-					</strong>
-				  <td><strong th:text="${orderList[0].orderer_name}"></strong></td>
-				  <td><strong th:text="${orderList[0].receiver_name}"></strong></td>
-				  <td>
-		            <input type="button" th:if="${orderList[0].delivery_state == 'delivery_prepared'}"
-		                   th:onclick="'fn_cancel_order(' + ${entry.key} + ')'" value="주문취소"/>
-		            <input type="button" th:if="${orderList[0].delivery_state != 'delivery_prepared'}"
-		                   value="주문취소" disabled/>
-		          </td>
-				  </th:block>
-				</tr>
+		<tr th:each="entry, iterStat : ${myOrderHistMap}"
+			th:class="${iterStat.even} ? 'even-row' : 'odd-row'">
+			  <td>
+				  <a th:href="@{/mypage/myOrderDetail.do(orderId=${entry.key})}">
+	  			    <span th:text="${entry.key}"></span>
+	  			  </a>
+			 </td>
+			  <th:block th:with="orderList=${entry.value}">
+			  <td th:if="${#lists.size(orderList) > 0}" th:text="${orderList[0].payOrderTime}">주문일자</td>
+			  <td align='left' style="padding-left:30px;">
+			    <ul>
+			      <li th:each="item : ${entry.value}">
+			        <span th:text="${item.goodsTitle}"></span> /
+			        <span th:text="${item.orderGoodsQty}"></span>개
+			      </li>
+			    </ul>
+			  </td>
+			  <td>
+				<div th:each="item2 : ${orderList}">
+		              <span th:text="${item2.goodsSalesPrice * item2.orderGoodsQty + '원 / ' + item2.orderGoodsQty + '개'}"></span><br/>
+	            </div>
+	          </td>
+			  <td>
+				<strong>
+					<span th:switch="${orderList[0].deliveryState}">
+		                <span th:case="'delivery_prepared'">배송준비중</span>
+		                <span th:case="'delivering'">배송중</span>
+		                <span th:case="'finished_delivering'">배송완료</span>
+		                <span th:case="'cancel_order'">주문취소</span>
+		                <span th:case="'returning_goods'">반품완료</span>
+		                <span th:case="*">기타</span>
+		            </span>
+				</strong>
+			  <td><strong th:text="${orderList[0].ordererName}"></strong></td>
+			  <td><strong th:text="${orderList[0].receiverName}"></strong></td>
+			  <td>
+	            <input type="button" th:if="${orderList[0].deliveryState == 'delivery_prepared'}"
+	                   th:onclick="'fn_cancel_order(' + ${entry.key} + ')'" value="주문취소"/>
+	            <input type="button" th:if="${orderList[0].deliveryState != 'delivery_prepared'}"
+	                   value="주문취소" disabled/>
+	          </td>
+			  </th:block>
+		</tr>
       </tbody>
   </table>
   <!-- 페이징 -->

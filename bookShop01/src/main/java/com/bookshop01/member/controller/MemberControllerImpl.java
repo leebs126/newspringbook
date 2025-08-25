@@ -41,7 +41,6 @@ public class MemberControllerImpl extends BaseController implements MemberContro
 							                  RedirectAttributes redirectAttributes) throws Exception {
 		ModelAndView mav = new ModelAndView();
 		 memberVO = memberService.login(loginMap);
-		 memberVO.getMemberId();
 		if(memberVO!= null && memberVO.getMemberId()!=null){
 			HttpSession session=request.getSession();
 			session=request.getSession();

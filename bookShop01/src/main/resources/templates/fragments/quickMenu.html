@@ -12,11 +12,11 @@
                 <div th:if="${#lists.isEmpty(session.quickGoodsList)}"><strong>상품이 없습니다.</strong></div>
                 <form name="frm_sticky">
                     <div th:each="item, iter : ${session.quickGoodsList}">
-                        <input type="hidden" name="h_goods_id" th:value="${item.goods_id}" />
-                        <input type="hidden" name="h_goods_fileName" th:value="${item.goods_fileName}" />
+                        <input type="hidden" name="h_goods_id" th:value="${item.goodsId}" />
+                        <input type="hidden" name="h_goods_fileName" th:value="${item.goodsFileName}" />
                         <a th:if="${iter.index == 0}" href="javascript:goodsDetail();">
                             <img width="75" height="95" id="img_sticky" 
-                                 th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" />
+                                 th:src="@{/thumbnails.do(goodsId=${item.goodsId},fileName=${item.goodsFileName})}" />
                         </a>
                     </div>
                 </form>

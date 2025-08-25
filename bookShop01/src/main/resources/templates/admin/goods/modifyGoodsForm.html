@@ -9,7 +9,7 @@
 <section>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script th:inline="javascript">
-    function fn_modify_goods(goods_id, attribute) {
+    function fn_modify_goods(goodsId, attribute) {
       var frm_mod_goods = document.frm_mod_goods;
       var value = frm_mod_goods[attribute]?.value || '';
       
@@ -17,12 +17,12 @@
         type: "post",
         url: '/admin/goods/modifyGoodsInfo.do',
         data: {
-          goods_id: goods_id,
+          goodsId: goodsId,
           attribute: attribute,
           value: value
         },
         success: function (data) {
-          if (data.trim() === 'mod_success') {
+          if (data.trim() === 'modSuccess') {
             alert("상품 정보를 수정했습니다.");
           } else {
             alert("다시 시도해 주세요.");
@@ -50,7 +50,7 @@
       container.insertAdjacentHTML("beforeend",
         `<br><input type='file' name='detail_image${cnt}' id='detail_image${cnt}' onchange="readURL(this, 'previewImage${cnt}')" />
          <img id='previewImage${cnt}' width='80%' />
-         <input type='button' value='상세이미지추가' onclick="addNewImageFile('detail_image${cnt}', [[${ goodsMap.imageFileList[0].goods_id}]], 'detail_image')" />`
+         <input type='button' value='상세이미지추가' onclick="addNewImageFile('detail_image${cnt}', [[${ goodsMap.imageFileList[0].goodsId}]], 'detail_image')" />`
       );
       cnt++;
     }
@@ -74,10 +74,10 @@
 	  }
 	
 	function onClickModifyImageFile(button) {
-	  const goodsId = button.getAttribute('data-goods-id');
-	  const imageId = button.getAttribute('data-image-id');
-	  const fileType = button.getAttribute('data-file-type');
-	  const fileId = button.getAttribute('data-file-id');
+	  const goodsId = button.getAttribute('data-goodsId');
+	  const imageId = button.getAttribute('data-imageId');
+	  const fileType = button.getAttribute('data-fileType');
+	  const fileId = button.getAttribute('data-fileId');
 	  modifyImageFile(fileId, goodsId, imageId, fileType);
 	}
 
@@ -87,8 +87,8 @@
 	  var form = $('#FILE_FORM')[0];
 	    var formData = new FormData(form);
 	    formData.append("fileName", $('#'+fileId)[0].files[0]);
-	    formData.append("goods_id", goods_id);
-	    formData.append("image_id", image_id);
+	    formData.append("goodsId", goodsId);
+	    formData.append("imageId", imageId);
 	    formData.append("fileType", fileType);
 	    
 	    $.ajax({
@@ -114,15 +114,15 @@
 
   
 
-    function deleteImageFile(goods_id, image_id, imageFileName, trId) {
+    function deleteImageFile(goodsId, imageId, imageFileName, trId) {
       const row = document.getElementById(trId);
 
       $.ajax({
         type: "post",
         url: '/admin/goods/removeGoodsImage.do',
         data: {
-          goods_id: goods_id,
-          image_id: image_id,
+          goodsId: goodsId,
+          imageId: imageId,
           imageFileName: imageFileName
         },
         success: function () {
@@ -152,166 +152,166 @@
 	         <tr>
 	           <td>상품분류</td>
 	           <td>
-	             <select name="goods_sort" 
-	                     th:value="${goodsMap['goods'].goods_sort}">
+	             <select name="goodsSort" 
+	                     th:value="${goodsMap['goods'].goodsSort}">
 	               <option value="컴퓨터와 인터넷"
-	                       th:selected="${goodsMap['goods'].goods_sort == '컴퓨터와 인터넷'}">
+	                       th:selected="${goodsMap['goods'].goodsSort == '컴퓨터와 인터넷'}">
 	                 컴퓨터와 인터넷
 	               </option>
 	               <option value="디지털 기기"
-	                       th:selected="${goodsMap['goods'].goods_sort == '디지털 기기'}">
+	                       th:selected="${goodsMap['goods'].goodsSort == '디지털 기기'}">
 	                 디지털 기기
 	               </option>
 	             </select>
 	           </td>
 	           <td>
-	             <input type="button" value="수정반영"
-	                    th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goods_id} + '\', \'goods_sort\')'" />
+	             <input type="button" th:value="수정반영"
+	                    th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goodsId} + '\', \'goodsSort\')'" />
 	           </td>
 	         </tr>
 
 	         <tr>
 	           <td>상품이름</td>
 	           <td>
-	             <input type="text" name="goods_title"  th:value="${goodsMap['goods'].goods_title}" />
+	             <input type="text" name="goodsTitle"  th:value="${goodsMap['goods'].goodsTitle}" />
 	           </td>
 	           <td>
 	             <input type="button" value="수정반영"
-	                    th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goods_id} + '\', \'goods_title\')'" />
+	                    th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goodsId} + '\', \'goodsTitle\')'" />
 	           </td>
 	         </tr>
 
 			 <tr>
 	 			<td >저자</td>
-	 			<td><input name="goods_writer" type="text" size="40"  th:value="${goodsMap['goods'].goods_writer }" /></td>
+	 			<td><input name="goodsWriter" type="text" size="40"  th:value="${goodsMap['goods'].goodsWriter }" /></td>
 	 							<td>
 	 			 <input  type="button" value="수정반영"  
-				 			th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goods_id} + '\', \'goods_writer\')'" />
+				 			th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goodsId} + '\', \'goodsWriter\')'" />
 	 			</td>
 	 			
 	 		</tr>
 	 		<tr>
 	 			<td >출판사</td>
-	 			<td><input name="goods_publisher" type="text" size="40"  th:value="${goodsMap['goods'].goods_publisher }" /></td>
+	 			<td><input name="goodsPublisher" type="text" size="40"  th:value="${goodsMap['goods'].goodsPublisher }" /></td>
 	 		     <td>
-	 			  <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goods_id }','goods_publisher')"/>
+	 			  <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goodsId }','goodsPublisher')"/>
 	 			</td>
 	 			
 	 		</tr>
 	 		<tr>
 	 			<td >상품정가</td>
-	 			<td><input name="goods_price" type="text" size="40" th:value="${goodsMap['goods'].goods_price }" /></td>
+	 			<td><input name="goodsPrice" type="text" size="40" th:value="${goodsMap['goods'].goodsPrice }" /></td>
 	 			<td>
-	 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goods_id }','goods_price')"/>
+	 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goodsId }','goodsPrice')"/>
 	 			</td>
 	 			
 	 		</tr>
 			 		
-			 		<tr>
-			 			<td >상품판매가격</td>
-			 			<td><input name="goods_sales_price" type="text" size="40" th:value="${goodsMap['goods'].goods_sales_price }" /></td>
-			 			<td>
-			 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goods_id }','goods_sales_price')"/>
-			 			</td>
-			 			
-			 		</tr>
-			 		
-			 		
-			 		<tr>
-			 			<td >상품 구매 포인트</td>
-			 			<td><input name="goods_point" type="text" size="40" th:value="${goodsMap['goods'].goods_point }" /></td>
-			 			<td>
-							<input type="button" value="수정반영"
-							       th:onclick="|fn_modify_goods('${goodsMap['goods'].goods_id}', 'goods_point')|"/>
-			 			</td>
+		 		<tr>
+		 			<td >상품판매가격</td>
+		 			<td><input name="goodsSalesPrice" type="text" size="40" th:value="${goodsMap['goods'].goodsSalesPrice }" /></td>
+		 			<td>
+		 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goodsId }','goodsSalesPrice')"/>
+		 			</td>
+		 			
+		 		</tr>
+		 		
+		 		
+		 		<tr>
+		 			<td >상품 구매 포인트</td>
+		 			<td><input name="goodsPoint" type="text" size="40" th:value="${goodsMap['goods'].goodsPoint }" /></td>
+		 			<td>
+						<input type="button" value="수정반영"
+						       th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}', 'goodsPoint')|"/>
+		 			</td>
 
-			 		</tr>
+		 		</tr>
 
-			 		<tr>
-			 			<td >상품출판일</td>
-			 			<td>
-			 			  <input  name="goods_published_date"  type="date"  th:value="${goodsMap['goods'].goods_published_date }" />
-			 			</td>
-			 			<td>
-							<input type="button" value="수정반영"
-							       th:onclick="|fn_modify_goods(${goodsMap['goods'].goods_id}, 'goods_published_date')|"/>
-			 			</td>
-			 		</tr>
-					<tr>
-			 			<td >상품입고일</td>
-			 			<td>
-			 			  <input  name="goods_credate"  type="date"  th:value="${goodsMap['goods'].goods_credate }" />
-			 			</td>
-			 			<td>
-							<input type="button" value="수정반영"
-							       th:onclick="|fn_modify_goods(${goodsMap['goods'].goods_id}, 'goods_credate')|"/>
-			 			</td>
-			 		</tr>
-			 		
-			 		<tr>
-			 			<td >상품 총 페이지수</td>
-			 			<td><input name="goods_total_page" type="text" size="40"  th:value="${goodsMap['goods'].goods_total_page }"/></td>
-			 			<td>
-			 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goods_id }','goods_total_page')"/>
-			 			</td>
+		 		<tr>
+		 			<td >상품출판일</td>
+		 			<td>
+		 			  <input  name="goodsPublishedDate"  type="date"  th:value="${goodsMap['goods'].goodsPublishedDate }" />
+		 			</td>
+		 			<td>
+						<input type="button" value="수정반영"
+						       th:onclick="|fn_modify_goods(${goodsMap['goods'].goodsId}, 'goodsPublishedDate')|"/>
+		 			</td>
+		 		</tr>
+				<tr>
+		 			<td >상품입고일</td>
+		 			<td>
+		 			  <input  name="goodsCredate"  type="date"  th:value="${goodsMap['goods'].goodsCredate }" />
+		 			</td>
+		 			<td>
+						<input type="button" value="수정반영"
+						       th:onclick="|fn_modify_goods(${goodsMap['goods'].goodsId}, 'goodsCredate')|"/>
+		 			</td>
+		 		</tr>
+		 		
+		 		<tr>
+		 			<td >상품 총 페이지수</td>
+		 			<td><input name="goodsTotalPage" type="text" size="40"  th:value="${goodsMap['goods'].goodsTotalPage }"/></td>
+		 			<td>
+		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods(${goodsMap['goods'].goodsId},'goodsTotalPage')|"/>
+		 			</td>
 
-			 		</tr>
-			 		
-			 		<tr>
-			 			<td >ISBN</td>
-			 			<td><input name="goods_isbn" type="text" size="40" th:value="${goodsMap['goods'].goods_isbn }" /></td>
-			 			<td>
-			 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goods_id }','goods_isbn')"/>
-			 			</td>
+		 		</tr>
+		 		
+		 		<tr>
+		 			<td >ISBN</td>
+		 			<td><input name="goodsIsbn" type="text" size="40" th:value="${goodsMap['goods'].goodsIsbn}" /></td>
+		 			<td>
+		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId }','goodsIsbn')|"/>
+		 			</td>
 
-			 		</tr>
-			 		<tr>
-			 			<td >상품 배송비</td>
-			 			<td><input name="goods_delivery_price" type="text" size="40"  th:value="${goodsMap['goods'].goods_delivery_price }"/></td>
-			 			<td>
-			 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goods_id }','goods_delivery_price')"/>
-			 			</td>
+		 		</tr>
+		 		<tr>
+		 			<td >상품 배송비</td>
+		 			<td><input name="goodsDeliveryPrice" type="text" size="40"  th:value="${goodsMap['goods'].goodsDeliveryPrice }"/></td>
+		 			<td>
+		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId }','goodsDeliveryPrice')|"/>
+		 			</td>
 
-			 		</tr>
-			 		<tr>
-			 			<td >상품 도착 예정일</td>
-			 			<td>
-			 			  <input name="goods_delivery_date" type="date"  th:value="${goodsMap['goods'].goods_delivery_date }" />
-			 			  </td>
-			 			<td>
-			 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goods_id }','goods_delivery_date')"/>
-			 			</td>
+		 		</tr>
+		 		<tr>
+		 			<td >상품 도착 예정일</td>
+		 			<td>
+		 			  <input name="goodsDeliveryDate" type="date"  th:value="${goodsMap['goods'].goodsDeliveryDate }" />
+		 			  </td>
+		 			<td>
+		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}','goodsDeliveryDate')|"/>
+		 			</td>
 
-			 		</tr>
-					<tr>
-					  <td>상품종류</td>
-					  <td>
-					    <select name="goods_status">
-					      <option value="bestseller"
-					              th:selected="${goodsMap['goods'].goods_status == 'bestseller'}">베스트셀러</option>
-					      <option value="steadyseller"
-					              th:selected="${goodsMap['goods'].goods_status == 'steadyseller'}">스테디셀러</option>
-					      <option value="newbook"
-					              th:selected="${goodsMap['goods'].goods_status == 'newbook'}">신간</option>
-					      <option value="on_sale"
-					              th:selected="${goodsMap['goods'].goods_status == 'on_sale'}">판매중</option>
-					      <option value="buy_out"
-					              th:selected="${goodsMap['goods'].goods_status == 'buy_out'}">품절</option>
-					      <option value="out_of_print"
-					              th:selected="${goodsMap['goods'].goods_status == 'out_of_print'}">절판</option>
-					    </select>
-					    <input type="hidden" name="h_goods_status" th:value="${goodsMap['goods'].goods_status}" />
-					  </td>
-					  <td>
-					    <input type="button" value="수정반영"
-					           th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goods_id} + '\', \'goods_status\')'" />
-					  </td>
-					</tr>
-					<tr>
-					 <td colspan=3>
-					   <br>
-					 </td>
-					</tr>
+		 		</tr>
+				<tr>
+				  <td>상품종류</td>
+				  <td>
+				    <select name="goodsStatus">
+				      <option value="bestseller"
+				              th:selected="${goodsMap['goods'].goodsStatus == 'bestseller'}">베스트셀러</option>
+				      <option value="steadyseller"
+				              th:selected="${goodsMap['goods'].goodsStatus == 'steadyseller'}">스테디셀러</option>
+				      <option value="newbook"
+				              th:selected="${goodsMap['goods'].goodsStatus == 'newbook'}">신간</option>
+				      <option value="on_sale"
+				              th:selected="${goodsMap['goods'].goodsStatus == 'on_sale'}">판매중</option>
+				      <option value="buy_out"
+				              th:selected="${goodsMap['goods'].goodsStatus == 'buy_out'}">품절</option>
+				      <option value="out_of_print"
+				              th:selected="${goodsMap['goods'].goodsStatus == 'out_of_print'}">절판</option>
+				    </select>
+				    <input type="hidden" name="h_goods_status" th:value="${goodsMap['goods'].goodsStatus}" />
+				  </td>
+				  <td>
+				    <input type="button" value="수정반영"
+				           th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}', 'goodsStatus')|" />
+				  </td>
+				</tr>
+				<tr>
+				 <td colspan=3>
+				   <br>
+				 </td>
+				</tr>
 	       </table>
 	     </div>
 		 <div class="tab_content" id="tab2">
@@ -320,14 +320,14 @@
 		     <tr>
 		       <td>상품목차</td>
 		       <td>
-		         <textarea rows="100" cols="80" name="goods_contents_order"
-		                   th:text="${goodsMap['goods'].goods_contents_order}">
+		         <textarea rows="100" cols="80" name="goodsContentsOrder"
+		                   th:text="${goodsMap['goods'].goodsContentsOrder}">
 				 </textarea>
 		       </td>
 		       <td>
 		         &nbsp;&nbsp;&nbsp;&nbsp;
 		         <input type="button" value="수정반영"
-		                th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goods_id} + '\', \'goods_contents_order\')'" />
+		                th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goodsId} + '\', \'goodsContentsOrder\')'" />
 		       </td>
 		     </tr>
 		   </table>
@@ -339,13 +339,13 @@
 		       <tr>
 		         <td>상품 저자 소개</td>
 		         <td>
-		           <textarea rows="100" cols="80" name="goods_writer_intro"
-		                     th:text="${goodsMap['goods'].goods_writer_intro}"></textarea>
+		           <textarea rows="100" cols="80" name="goodsWriterIntro"
+		                     th:text="${goodsMap['goods'].goodsWriterIntro}"></textarea>
 		         </td>
 		         <td>
 		           &nbsp;&nbsp;&nbsp;&nbsp;
 		           <input type="button" value="수정반영"
-		                  th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goods_id} + '\', \'goods_writer_intro\')'" />
+		                  th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goodsId} + '\', \'goodsWriterIntro\')'" />
 		         </td>
 		       </tr>
 		     </table>
@@ -357,13 +357,13 @@
 		 	<table>
 		 		<tr>
 		 			<td>상품소개</td>
-		 			<td><textarea  rows="100" cols="80" name="goods_intro"  th:text="${goodsMap['goods'].goods_intro}">
+		 			<td><textarea  rows="100" cols="80" name="goodsIntro"  th:text="${goodsMap['goods'].goodsIntro}">
 		 			</textarea>
 		 			</td>
 		 			<td>
 		 			&nbsp;&nbsp;&nbsp;&nbsp;
 					<input type="button" value="수정반영"
-					       th:onclick="|fn_modify_goods('${goodsMap['goods'].goods_id}', 'goods_intro')|"/>
+					       th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}', 'goodsIntro')|"/>
 		 			</td>
 		 		</tr>
 		     </table>
@@ -374,12 +374,12 @@
 		 	<P>
 		 	<table>
 		 		<tr>
-		 			<td><textarea  rows="100" cols="80" name="goods_publisher_comment"  th:text="${goodsMap['goods'].goods_publisher_comment}">
+		 			<td><textarea  rows="100" cols="80" name="goodsPublisherComment"  th:text="${goodsMap['goods'].goodsPublisherComment}">
 		 			</textarea>
 		 			</td>
 		 			<td>
 		 			&nbsp;&nbsp;&nbsp;&nbsp;
-		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goods_id}', 'goods_publisher_comment')|"/>
+		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}', 'goodsPublisherComment')|"/>
 		 			</td>
 		 		</tr>
 		 </table>
@@ -390,12 +390,12 @@
 		 	 <table>
 		 		 <tr>
 		 			<td>추천사</td>
-		 			<td><textarea  rows="100" cols="80" name="goods_recommendation" th:text="${goodsMap['goods'].goods_recommendation}">
+		 			<td><textarea  rows="100" cols="80" name="goodsRecommendation" th:text="${goodsMap['goods'].goodsRecommendation}">
 		 			</textarea>
 		 			</td>
 		 			<td>
 		 			&nbsp;&nbsp;&nbsp;&nbsp;
-		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goods_id}', 'goods_recommendation')|"/>
+		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}', 'goodsRecommendation')|"/>
 		 			</td>
 		 		</tr>
 		     </table>
@@ -413,18 +413,18 @@
 		                 th:id="'file_' + ${stat.index}"
 		                 th:name="'file_' + ${stat.index}"
 		                 th:onchange="|readURL(this, 'preview${stat.index}')|"/>
-		          <input type="hidden" name="image_id" th:value="${image.image_id}"/>
+		          <input type="hidden" name="image_id" th:value="${image.imageId}"/>
 		        </td>
 		        <td>
 		          <img th:id="'preview' + ${stat.index}"
 		               width="80%"
-		               th:src="@{/download.do(goods_id=${image.goods_id}, fileName=${image.fileName})}"/>
+		               th:src="@{/download.do(goodsId=${image.goodsId}, fileName=${image.fileName})}"/>
 		        </td>
 		        <td>
 					<input type="button" value="수정반영하기"
 					       th:id="'btn_' + ${stat.index}"
-					       th:data-goods-id="${image.goods_id}"
-					       th:data-image-id="${image.image_id}"
+					       th:data-goods-id="${image.goodsId}"
+					       th:data-image-id="${image.imageId}"
 					       th:data-file-type="${image.fileType}"
 						   th:data-file-id="'file_' + ${stat.index}"
 					       onclick="onClickModifyImageFile(this)" />
@@ -432,19 +432,11 @@
 				   <input type="button" value="이미지삭제"
 				          th:if="${image.fileType != 'main_image'}"
 				          th:id="'delbtn_' + ${stat.index}"
-				          th:data-goods-id="${image.goods_id}"
-				          th:data-image-id="${image.image_id}"
+				          th:data-goods-id="${image.goodsId}"
+				          th:data-image-id="${image.imageId}"
 				          th:data-file-name="${image.fileName}"
 				          th:data-row-id="'row_' + ${stat.index}"
 				          onclick="onClickDeleteImageFile(this)" />
-	   
-					
-					<!--<input type="button" value="수정"
-					       th:onclick="|modifyImageFile('detail_image', ${image.goods_id}, ${image.image_id}, '${image.fileType}')|"/>-->
-				    <!--
-						<input type="button" value="삭제"
-						          th:if="${image.fileType != 'main_image'}"
-						          th:onclick="|deleteImageFile(${image.goods_id}, ${image.image_id}, '${image.fileName}', 'row_${stat.index}')|"/>-->
 		        </td>
 		      </tr>
 		    </table>

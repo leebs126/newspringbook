@@ -39,7 +39,7 @@ public class CartServiceImpl  implements CartService{
 	}	
 	public void addGoodsInCart(CartVO cartVO) throws Exception{
 		int cartId= cartDAO.selectMaxCartId();
-		cartVO.setCart_id(cartId);
+		cartVO.setCartId(cartId);
 		cartDAO.insertGoodsInCart(cartVO);
 	}
 	
@@ -48,8 +48,8 @@ public class CartServiceImpl  implements CartService{
 		cartDAO.updateCartGoodsQty(cartVO);
 		return result;
 	}
-	public void removeCartGoods(int cart_id) throws Exception{
-		cartDAO.deleteCartGoods(cart_id);
+	public void removeCartGoods(int cartId) throws Exception{
+		cartDAO.deleteCartGoods(cartId);
 	}
 	
 }

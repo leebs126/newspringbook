@@ -182,21 +182,21 @@ function  calcPeriod(search_period){
       </tr>
     </thead>
     <tbody align="center">
-      <tr th:if="${#lists.isEmpty(newGoodsList)}">
+      <tr th:if="${#lists.isEmpty(goodsList)}">
         <td colspan="8" class="fixed"><strong>조회된 상품이 없습니다.</strong></td>
       </tr>
-      <tr th:each="item : ${newGoodsList}">
-        <td><strong th:text="${item.goods_id}"></strong></td>
+      <tr th:each="item : ${goodsList}">
+        <td><strong th:text="${item.goodsId}"></strong></td>
         <td>
-          <a th:href="@{/admin/goods/modifyGoodsForm.do(goods_id=${item.goods_id})}">
-            <strong th:text="${item.goods_title}"></strong>
+          <a th:href="@{/admin/goods/modifyGoodsForm.do(goodsId=${item.goodsId})}">
+            <strong th:text="${item.goodsTitle}"></strong>
           </a>
         </td>
-        <td><strong th:text="${item.goods_writer}"></strong></td>
-        <td><strong th:text="${item.goods_publisher}"></strong></td>
-        <td><strong th:text="${item.goods_sales_price + '원'}"></strong></td>
-        <td><strong th:text="${item.goods_credate}"></strong></td>
-        <td><strong th:text="${#dates.format(item.goods_published_date, 'yyyy-MM-dd')}"></strong></td>
+        <td><strong th:text="${item.goodsWriter}"></strong></td>
+        <td><strong th:text="${item.goodsPublisher}"></strong></td>
+        <td><strong th:text="${item.goodsSalesPrice + '원'}"></strong></td>
+        <td><strong th:text="${item.goodsCredate}"></strong></td>
+        <td><strong th:text="${#dates.format(item.goodsPublishedDate, 'yyyy-MM-dd')}"></strong></td>
       </tr>
     </tbody>
   </table>

@@ -32,23 +32,23 @@
 		    <tr th:each="item, iterStat : ${myOrderList}">
 		      <!-- 주문번호와 주문일자는 첫 번째 항목에만 표시 -->
 		      <td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" th:text="${entry.key}" style="background-color: #d0ebff;" >주문번호</td>
-		      <td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" th:text="${item.pay_order_time}"  style="background-color: rgb(255, 255, 128);">주문일자</td>
+		      <td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(myOrderList)}" th:text="${item.payOrderTime}"  style="background-color: rgb(255, 255, 128);">주문일자</td>
 
 		      <!-- 상품 정보 반복 표시 -->
 		      <td >
-		        <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
-		          <img width="75" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" alt="">
+		        <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
+		          <img width="75" th:src="@{/thumbnails.do(goodsId=${item.goodsId},fileName=${item.goodsFileName})}" alt="">
 		        </a>
 		      </td>
 			 
 		      <td>
-				  <span th:text="${item.goods_title}"></span>/<span th:text="${item.order_goods_qty}"></span>개
+				  <span th:text="${item.goodsTitle}"></span>/<span th:text="${item.orderGoodsQty}"></span>개
 		      </td>
-			 <td><span th:text="${item.goods_delivery_price} + '원'"></span></td>
-			  <td><span th:text="${1500 * item.order_goods_qty} + '원'"></span></td>
-		      <td><span th:text="${item.goods_sales_price} + '원'"></span></td>
+			 <td><span th:text="${item.goodsDeliveryPrice} + '원'"></span></td>
+			  <td><span th:text="${1500 * item.orderGoodsQty} + '원'"></span></td>
+		      <td><span th:text="${item.goodsPrice} + '원'"></span></td>
 		      <td>
-				<span th:text="${T(java.lang.Math).round(item.goods_sales_price * 0.9)} + '원'"></span>
+				<span th:text="${item.goodsSalesPrice} + '원'"></span>
 			  </td>
 		      
 		      
@@ -64,38 +64,54 @@
     </table>
 
     <br><br>
-	<h1>2.배송지 정보</h1>
+	<h1>2.배송정보</h1>
 
 	<table class="detail_table">
 	  <tbody>
 	    <tr th:each="entry : ${myOrderMap}" class="large-row">
 	      <td class="fixed_join">배송방법</td>
-	      <td th:text="${entry.value[0].delivery_method}"></td>
+	      <td th:text="${entry.value[0].deliveryMethod}"></td>
 	    </tr>
 	    <tr th:each="entry : ${myOrderMap}" class="large-row">
 	      <td class="fixed_join">받으실 분</td>
-	      <td th:text="${entry.value[0].receiver_name}"></td>
+	      <td th:text="${entry.value[0].receiverName}"></td>
 	    </tr>
 	    <tr th:each="entry : ${myOrderMap}" class="large-row">
 	      <td class="fixed_join">휴대폰번호</td>
-	      <td th:text="${entry.value[0].receiver_hp1 + '-' + entry.value[0].receiver_hp2 + '-' + entry.value[0].receiver_hp3}"></td>
+	      <td th:text="${entry.value[0].receiverHp1 + '-' + entry.value[0].receiverHp2 + '-' + entry.value[0].receiverHp3}"></td>
 	    </tr>
 	    <tr th:each="entry : ${myOrderMap}" class="large-row">
 	      <td class="fixed_join">유선전화(선택)</td>
-	      <td th:text="${entry.value[0].receiver_tel1 + '-' + entry.value[0].receiver_tel2 + '-' + entry.value[0].receiver_tel3}"></td>
+	      <td th:text="${entry.value[0].receiverTel1 + '-' + entry.value[0].receiverTel2 + '-' + entry.value[0].receiverTel3}"></td>
 	    </tr>
 	    <tr th:each="entry : ${myOrderMap}" class="large-row">
 	      <td class="fixed_join">주소</td>
-	      <td th:utext="${entry.value[0].delivery_address}"></td>
+	      <td th:utext="${entry.value[0].deliveryAddress}"></td>
 	    </tr>
 	    <tr th:each="entry : ${myOrderMap}" class="large-row">
 	      <td class="fixed_join">배송 메시지</td>
-	      <td th:text="${entry.value[0].delivery_message}"></td>
+	      <td th:text="${entry.value[0].deliveryMessage}"></td>
 	    </tr>
 	    <tr th:each="entry : ${myOrderMap}" class="large-row">
 	      <td class="fixed_join">선물 포장</td>
-	      <td th:text="${entry.value[0].gift_wrapping}"></td>
+	      <td th:text="${entry.value[0].giftWrapping}"></td>
 	    </tr>
+		<tr th:each="entry : ${myOrderMap}" class="large-row">
+         <td class="fixed_join">배송상태</td>
+         <td>
+			<strong>
+				<span th:switch="${entry.value[0].deliveryState}">
+	                <span th:case="'delivery_prepared'">배송준비중</span>
+	                <span th:case="'delivering'">배송중</span>
+	                <span th:case="'finished_delivering'">배송완료</span>
+	                <span th:case="'cancel_order'">주문취소</span>
+	                <span th:case="'returning_goods'">반품완료</span>
+	                <span th:case="*">기타</span>
+	            </span>
+			</strong>
+		
+	     </td>
+        </tr>
 	  </tbody>
 	</table>
 
@@ -105,7 +121,7 @@
         <tr class="dot_line">
           <td><h2>이름</h2></td>
           <td>
-            <input type="text" th:value="${orderer.member_name}" size="15" disabled />
+            <input type="text" th:value="${orderer.memberName}" size="15" disabled />
           </td>
         </tr>
         <tr class="dot_line">
@@ -131,19 +147,20 @@
 	    <tbody>
 	      <tr class="large-row">
 	        <td class="fixed_join">결제방법</td>
-	        <td th:utext="${myOrderList[0].pay_method}"></td>
+	        <td th:utext="${myOrderList[0].payMethod}"></td>
 	      </tr>
 	      <tr class="large-row">
 	        <td class="fixed_join">결제카드</td>
-	        <td th:text="${myOrderList[0].card_com_name}"></td>
+	        <td th:text="${myOrderList[0].cardComName}"></td>
 	      </tr>
 	      <tr class="large-row">
 	        <td class="fixed_join">할부기간</td>
-	        <td th:text="${myOrderList[0].card_pay_month}"></td>
+	        <td th:text="${myOrderList[0].cardPayMonth}"></td>
 	      </tr>
 	    </tbody>
 	  </table>
 	</th:block>
+
 	<div class="clear"></div>
     <br><br>
     <a th:href="@{/main/main.do}">

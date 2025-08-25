@@ -6,21 +6,30 @@
   </head>
 <body>
 <section>
-	  <div th:if="${message == 'cancel_order'}">
-	    <script>
-	      window.onload = function () {
-	        alert("주문을 취소했습니다.");
-	      };
-	    </script>
-	  </div>
+<style>
+.even-row {
+  background-color: rgb(128, 255, 0); /* 연한 회색 */
+}
+.odd-row {
+  background-color: rgb(0, 255, 255); /* 흰색 */
+}
+</style>	
+	
+  <div th:if="${message == 'cancelOrder'}">
+    <script>
+      window.onload = function () {
+        alert("주문을 취소했습니다.");
+      };
+    </script>
+  </div>
 
 	  <script th:inline="javascript">
-	    function fn_cancel_order(order_id) {
+	    function fn_cancel_order(orderId) {
 	      if (confirm("주문을 취소하시겠습니까?")) {
 	        const formObj = document.createElement("form");
 	        const i_order_id = document.createElement("input");
-	        i_order_id.name = "order_id";
-	        i_order_id.value = order_id;
+	        i_order_id.name = "orderId";
+	        i_order_id.value = orderId;
 
 	        formObj.appendChild(i_order_id);
 	        document.body.appendChild(formObj);
@@ -43,25 +52,26 @@
 	            <th>주문취소</th>
 	        </tr>
 		<tbody align="center">
-		<tr th:each="entry : ${myOrdersMap}">
+		<tr th:each="entry, iterStat : ${myOrdersMap}"
+						th:class="${iterStat.even} ? 'even-row' : 'odd-row'">	
 		  <!--<td th:text="${entry.key}">주문번호</td>-->
 		  <td>
-			<a th:href="@{/mypage/myOrderDetail.do(order_id=${entry.key})}">
+			<a th:href="@{/mypage/myOrderDetail.do(orderId=${entry.key})}">
 			    <span th:text="${entry.key}"></span>
 			</a>
 	      </td>
 		  <th:block th:with="myOrdersList=${entry.value}">
-		  <td th:if="${#lists.size(myOrdersList) > 0}" th:text="${myOrdersList[0].pay_order_time}">주문일자</td>
+		  <td th:if="${#lists.size(myOrdersList) > 0}" th:text="${myOrdersList[0].payOrderTime}">주문일자</td>
 		  <td align='left' style="padding-left:100px;">
 		    <ul>
 		      <li th:each="item : ${entry.value}">
-		        <span th:text="${item.goods_title}"></span> /
-		        <span th:text="${item.order_goods_qty}"></span>개
+		        <span th:text="${item.goodsTitle}"></span> /
+		        <span th:text="${item.orderGoodsQty}"></span>개
 		      </li>
 		    </ul>
 		  </td>
 		  <td>
-			<span th:switch="${myOrdersList[0].delivery_state}">
+			<span th:switch="${myOrdersList[0].deliveryState}">
                 <span th:case="'delivery_prepared'">배송준비중</span>
                 <span th:case="'delivering'">배송중</span>
                 <span th:case="'finished_delivering'">배송완료</span>
@@ -72,9 +82,9 @@
 			
 		  </td>
 		  <td>
-            <input type="button" th:if="${myOrdersList[0].delivery_state == 'delivery_prepared'}"
+            <input type="button" th:if="${myOrdersList[0].deliveryState == 'delivery_prepared'}"
                    th:onclick="'fn_cancel_order(' + ${entry.key} + ')'" value="주문취소"/>
-            <input type="button" th:if="${myOrdersList[0].delivery_state != 'delivery_prepared'}"
+            <input type="button" th:if="${myOrdersList[0].deliveryState != 'delivery_prepared'}"
                    value="주문취소" disabled/>
           </td>
 		  </th:block>

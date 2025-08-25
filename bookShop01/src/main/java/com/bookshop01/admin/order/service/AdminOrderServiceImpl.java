@@ -40,12 +40,12 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	
 	
 	@Override
-	public Map adminOrderDetail(int order_id) throws Exception {
+	public Map adminOrderDetail(int orderId) throws Exception {
 		Map orderDataMap=new HashMap();
-		ArrayList<OrderVO> orderList =adminOrderDAO.selectAdminOrderDetail(order_id);
+		ArrayList<OrderVO> orderList =adminOrderDAO.selectAdminOrderDetail(orderId);
 		OrderVO deliveryInfo=(OrderVO)orderList.get(0);
-		String member_id=(String)deliveryInfo.getMember_id();
-		MemberVO orderer=adminOrderDAO.selectOrderer(member_id);
+		String memberId=(String)deliveryInfo.getMemberId();
+		MemberVO orderer=adminOrderDAO.selectOrderer(memberId);
 		orderDataMap.put("orderList",orderList);
 		orderDataMap.put("deliveryInfo",deliveryInfo);
 		orderDataMap.put("orderer", orderer);
@@ -58,8 +58,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 		Map<String, Object> searchResultMap = new HashMap<>();
 		ArrayList<OrderVO> newOrdersList =adminOrderDAO.selectSearchOrderDetail(searchCondMap);
 		OrderVO deliveryInfo=(OrderVO)newOrdersList.get(0);
-		String member_id=(String)deliveryInfo.getMember_id();
-		MemberVO orderer=adminOrderDAO.selectOrderer(member_id);
+		String memberId=(String)deliveryInfo.getMemberId();
+		MemberVO orderer=adminOrderDAO.selectOrderer(memberId);
 		searchResultMap.put("newOrdersList",newOrdersList);
 		searchResultMap.put("deliveryInfo",deliveryInfo);
 		searchResultMap.put("orderer", orderer);

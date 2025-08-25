@@ -389,23 +389,23 @@ function fn_process_pay_order(){
     var i_card_pay_month=document.createElement("input");
     var i_pay_orderer_hp_num=document.createElement("input");
    
-    i_receiver_name.name="receiver_name";
-    i_receiver_hp1.name="receiver_hp1";
-    i_receiver_hp2.name="receiver_hp2";
-    i_receiver_hp3.name="receiver_hp3";
+    i_receiver_name.name="receiverName";
+    i_receiver_hp1.name="receiverHp1";
+    i_receiver_hp2.name="receiverHp2";
+    i_receiver_hp3.name="receiverHp3";
    
-    i_receiver_tel1.name="receiver_tel1";
-    i_receiver_tel2.name="receiver_tel2";
-    i_receiver_tel3.name="receiver_tel3";
+    i_receiver_tel1.name="receiverTel1";
+    i_receiver_tel2.name="receiverTel2";
+    i_receiver_tel3.name="receiverTel3";
    
-    i_delivery_address.name="delivery_address";
-    i_delivery_message.name="delivery_message";
-    i_delivery_method.name="delivery_method";
-    i_gift_wrapping.name="gift_wrapping";
-    i_pay_method.name="pay_method";
-    i_card_com_name.name="card_com_name";
-    i_card_pay_month.name="card_pay_month";
-    i_pay_orderer_hp_num.name="pay_orderer_hp_num";
+    i_delivery_address.name="deliveryAddress";
+    i_delivery_message.name="deliveryMessage";
+    i_delivery_method.name="deliveryMethod";
+    i_gift_wrapping.name="giftWrapping";
+    i_pay_method.name="payMethod";
+    i_card_com_name.name="cardComName";
+    i_card_pay_month.name="cardPayMonth";
+    i_pay_orderer_hp_num.name="payOrdererHpNum";
   
     i_receiver_name.value=receiver_name;
     i_receiver_hp1.value=hp1;

@@ -71,13 +71,13 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		condMap.put("beginDate",beginDate);
 		condMap.put("endDate", endDate);
 //		List<GoodsVO> newGoodsList = adminGoodsService.listNewGoods(condMap);
-		Map<String, Object> newGoodsMap = adminGoodsService.listNewGoods(condMap);
-		List<GoodsVO> newGoodsList = (List<GoodsVO>)newGoodsMap.get("newGoodsList");
-		mav.addObject("newGoodsList", newGoodsList);
+		Map<String, Object> goodsMap = adminGoodsService.listGoods(condMap);
+		List<GoodsVO> goodsList = (List<GoodsVO>)goodsMap.get("goodsList");
+		mav.addObject("goodsList", goodsList);
 		
 		//페이징 기능 구현 코드 추가
-		int totalItemCount = (Integer)newGoodsMap.get("totalItemCount");
-		int totalPage = (int) Math.ceil((double)totalItemCount / ORDERS_PER_PAGE);
+		int totalGoodsCount = (Integer)goodsMap.get("totalGoodsCount");
+		int totalPage = (int) Math.ceil((double)totalGoodsCount / ORDERS_PER_PAGE);
 		mav.addObject("totalPage", totalPage);
 		
 		String beginDate1[]=beginDate.split("-");
@@ -98,7 +98,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		
 	}
 	
-	@RequestMapping(value = "/addNewGoods.do", method = {RequestMethod.POST})
+	@PostMapping("/addNewGoods.do")
 	public ResponseEntity addNewGoods(@RequestParam("goodsData") String goodsDataJson, // JSON 문자열
 								        MultipartHttpServletRequest multipartRequest,
 								        HttpServletResponse response) throws Exception {
@@ -114,11 +114,11 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 
 	    // 2) 개행문자 변환 대상 키 목록
 	    Set<String> newlineKeys = Set.of(
-	        "goods_contents_order",
-	        "goods_writer_intro",
-	        "goods_intro",
-	        "goods_publisher_comment",
-	        "goods_recommendation"
+	        "goodsContentsOrder",
+	        "goodsWriterIntro",
+	        "goodsIntro",
+	        "goodsPublisherComment",
+	        "goodsRecommendation"
 	    );
 
 	    // 3) Map 데이터 후처리
@@ -138,7 +138,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 	    // 2) 로그인 회원 정보
 	    HttpSession session = multipartRequest.getSession();
 	    MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
-	    String reg_id = memberVO.getMemberId();
+	    String regId = memberVO.getMemberId();  //등록자 아이디
 
 	    // 3) 파일 업로드 처리
 	    List<ImageFileVO> imageFileList = upload(multipartRequest);
@@ -150,7 +150,7 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 
 	    if (imageFileList != null && !imageFileList.isEmpty()) {
 	        for (ImageFileVO imageFileVO : imageFileList) {
-	            imageFileVO.setReg_id(reg_id);
+	            imageFileVO.setRegId(regId);
 	        }
 	        newGoodsMap.put("imageFileList", imageFileList);
 	    }
@@ -202,32 +202,32 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 
 	
 	@RequestMapping(value="/modifyGoodsForm.do" ,method={RequestMethod.GET,RequestMethod.POST})
-	public ModelAndView modifyGoodsForm(@RequestParam("goods_id") int goods_id,
+	public ModelAndView modifyGoodsForm(@RequestParam("goodsId") int goodsId,
 			                            HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		
-		Map goodsMap=adminGoodsService.goodsDetail(goods_id);
+		Map goodsMap=adminGoodsService.goodsDetail(goodsId);
 		mav.addObject("goodsMap", goodsMap);
 		
 		return mav;
 	}
 	
-	@RequestMapping(value="/modifyGoodsInfo.do" ,method={RequestMethod.POST})
-	public ResponseEntity modifyGoodsInfo( @RequestParam("goods_id") String goods_id,
+	@PostMapping("/modifyGoodsInfo.do")
+	public ResponseEntity modifyGoodsInfo( @RequestParam("goodsId") String goodsId,
 			                     @RequestParam("attribute") String attribute,
 			                     @RequestParam("value") String value,
 			HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		
 		Map<String,String> goodsMap=new HashMap<String,String>();
-		goodsMap.put("goods_id", goods_id);
+		goodsMap.put("goodsId", goodsId);
 		
 		// 모든 줄바꿈을 <br/>로 직접 변환
-		if(attribute.equals("goods_contents_order") 
-			||attribute.equals("goods_writer_intro")
-			||attribute.equals("goods_intro")
-			||attribute.equals("goods_publisher_comment")
-			||attribute.equals("goods_recommendation")) {
+		if(attribute.equals("goodsContentsOrder") 
+			||attribute.equals("goodsWriterIntro")
+			||attribute.equals("goodsIntro")
+			||attribute.equals("goodsPublisherComment")
+			||attribute.equals("goodsRecommendation")) {
 			value = value.replaceAll("(\r\n|\n|\r)", "<br/>");
 		}
 		goodsMap.put(attribute, value);
@@ -236,13 +236,13 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		String message = null;
 		ResponseEntity resEntity = null;
 		HttpHeaders responseHeaders = new HttpHeaders();
-		message  = "mod_success";
+		message  = "modSuccess";
 		resEntity =new ResponseEntity(message, responseHeaders, HttpStatus.OK);
 		return resEntity;
 	}
 	
 
-	@RequestMapping(value="/modifyGoodsImageInfo.do" ,method={RequestMethod.POST})
+	@PostMapping("/modifyGoodsImageInfo.do")
 	public void modifyGoodsImageInfo(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)  throws Exception {
 		System.out.println("modifyGoodsImageInfo");
 		multipartRequest.setCharacterEncoding("utf-8");
@@ -259,27 +259,27 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
-		String reg_id = memberVO.getMemberId();
+		String regId = memberVO.getMemberId();
 		
 		List<ImageFileVO> imageFileList=null;
-		int goods_id=0;
-		int image_id=0;
+		int goodsId=0;
+		int imageId=0;
 		try {
 			imageFileList =upload(multipartRequest);
 			if(imageFileList!= null && imageFileList.size()!=0) {
 				for(ImageFileVO imageFileVO : imageFileList) {
-					goods_id = Integer.parseInt((String)goodsMap.get("goods_id"));
-					image_id = Integer.parseInt((String)goodsMap.get("image_id"));
-					imageFileVO.setGoods_id(goods_id);
-					imageFileVO.setImage_id(image_id);
-					imageFileVO.setReg_id(reg_id);
+					goodsId = Integer.parseInt((String)goodsMap.get("goodsId"));
+					imageId = Integer.parseInt((String)goodsMap.get("imageId"));
+					imageFileVO.setGoodsId(goodsId);
+					imageFileVO.setImageId(imageId);
+					imageFileVO.setRegId(regId);
 				}
 				
 			    adminGoodsService.modifyGoodsImage(imageFileList);
 				for(ImageFileVO  imageFileVO:imageFileList) {
 					imageFileName = imageFileVO.getFileName();
 					File srcFile = new File(CURR_IMAGE_REPO_PATH+"\\"+"temp"+"\\"+imageFileName);
-					File destDir = new File(CURR_IMAGE_REPO_PATH+"\\"+goods_id);
+					File destDir = new File(CURR_IMAGE_REPO_PATH+"\\"+goodsId);
 					FileUtils.moveFileToDirectory(srcFile, destDir,true);
 				}
 			}
@@ -299,8 +299,9 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 
 	@Override
 	@PostMapping("/addNewGoodsImage.do")
-	public void addNewGoodsImage(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)
-			throws Exception {
+	public void addNewGoodsImage(MultipartHttpServletRequest multipartRequest, 
+									HttpServletResponse response)
+									throws Exception {
 		System.out.println("addNewGoodsImage");
 		multipartRequest.setCharacterEncoding("utf-8");
 		response.setContentType("text/html; charset=utf-8");
@@ -311,29 +312,29 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 		while(enu.hasMoreElements()){
 			String name=(String)enu.nextElement();
 			String value=multipartRequest.getParameter(name);
-			goodsMap.put(name,value);
+			goodsMap.put(name, value);
 		}
 		
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("memberInfo");
-		String reg_id = memberVO.getMemberId();
+		String regId = memberVO.getMemberId();
 		
 		List<ImageFileVO> imageFileList=null;
-		int goods_id=0;
+		int goodsId=0;
 		try {
 			imageFileList =upload(multipartRequest);
 			if(imageFileList!= null && imageFileList.size()!=0) {
 				for(ImageFileVO imageFileVO : imageFileList) {
-					goods_id = Integer.parseInt((String)goodsMap.get("goods_id"));
-					imageFileVO.setGoods_id(goods_id);
-					imageFileVO.setReg_id(reg_id);
+					goodsId = Integer.parseInt((String)goodsMap.get("goodsId"));
+					imageFileVO.setGoodsId(goodsId);
+					imageFileVO.setRegId(regId);
 				}
 				
 			    adminGoodsService.addNewGoodsImage(imageFileList);
 				for(ImageFileVO  imageFileVO:imageFileList) {
 					imageFileName = imageFileVO.getFileName();
 					File srcFile = new File(CURR_IMAGE_REPO_PATH+"\\"+"temp"+"\\"+imageFileName);
-					File destDir = new File(CURR_IMAGE_REPO_PATH+"\\"+goods_id);
+					File destDir = new File(CURR_IMAGE_REPO_PATH+"\\"+goodsId);
 					FileUtils.moveFileToDirectory(srcFile, destDir,true);
 				}
 			}
@@ -350,15 +351,15 @@ public class AdminGoodsControllerImpl extends BaseController  implements AdminGo
 	}
 
 	@Override
-	@RequestMapping(value="/removeGoodsImage.do" ,method={RequestMethod.POST})
-	public void  removeGoodsImage(@RequestParam("goods_id") int goods_id,
-			                      @RequestParam("image_id") int image_id,
+	@PostMapping("/removeGoodsImage.do")
+	public void  removeGoodsImage(@RequestParam("goodsId") int goodsId,
+			                      @RequestParam("imageId") int imageId,
 			                      @RequestParam("imageFileName") String imageFileName,
 			                      HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		
-		adminGoodsService.removeGoodsImage(image_id);
+		adminGoodsService.removeGoodsImage(imageId);
 		try{
-			File srcFile = new File(CURR_IMAGE_REPO_PATH+"\\"+goods_id+"\\"+imageFileName);
+			File srcFile = new File(CURR_IMAGE_REPO_PATH+"\\"+goodsId+"\\"+imageFileName);
 			srcFile.delete();
 		}catch(Exception e) {
 			e.printStackTrace();

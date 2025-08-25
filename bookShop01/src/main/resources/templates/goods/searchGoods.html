@@ -94,17 +94,17 @@
             </li>
             <li th:each="item : ${goodsList}">
                 <div id="book">
-                    <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
-                        <img width="75" alt="" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}"/>
+                    <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
+                        <img width="75" alt="" th:src="@{/thumbnails.do(goodsId=${item.goodsId},fileName=${item.goodsFileName})}"/>
                     </a>
                     <div class="sort">[컴퓨터 인터넷]</div>
                     <div class="title">
-                        <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" th:text="${item.goods_title}"></a>
+                        <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}" th:text="${item.goodsTitle}"></a>
                     </div>
-                    <div class="writer" th:text="${item.goods_writer + ' | ' + item.goods_publisher}"></div>
+                    <div class="writer" th:text="${item.goodsWriter + ' | ' + item.goodsPublisher}"></div>
                     <div class="price">
-                        <span th:text="${item.goods_sales_price} + '원'"></span><br>
-                        <span th:text="${item.goods_sales_price * 0.9} + '원 (10%할인)'"></span>
+                        <span th:text="${item.goodsPrice} + '원'"></span><br>
+                        <span th:text="${item.goodsSalesPrice} + '원 (10%할인)'"></span>
                     </div>
                 </div>
             </li>
@@ -128,19 +128,19 @@
     <tbody>
     <tr th:each="item : ${goodsList}">
         <td class="goods_image">
-            <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
-                <img width="75" alt="" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}"/>
+            <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
+                <img width="75" alt="" th:src="@{/thumbnails.do(goodsId=${item.goodsId},fileName=${item.goodsFileName})}"/>
             </a>
         </td>
         <td class="goods_description">
-            <h2><a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" th:text="${item.goods_title}"></a></h2>
+            <h2><a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}" th:text="${item.goodsTitle}"></a></h2>
             <div class="writer_press">
-                <span th:text="${item.goods_writer + ' 저 | ' + item.goods_publisher + ' | ' + #strings.substring(item.goods_published_date, 0, 10)}"></span>
+                <span th:text="${item.goodsWriter + ' 저 | ' + item.goodsPublisher + ' | ' + #strings.substring(item.goodsPublishedDate, 0, 10)}"></span>
             </div>
         </td>
         <td class="price">
-            <span th:text="${item.goods_sales_price + '원'}"></span><br>
-            <strong th:text="${item.goods_sales_price * 0.9} + '원'"></strong><br>(10% 할인)
+            <span th:text="${item.goodsPrice + '원'}"></span><br>
+            <strong th:text="${item.goodsSalesPrice } + '원'"></strong><br>(10% 할인)
         </td>
         <td><input type="checkbox" value=""/></td>
         <td class="buy_btns">

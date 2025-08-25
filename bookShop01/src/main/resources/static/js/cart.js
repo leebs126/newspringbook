@@ -39,17 +39,17 @@ function calcGoodsPrice(bookPrice,obj){
 	p_final_totalOrderPrice.innerHTML=finalTotalOrderPrice;
 }
 
-function modify_cart_qty(goods_id, bookPrice, index){
+function modify_cart_qty(goodsId, bookPrice, index){
 	//alert(index); 
-   var length=document.frm_order_all_cart.cart_goods_qty.length;
+   var length=document.frm_order_all_cart.cartGoodsQty.length;
    var _cart_goods_qty=0;
 	if(length>1){ //카트에 제품이 한개인 경우와 여러개인 경우 나누어서 처리한다.
-		_cart_goods_qty=document.frm_order_all_cart.cart_goods_qty[index].value;		
+		_cart_goods_qty=document.frm_order_all_cart.cartGoodsQty[index].value;		
 	}else{
-		_cart_goods_qty=document.frm_order_all_cart.cart_goods_qty.value;
+		_cart_goods_qty=document.frm_order_all_cart.cartGoodsQty.value;
 	}
 		
-	var cart_goods_qty=Number(_cart_goods_qty);
+	var cartGoodsQty=Number(_cart_goods_qty);
 	//alert("cart_goods_qty:"+cart_goods_qty);
 	//console.log(cart_goods_qty);
 	$.ajax({
@@ -57,13 +57,13 @@ function modify_cart_qty(goods_id, bookPrice, index){
 		async : false, //false인 경우 동기식으로 처리한다.
 		url : "/cart/modifyCartQty.do",
 		data : {
-			goods_id:goods_id,
-			cart_goods_qty:cart_goods_qty
+			goodsId:goodsId,
+			cartGoodsQty:cartGoodsQty
 		},
 		
 		success : function(data, textStatus) {
 			//alert(data);
-			if(data.trim()=='modify_success'){
+			if(data.trim()=='modifySuccess'){
 				alert("수량을 변경했습니다!!");	
 			}else{
 				alert("다시 시도해 주세요!!");	
@@ -80,12 +80,12 @@ function modify_cart_qty(goods_id, bookPrice, index){
 	}); //end ajax	
 }
 
-function delete_cart_goods(cart_id){
-	var cart_id=Number(cart_id);
+function delete_cart_goods(cartId){
+	var cart_id=Number(cartId);
 	var formObj=document.createElement("form");
 	var i_cart = document.createElement("input");
-	i_cart.name="cart_id";
-	i_cart.value=cart_id;
+	i_cart.name="cartId";
+	i_cart.value=cartId;
 	
 	formObj.appendChild(i_cart);
     document.body.appendChild(formObj); 
@@ -94,32 +94,36 @@ function delete_cart_goods(cart_id){
     formObj.submit();
 }
 
-function fn_order_each_goods(goods_id,goods_title,goods_sales_price,fileName){
+function fn_order_each_goods(goodsId,goodsTitle,goodsPrice, goodsSalesPrice, goodsFileName){
 	var total_price,final_total_price,_goods_qty;
-	var cart_goods_qty=document.getElementById("cart_goods_qty");
+	var cartGoodsQty=document.getElementById("cartGoodsQty");
 	
-	_order_goods_qty=cart_goods_qty.value; //장바구니에 담긴 개수 만큼 주문한다.
+	var _orderGoodsQty=cartGoodsQty.value; //장바구니에 담긴 개수 만큼 주문한다.
 	var formObj=document.createElement("form");
 	var i_goods_id = document.createElement("input"); 
     var i_goods_title = document.createElement("input");
+	var i_goods_price=document.createElement("input");
     var i_goods_sales_price=document.createElement("input");
     var i_fileName=document.createElement("input");
     var i_order_goods_qty=document.createElement("input");
     
-    i_goods_id.name="goods_id";
-    i_goods_title.name="goods_title";
-    i_goods_sales_price.name="goods_sales_price";
-    i_fileName.name="goods_fileName";
-    i_order_goods_qty.name="order_goods_qty";
+    i_goods_id.name="goodsId";
+    i_goods_title.name="goodsTitle";
+	i_goods_price.name="goodsPrice";
+	i_goods_sales_price.name="goodsSalesPrice";
+    i_fileName.name="goodsFileName";
+    i_order_goods_qty.name="orderGoodsQty";
     
-    i_goods_id.value=goods_id;
-    i_order_goods_qty.value=_order_goods_qty;
-    i_goods_title.value=goods_title;
-    i_goods_sales_price.value=goods_sales_price;
-    i_fileName.value=fileName;
+    i_goods_id.value=goodsId;
+    i_order_goods_qty.value=_orderGoodsQty;
+    i_goods_title.value=goodsTitle;
+	i_goods_price.value=goodsPrice;
+	i_goods_sales_price.value=goodsSalesPrice;
+    i_fileName.value=goodsFileName;
     
     formObj.appendChild(i_goods_id);
     formObj.appendChild(i_goods_title);
+	formObj.appendChild(i_goods_price);
     formObj.appendChild(i_goods_sales_price);
     formObj.appendChild(i_fileName);
     formObj.appendChild(i_order_goods_qty);
@@ -135,7 +139,7 @@ function fn_order_all_cart_goods(){
 	var order_goods_qty;
 	var order_goods_id;
 	var objForm=document.frm_order_all_cart;
-	var cart_goods_qty=objForm.cart_goods_qty;
+	var cartGoodsQty=objForm.cartGoodsQty;
 	var h_order_each_goods_qty=objForm.h_order_each_goods_qty;
 	var checked_goods=objForm.checked_goods;
 	var length=checked_goods.length;
@@ -146,17 +150,17 @@ function fn_order_all_cart_goods(){
 		for(var i=0; i<length;i++){
 			if(checked_goods[i].checked==true){
 				order_goods_id=checked_goods[i].value;
-				order_goods_qty=cart_goods_qty[i].value;
-				cart_goods_qty[i].value="";
-				cart_goods_qty[i].value=order_goods_id+":"+order_goods_qty;
+				order_goods_qty=cartGoodsQty[i].value;
+				cartGoodsQty[i].value="";
+				cartGoodsQty[i].value=order_goods_id+":"+order_goods_qty;
 				//alert(select_goods_qty[i].value);
-				console.log(cart_goods_qty[i].value);
+				console.log(cartGoodsQty[i].value);
 			}
 		}	
 	}else{
 		order_goods_id=checked_goods.value;
-		order_goods_qty=cart_goods_qty.value;
-		cart_goods_qty.value=order_goods_id+":"+order_goods_qty;
+		order_goods_qty=cartGoodsQty.value;
+		cartGoodsQty.value=order_goods_id+":"+order_goods_qty;
 		//alert(select_goods_qty.value);
 	}
 		

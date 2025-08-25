@@ -28,7 +28,7 @@
 		float: right;
 	}
 	</style>
-	  <title th:text="${goodsMap.goodsVO.goods_title}">상품 상세</title>
+	  <title th:text="${goodsMap.goodsVO.goodsTitle}">상품 상세</title>
 </head>
 <body>
 <section>
@@ -36,17 +36,19 @@
 		<script src="/jquery/jquery-1.6.2.min.js"></script>
 	  <script type="text/javascript">
 	    function handleAddCartClick(el) {
-	      const goodsId = el.getAttribute("data-goods-id");
+	      const goodsId = el.getAttribute("data-goodsId");
+		  const goodsPrice = el.getAttribute("data-goodsPrice");
 
 	      $.ajax({
 	        type: "post",
 	        async: false,
 	        url: "/cart/addGoodsInCart.do",
-	        data: { goods_id: goodsId },
+	        data: { goodsId: goodsId,
+					goodsPrice: goodsPrice },
 	        success: function (data) {
-	          if (data.trim() === "add_success") {
+	          if (data.trim() === "addSuccess") {
 	            imagePopup("open");
-	          } else if (data.trim() === "already_existed") {
+	          } else if (data.trim() === "alreadyExisted") {
 	            alert("이미 카트에 등록된 상품입니다.");
 	          }
 	        },
@@ -62,24 +64,24 @@
 	        alert("로그인 후 주문이 가능합니다!");
 	      }
 
-	      const goodsId = el.getAttribute("data-goods-id");
-	      const title = el.getAttribute("data-title");
-	      const price = el.getAttribute("data-price");
-		  const sales_price = el.getAttribute("data-sales_price");
-	      const file = el.getAttribute("data-file");
-	      const qty = document.getElementById("order_goods_qty").value;
+	      const goodsId = el.getAttribute("data-goodsId");
+	      const goodsTitle = el.getAttribute("data-goodsTitle");
+	      const goodsPrice = el.getAttribute("data-goodsPrice");
+		  const goodsSalesPrice = el.getAttribute("data-goodsSalesPrice");
+	      const goodsFileName = el.getAttribute("data-goodsFileName");
+	      const orderGoodsQty = document.getElementById("order_goods_qty").value;
 
 	      const form = document.createElement("form");
 	      form.method = "post";
 	      form.action = "/order/orderEachGoods.do";
 
 	      const fields = {
-	        goods_id: goodsId,
-	        goods_title: title,
-			goods_price: price,
-			goods_sales_price: sales_price,
-	        goods_fileName: file,
-	        order_goods_qty: qty
+	        goodsId: goodsId,
+	        goodsTitle: goodsTitle,
+			goodsPrice: goodsPrice,
+			goodsSalesPrice: goodsSalesPrice,
+	        goodsFileName: goodsFileName,
+	        orderGoodsQty: orderGoodsQty
 	      };
 
 	      for (let key in fields) {
@@ -106,14 +108,14 @@
   <hgroup>
     <h1>컴퓨터와 인터넷</h1>
     <h2>국내외 도서 &gt; 컴퓨터와 인터넷 &gt; 웹 개발</h2>
-    <h3 th:text="${goodsMap.goodsVO.goods_title}"></h3>
-    <h4 th:text="${goodsMap.goodsVO.goods_writer} + ' 저 | ' + ${goodsMap.goodsVO.goods_publisher}"></h4>
+    <h3 th:text="${goodsMap.goodsVO.goodsTitle}"></h3>
+    <h4 th:text="${goodsMap.goodsVO.goodsWriter} + ' 저 | ' + ${goodsMap.goodsVO.goodsPublisher}"></h4>
   </hgroup>
 
   <div id="goods_image">
     <figure>
       <img width="121" height="154" 
-	       th:src="@{/thumbnails.do(goods_id=${goodsMap.goodsVO.goods_id},fileName=${goodsMap.goodsVO.goods_fileName})}" alt="책 이미지">
+	       th:src="@{/thumbnails.do(goodsId=${goodsMap.goodsVO.goodsId},fileName=${goodsMap.goodsVO.goodsFileName})}" alt="책 이미지">
     </figure>
   </div>
 
@@ -122,18 +124,18 @@
       <tr>
         <td class="fixed">정가</td>
         <td class="active">
-          <span th:text="${#numbers.formatInteger(goodsMap.goodsVO.goods_price, 3, 'COMMA')} "></span><span>원</span>
+          <span th:text="${#numbers.formatInteger(goodsMap.goodsVO.goodsPrice, 3, 'COMMA')} "></span><span>원</span>
         </td>
       </tr>
       <tr class="dot_line">
         <td class="fixed">판매가</td>
         <td class="active">
-          <span th:text="${#numbers.formatInteger(goodsMap.goodsVO.goods_sales_price , 3, 'COMMA')}"></span><span>원(10%할인)</span>
+          <span th:text="${#numbers.formatInteger(goodsMap.goodsVO.goodsSalesPrice , 3, 'COMMA')}"></span><span>원(10%할인)</span>
         </td>
       </tr>
       <tr>
         <td class="fixed">포인트적립</td>
-        <td class="active" th:text="${goodsMap.goodsVO.goods_point} + 'P(10%적립)'"></td>
+        <td class="active" th:text="${goodsMap.goodsVO.goodsPoint} + 'P(10%적립)'"></td>
       </tr>
       <tr class="dot_line">
         <td class="fixed">포인트 추가적립</td>
@@ -141,15 +143,15 @@
       </tr>
       <tr>
         <td class="fixed">발행일</td>
-        <td class="fixed" th:text="${#dates.format(goodsMap.goodsVO.goods_published_date, 'yyyy-MM-dd')}"></td>
+        <td class="fixed" th:text="${#dates.format(goodsMap.goodsVO.goodsPublishedDate, 'yyyy-MM-dd')}"></td>
       </tr>
       <tr>
         <td class="fixed">페이지 수</td>
-        <td class="fixed" th:text="${goodsMap.goodsVO.goods_total_page + '쪽'}"></td>
+        <td class="fixed" th:text="${goodsMap.goodsVO.goodsTotalPage + '쪽'}"></td>
       </tr>
       <tr class="dot_line">
         <td class="fixed">ISBN</td>
-        <td class="fixed" th:text="${goodsMap.goodsVO.goods_isbn}"></td>
+        <td class="fixed" th:text="${goodsMap.goodsVO.goodsIsbn}"></td>
       </tr>
       <tr>
         <td class="fixed">배송료</td>
@@ -179,17 +181,18 @@
 	  <li>
 	    <a class="buy"
 	       href="javascript:void(0);"
-	       th:attr="data-goods-id=${goodsMap.goodsVO.goods_id},
-	                data-title=${goodsMap.goodsVO.goods_title},
-	                data-price=${goodsMap.goodsVO.goods_price},
-					data-sales_price=${goodsMap.goodsVO.goods_sales_price},
-	                data-file=${goodsMap.goodsVO.goods_fileName}"
+	       th:attr="data-goodsId=${goodsMap.goodsVO.goodsId},
+	                data-goodsTitle=${goodsMap.goodsVO.goodsTitle},
+	                data-goodsPrice=${goodsMap.goodsVO.goodsPrice},
+					data-goodsSalesPrice=${goodsMap.goodsVO.goodsSalesPrice},
+	                data-goodsFileName=${goodsMap.goodsVO.goodsFileName}"
 	       onclick="handleBuyClick(this)">구매하기</a>
 	  </li>
 	  <li>
 	    <a class="cart"
 	       href="javascript:void(0);"
-	       th:attr="data-goods-id=${goodsMap.goodsVO.goods_id}"
+	       th:attr="data-goodsId=${goodsMap.goodsVO.goodsId},
+		   			data-goodsPrice=${goodsMap.goodsVO.goodsPrice}"
 	       onclick="handleAddCartClick(this)">장바구니</a>
 	  </li>
 	  <li><a class="wish" href="#">위시리스트</a></li>
@@ -210,27 +213,27 @@
     <div class="tab_container">
       <div class="tab_content" id="tab1">
         <h4>책소개</h4>
-        <p th:utext="${#strings.replace(goodsMap.goodsVO.goods_intro, '\n', '<br/>')}"></p>
+        <p th:utext="${#strings.replace(goodsMap.goodsVO.goodsIntro, '\n', '<br/>')}"></p>
         <div th:each="image : ${goodsMap.imageList}">
-          <img th:src="@{/download.do(goods_id=${goodsMap.goodsVO.goods_id}, fileName=${image.fileName})}" />
+          <img th:src="@{/download.do(goodsId=${goodsMap.goodsVO.goodsId}, fileName=${image.fileName})}" />
         </div>
       </div>
       <div class="tab_content" id="tab2">
         <h4>저자소개</h4>
-        <div class="writer" th:text="'저자 : ' + ${goodsMap.goodsVO.goods_writer}"></div>
-        <p th:utext="${#strings.replace(goodsMap.goodsVO.goods_writer_intro, '\n', '<br/>')}"></p>
+        <div class="writer" th:text="'저자 : ' + ${goodsMap.goodsVO.goodsWriter}"></div>
+        <p th:utext="${#strings.replace(goodsMap.goodsVO.goodsWriterIntro, '\n', '<br/>')}"></p>
       </div>
       <div class="tab_content" id="tab3">
         <h4>책목차</h4>
-        <p th:utext="${goodsMap.goodsVO.goods_contents_order}"></p>
+        <p th:utext="${goodsMap.goodsVO.goodsContentsOrder}"></p>
       </div>
       <div class="tab_content" id="tab4">
         <h4>출판사서평</h4>
-        <p th:utext="${#strings.replace(goodsMap.goodsVO.goods_publisher_comment, '\n', '<br/>')}"></p>
+        <p th:utext="${#strings.replace(goodsMap.goodsVO.goodsPublisherComment, '\n', '<br/>')}"></p>
       </div>
       <div class="tab_content" id="tab5">
         <h4>추천사</h4>
-        <p th:utext="${#strings.replace(goodsMap.goodsVO.goods_recommendation, '\n', '<br/>')}"></p>
+        <p th:utext="${#strings.replace(goodsMap.goodsVO.goodsRecommendation, '\n', '<br/>')}"></p>
       </div>
       <div class="tab_content" id="tab6">
         <h4>리뷰</h4>

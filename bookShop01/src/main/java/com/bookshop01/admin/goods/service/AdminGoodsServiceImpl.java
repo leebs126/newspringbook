@@ -28,37 +28,37 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
 	@Override
 	public int addNewGoods(Map newGoodsMap) throws Exception{
 		adminGoodsDAO.insertNewGoods(newGoodsMap);
-		int goods_id = Integer.parseInt( String.valueOf(newGoodsMap.get("goods_id")));
+		int goodsId = Integer.parseInt( String.valueOf(newGoodsMap.get("goodsId")));
 		ArrayList<ImageFileVO> imageFileList = (ArrayList)newGoodsMap.get("imageFileList");
 		for(ImageFileVO imageFileVO : imageFileList) {
-			imageFileVO.setGoods_id(goods_id);
+			imageFileVO.setGoodsId(goodsId);
 		}
 		
 		addNewGoodsImage(imageFileList);
-		return goods_id;
+		return goodsId;
 	}
 	
 	@Override
-	public Map<String, Object> listNewGoods(Map<String, String> condMap) throws Exception{
-		Map<String, Object> newGoodsMap =new HashMap<String, Object>();
-		List<GoodsVO> newGoodsList = adminGoodsDAO.selectNewGoodsList(condMap);
-		int totalItemCount = adminGoodsDAO.selectTotalNewGoods(condMap);
-		newGoodsMap.put("newGoodsList", newGoodsList);
-		newGoodsMap.put("totalItemCount", totalItemCount);
-		return  newGoodsMap;
+	public Map<String, Object> listGoods(Map<String, String> condMap) throws Exception{
+		Map<String, Object> goodsMap =new HashMap<String, Object>();
+		List<GoodsVO> goodsList = adminGoodsDAO.selectGoodsList(condMap);
+		int totalGoodsCount = adminGoodsDAO.selectTotalGoods(condMap);
+		goodsMap.put("goodsList", goodsList);
+		goodsMap.put("totalGoodsCount", totalGoodsCount);
+		return  goodsMap;
 	}
 	@Override
-	public Map goodsDetail(int goods_id) throws Exception {
+	public Map goodsDetail(int goodsId) throws Exception {
 		Map goodsMap = new HashMap();
-		GoodsVO goodsVO=adminGoodsDAO.selectGoodsDetail(goods_id);
-		List imageFileList =adminGoodsDAO.selectGoodsImageFileList(goods_id);
+		GoodsVO goodsVO=adminGoodsDAO.selectGoodsDetail(goodsId);
+		List imageFileList =adminGoodsDAO.selectGoodsImageFileList(goodsId);
 		goodsMap.put("goods", goodsVO);
 		goodsMap.put("imageFileList", imageFileList);
 		return goodsMap;
 	}
 	@Override
-	public List goodsImageFile(int goods_id) throws Exception{
-		List imageList =adminGoodsDAO.selectGoodsImageFileList(goods_id);
+	public List goodsImageFile(int goodsId) throws Exception{
+		List imageList =adminGoodsDAO.selectGoodsImageFileList(goodsId);
 		return imageList;
 	}
 	
@@ -72,18 +72,14 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
 		adminGoodsDAO.updateGoodsImage(imageFileList); 
 	}
 	
-//	@Override
-//	public List<OrderVO> listOrderGoods(Map condMap) throws Exception{
-//		return adminGoodsDAO.selectOrderGoodsList(condMap);
-//	}
 	@Override
 	public void modifyOrderGoods(Map orderMap) throws Exception{
 		adminGoodsDAO.updateOrderGoods(orderMap);
 	}
 	
 	@Override
-	public void removeGoodsImage(int image_id) throws Exception{
-		adminGoodsDAO.deleteGoodsImage(image_id);
+	public void removeGoodsImage(int imageId) throws Exception{
+		adminGoodsDAO.deleteGoodsImage(imageId);
 	}
 	
 	@Override

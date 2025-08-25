@@ -42,8 +42,7 @@
 <body>
 <section>
 <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
-<script th:src="@{/js/order.js}"></script>
-
+<script th:src="@{/js/order.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
 
 
 <form name="form_order">
@@ -58,8 +57,8 @@
 		<td>주문금액</td>
 		<td>배송비</td>
 		<td>예상적립금</td>
-		<td>할인액(10%)</td>
-		<td>최종주문금액</td>
+		<td>결제금액(10%할인)</td>
+		<td>최종결제금액</td>
       </tr>
     </thead>
     <tbody align=center>
@@ -68,37 +67,32 @@
 		  <tr th:each="item, iterStat : ${myOrderList}"  >
 			<td></td>
 			<td>
-	          <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
-	            <img width="75" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" alt="">
+	          <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
+	            <img width="75" th:src="@{/thumbnails.do(goodsId=${item.goodsId},fileName=${item.goodsFileName})}" alt="">
 	          </a>
-			  <input   type="hidden" id="h_goods_id" name="h_goods_id" th:value="${item.goods_id }" />
-			  <input   type="hidden" id="h_goods_fileName" name="h_goods_fileName" th:value="${item.goods_fileName }" />
+			  <input   type="hidden" id="h_goods_id" name="h_goods_id" th:value="${item.goodsId }" />
+			  <input   type="hidden" id="h_goods_fileName" name="h_goods_fileName" th:value="${item.goodsFileName }" />
 	        </td>
 	        <td >
 	          <h2>
-	            <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" th:text="${item.goods_title}">상품명</a>
-				<input   type="hidden" id="h_goods_title" name="h_goods_title" th:value="${item.goods_title }" />
+	            <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}" th:text="${item.goodsTitle}">상품명</a>
+				<input   type="hidden" id="h_goods_title" name="h_goods_title" th:value="${item.goodsTitle }" />
 	          </h2>
 	        </td>
 	        <td >
-				<h2 th:text="${item.order_goods_qty} + '개'">수량</h2>
-	            <input   type="hidden" id="h_order_goods_qty" name="h_order_goods_qty" th:value="${item.order_goods_qty}" />
+				<h2 th:text="${item.orderGoodsQty} + '개'">수량</h2>
+	            <input   type="hidden" id="h_order_goods_qty" name="h_order_goods_qty" th:value="${item.orderGoodsQty}" />
 			</td>
 	        <td >
-				<h2 th:text="${item.goods_price} + '원'">0</h2>
+				<h2 th:text="${item.goodsPrice} + '원'">0</h2>
 			</td>
-	        <td><h2 th:text="${item.goods_delivery_price} + '원'">0</h2></td>
-	        <td><h2 th:text="${1500 * item.order_goods_qty} + '원'">적립금</h2></td>
-			<td><h2 th:text="${item.goods_sales_price} + '원'"></h2></td>
+	        <td><h2 th:text="${item.goodsDeliveryPrice} + '원'">0</h2></td>
+	        <td><h2 th:text="${1500 * item.orderGoodsQty} + '원'">적립금</h2></td>
+			<td><h2 th:text="${item.goodsSalesPrice} + '원'"></h2></td>
 			<td th:if="${iterStat.index == 0}"  th:rowspan="${#lists.size(myOrderList)}"  style="background-color: #e0f7da;">
 		    	<h2 th:text="${session.finalTotalOrderPrice} + '원'"></h2>
 				<input  type="hidden" id="h_each_goods_price"  name="h_each_goods_price" th:value="${session.finalTotalOrderPrice}  + '원'" />
 		 	</td>
-			<!--<td>
-				<h2 th:text="${session.finalTotalOrderPrice}  + '원'">0</h2>
-				<h2 th:text="${#numbers.formatDecimal(item.goods_sales_price * item.order_goods_qty,0,'COMMA')} + '원'">합계</h2>
-				<input  type="hidden" id="h_each_goods_price"  name="h_each_goods_price" th:value="${item.goods_sales_price * item.order_goods_qty}  + '원'" />
-			</td>-->
 	      </tr>
 		  </th:block>
 		</th:block>
@@ -132,9 +126,9 @@
   				<tr class="dot_line">
   					<td class="fixed_join">받으실 분</td>
   					<td>
-						<input id="receiver_name" name="receiver_name" type="text" size="40" th:value="${session.orderer.member_name}" />
-						<input type="hidden" id="h_orderer_name" name="h_orderer_name" th:value="${session.orderer.member_name}" />
-						<input type="hidden" id="h_receiver_name" name="h_receiver_name" th:value="${session.orderer.member_name}" />
+						<input id="receiver_name" name="receiver_name" type="text" size="40" th:value="${session.orderer.memberName}" />
+						<input type="hidden" id="h_orderer_name" name="h_orderer_name" th:value="${session.orderer.memberName}" />
+						<input type="hidden" id="h_receiver_name" name="h_receiver_name" th:value="${session.orderer.memberName}" />
   					</td>
   				</tr>
   				<tr class="dot_line">
@@ -153,7 +147,7 @@
   					  <input type="hidden" id="h_hp1" name="h_hp1" th:value="${session.orderer.hp1 }" /> 
   					  <input type="hidden" id="h_hp2" name="h_hp2" th:value="${session.orderer.hp2 }" /> 
   					  <input type="hidden" id="h_hp3" name="h_hp3"  th:value="${session.orderer.hp3 }" />
-  					  <c:set  var="orderer_hp" th:value="${session.orderer.hp1}-${session.orderer.hp2}-${session.orderer.hp3 }"/>
+  					  <c:set  var="orderer_hp" th:value="${session.orderer.hp1}+'-'+${session.orderer.hp2}+'-'+${session.orderer.hp3}"/>
   					   									
   					         
   				  </tr>
@@ -231,10 +225,16 @@
   	   <h2>주문고객</h2>
   		 <table>
   		   <tbody>
+			<tr class="dot_line">
+				<td ><h2>아이디</h2></td>
+				<td>
+				 <input  type="text" th:value="${session.orderer.memberId}" size="15" />
+				</td>
+			 </tr>
   			 <tr class="dot_line">
   				<td ><h2>이름</h2></td>
   				<td>
-  				 <input  type="text" th:value="${session.orderer.member_name}" size="15" />
+  				 <input  type="text" th:value="${session.orderer.memberName}+'(아이디:' + ${session.orderer.memberId}+')'" size="15" />
   				</td>
   			  </tr>
   			  <tr class="dot_line">

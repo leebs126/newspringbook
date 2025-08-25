@@ -53,8 +53,8 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
-		String member_id=memberVO.getMemberId();
-		condMap.put("member_id", member_id);
+		String memberId=memberVO.getMemberId();
+		condMap.put("memberId", memberId);
 		
 		String section = pagingMap.get("section");
 		String pageNum = pagingMap.get("pageNum");
@@ -76,17 +76,16 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		List<OrderVO> _myOrdersList = (List<OrderVO>)_myOrdersMap.get("myOrdersList");
 		Set<Integer> orderIdSet = new HashSet<>();
 		for (OrderVO orderVO : _myOrdersList) {
-		    orderIdSet.add(orderVO.getOrder_id());
+		    orderIdSet.add(orderVO.getOrderId());
 		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
-		
 		Map<Integer, List<OrderVO>> myOrdersMap = new TreeMap<>(Comparator.reverseOrder());
 		
 		for (int orderId : orderIdList) {
 			List<OrderVO> myOrderList = new ArrayList<>();
 		    for (OrderVO orderVO : _myOrdersList) {
-		        if (orderId == orderVO.getOrder_id()) {
+		        if (orderId == orderVO.getOrderId()) {
 		            myOrderList.add(orderVO);
 		        }
 		    }
@@ -110,30 +109,32 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 	
 	@Override
 	@GetMapping("/myOrderDetail.do")
-	public ModelAndView myOrderDetail(@RequestParam("order_id")  String order_id,HttpServletRequest request, HttpServletResponse response)  throws Exception {
+	public ModelAndView myOrderDetail(@RequestParam("orderId")  String orderId,
+										HttpServletRequest request, 
+										HttpServletResponse response)  throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		HttpSession session=request.getSession();
 		MemberVO orderer=(MemberVO)session.getAttribute("memberInfo");
 		
-		List<OrderVO> _myOrderList = myPageService.findMyOrderInfo(order_id);
+		List<OrderVO> _myOrderList = myPageService.findMyOrderInfo(orderId);
 		
 		Set<Integer> orderIdSet = new HashSet<>();
 		for (OrderVO orderVO : _myOrderList) {
-		    orderIdSet.add(orderVO.getOrder_id());
+		    orderIdSet.add(orderVO.getOrderId());
 		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
 		Map<Integer, List<OrderVO>> myOrderMap = new TreeMap<>(Comparator.reverseOrder());
 		
-		for (int orderId : orderIdList) {
+		for (int _orderId : orderIdList) {
 			List<OrderVO> myOrderList = new ArrayList<>();
 		    for (OrderVO orderVO : _myOrderList) {
-		        if (orderId == orderVO.getOrder_id()) {
+		        if (_orderId == orderVO.getOrderId()) {
 		            myOrderList.add(orderVO);
 		        }
 		    }
-		    myOrderMap.put(orderId, myOrderList);
+		    myOrderMap.put(_orderId, myOrderList);
 		}	
 		
 		mav.addObject("myOrderMap", myOrderMap);
@@ -146,13 +147,13 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		int totalOrderGoodsQty = 0; 	//총주문개수
 		int orderGoodsQty = 0;			//총주문수량
 		for (OrderVO orderVO : _myOrderList) {
-			orderGoodsQty = orderVO.getOrder_goods_qty();
-			totalOrderPrice+= orderVO.getGoods_sales_price() * orderGoodsQty;
-			totalDeliveryPrice += orderVO.getGoods_delivery_price();
+			orderGoodsQty = orderVO.getOrderGoodsQty();
+			totalOrderPrice+= orderVO.getGoodsPrice() * orderGoodsQty;
+			totalDeliveryPrice += orderVO.getGoodsDeliveryPrice();
 			totalOrderGoodsQty+= orderGoodsQty;
 		}
 		
-		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
+		totalDiscountedPrice = (int)(totalOrderPrice * GOODS_DISCOUNT_RATE);  //10% 할인
 		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
 		
 		mav.addObject("finalTotalOrderPrice", finalTotalOrderPrice);
@@ -172,10 +173,10 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		ModelAndView mav = new ModelAndView(viewName);
 		HttpSession session=request.getSession();
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
-		String  member_id=memberVO.getMemberId();
+		String  memberId=memberVO.getMemberId();
 		
 		HashMap<String,String> condMap=new HashMap<String, String>();
-		condMap.put("member_id", member_id);
+		condMap.put("memberId", memberId);
 		
 		String fixedSearchPeriod = dateMap.get("fixedSearchPeriod");
 		String beginDate=null,endDate=null;
@@ -185,7 +186,6 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		endDate=tempDate[1];
 		condMap.put("beginDate", beginDate);
 		condMap.put("endDate", endDate);
-		condMap.put("member_id", member_id);
 		
 		String section = dateMap.get("section");
 		String pageNum = dateMap.get("pageNum");
@@ -201,7 +201,6 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		}
 		condMap.put("pageNum",pageNum);
 		
-//		List<OrderVO> _myOrderHistList=myPageService.listMyOrderHistory(dateMap);
 		Map<String, Object> _myOrdersHistMap =myPageService.listMyOrderHistory(condMap);
 		String beginDate1[]=beginDate.split("-"); //검색일자를 년,월,일로 분리해서 화면에 전달합니다.
 		int[] beginDateInts = new int[beginDate1.length];
@@ -226,7 +225,7 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		List<OrderVO> _myOrdersHistList = (List<OrderVO>)_myOrdersHistMap.get("myOrdersHistList");
 		Set<Integer> orderIdSet = new HashSet<>();
 		for (OrderVO orderVO : _myOrdersHistList) {
-		    orderIdSet.add(orderVO.getOrder_id());
+		    orderIdSet.add(orderVO.getOrderId());
 		}		
 		
 		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
@@ -234,7 +233,7 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		for (int orderId : orderIdList) {
 			List<OrderVO> myOrderHistList = new ArrayList<>();
 		    for (OrderVO orderVO : _myOrdersHistList) {
-		        if (orderId == orderVO.getOrder_id()) {
+		        if (orderId == orderVO.getOrderId()) {
 		        	myOrderHistList.add(orderVO);
 		        }
 		    }
@@ -256,11 +255,11 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 	
 	@Override
 	@PostMapping(value="/cancelMyOrder.do")
-	public ModelAndView cancelMyOrder(@RequestParam("order_id")  String order_id,
+	public ModelAndView cancelMyOrder(@RequestParam("orderId")  String orderId,
 			                         HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		ModelAndView mav = new ModelAndView();
-		myPageService.cancelOrder(order_id);
-		mav.addObject("message", "cancel_order");
+		myPageService.cancelOrder(orderId);
+		mav.addObject("message", "cancelOrder");
 		mav.setViewName("redirect:/mypage/myPageMain.do");
 		return mav;
 	}
@@ -273,13 +272,14 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		
 		HttpSession session=request.getSession();
 		MemberVO memberVO =(MemberVO)session.getAttribute("memberInfo");
-		int member_birth_y = Integer.parseInt(memberVO.getMemberBirthY());
-		int member_birth_m = Integer.parseInt(memberVO.getMemberBirthM());
-		int member_birth_d = Integer.parseInt(memberVO.getMemberBirthD());
-		mav.addObject("member_birth_y", member_birth_y);  //생년월일의 년,월,일을 정수로 변환해서 상세페이지로 전달한다.
-		mav.addObject("member_birth_m", member_birth_m);
-		mav.addObject("member_birth_d", member_birth_d);
-		
+		int memberBirthY = Integer.parseInt(memberVO.getMemberBirthY());
+		int memberBirthM = Integer.parseInt(memberVO.getMemberBirthM());
+		int memberBirthD = Integer.parseInt(memberVO.getMemberBirthD());
+		int memberBirthGn = Integer.parseInt(memberVO.getMemberBirthGn());
+		mav.addObject("memberBirthY", memberBirthY);  //생년월일의 년,월,일을 정수로 변환해서 상세페이지로 전달한다.
+		mav.addObject("memberBirthM", memberBirthM);
+		mav.addObject("memberBirthD", memberBirthD);
+		mav.addObject("memberBirthGn", memberBirthGn);
 		return mav;
 	}	
 	
@@ -292,13 +292,13 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		String val[]=null;
 		HttpSession session=request.getSession();
 		memberVO=(MemberVO)session.getAttribute("memberInfo");
-		String  member_id=memberVO.getMemberId();
-		if(attribute.equals("member_birth")){
+		String  memberId=memberVO.getMemberId();
+		if(attribute.equals("memberBirth")){
 			val=value.split(",");
-			memberMap.put("member_birth_y",val[0]);
-			memberMap.put("member_birth_m",val[1]);
-			memberMap.put("member_birth_d",val[2]);
-			memberMap.put("member_birth_gn",val[3]);
+			memberMap.put("memberBirthY",val[0]);
+			memberMap.put("memberBirthM",val[1]);
+			memberMap.put("memberBirthD",val[2]);
+			memberMap.put("memberBirthGn",val[3]);
 		}else if(attribute.equals("tel")){
 			val=value.split(",");
 			memberMap.put("tel1",val[0]);
@@ -309,12 +309,12 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 			memberMap.put("hp1",val[0]);
 			memberMap.put("hp2",val[1]);
 			memberMap.put("hp3",val[2]);
-			memberMap.put("smssts_yn", val[3]);
+			memberMap.put("smsstsYn", val[3]);
 		}else if(attribute.equals("email")){
 			val=value.split(",");
 			memberMap.put("email1",val[0]);
 			memberMap.put("email2",val[1]);
-			memberMap.put("emailsts_yn", val[2]);
+			memberMap.put("emailstsYn", val[2]);
 		}else if(attribute.equals("address")){
 			val=value.split(",");
 			memberMap.put("zipcode",val[0]);
@@ -325,9 +325,9 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 			memberMap.put(attribute,value);	
 		}
 		
-		memberMap.put("member_id", member_id);
+		memberMap.put("memberId", memberId);
 		
-		//������ ȸ�� ������ �ٽ� ���ǿ� �����Ѵ�.
+		//수정된 회원 정보를 다시 세션에 저장한다.
 		memberVO=(MemberVO)myPageService.modifyMyInfo(memberMap);
 		session.removeAttribute("memberInfo");
 		session.setAttribute("memberInfo", memberVO);

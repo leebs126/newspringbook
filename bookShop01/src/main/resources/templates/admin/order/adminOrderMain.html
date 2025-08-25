@@ -186,7 +186,7 @@ function fn_enable_detail_search(r_search){
 		
 }
 
-function fn_detail_order(order_id){
+function fn_detail_order(orderId){
 	//alert(order_id);
 	var frm_delivery_list=document.frm_delivery_list;
 	
@@ -194,8 +194,8 @@ function fn_detail_order(order_id){
 	var formObj=document.createElement("form");
 	var i_order_id = document.createElement("input");
 	
-	i_order_id.name="order_id";
-	i_order_id.value=order_id;
+	i_order_id.name="orderId";
+	i_order_id.value=orderId;
 	
     formObj.appendChild(i_order_id);
     document.body.appendChild(formObj); 
@@ -231,8 +231,8 @@ function fn_detail_search(){
     i_command.name="command";
     i_beginDate.name="beginDate";
     i_endDate.name="endDate";
-    i_search_type.name="search_type";
-    i_search_word.name="search_word";
+    i_search_type.name="searchType";
+    i_search_word.name="searchWord";
     i_search_section.name="section";
 	i_search_pageNum.name="pageNum";
 	
