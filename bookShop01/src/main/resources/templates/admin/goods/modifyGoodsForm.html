@@ -55,10 +55,10 @@
       cnt++;
     }
 	
-	function addNewImageFile(fileId, goods_id, fileType) {
+	function addNewImageFile(fileId, goodsId, fileType) {
 	    var formData = new FormData();
 	    formData.append("uploadFile", document.getElementById(fileId).files[0]);
-	    formData.append("goods_id", goods_id);
+	    formData.append("goodsId", goodsId);
 	    formData.append("fileType", fileType);
 
 	    $.ajax({
@@ -82,7 +82,7 @@
 	}
 
 	
-	function modifyImageFile(fileId, goods_id, image_id, fileType){
+	function modifyImageFile(fileId, goodsId, imageId, fileType){
 	  // alert(fileId);
 	  var form = $('#FILE_FORM')[0];
 	    var formData = new FormData(form);
@@ -96,7 +96,7 @@
 	      processData: false,
 	      contentType: false,
 	      data: formData,
-	      type: 'POST',
+	      type: 'post',
 	      success: function(result){
 	          alert("이미지를 수정했습니다!");
 	       }
@@ -166,7 +166,7 @@
 	           </td>
 	           <td>
 	             <input type="button" th:value="수정반영"
-	                    th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goodsId} + '\', \'goodsSort\')'" />
+	                    th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}', 'goodsSort')|" />
 	           </td>
 	         </tr>
 
@@ -177,7 +177,7 @@
 	           </td>
 	           <td>
 	             <input type="button" value="수정반영"
-	                    th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goodsId} + '\', \'goodsTitle\')'" />
+	                    th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}', 'goodsTitle')|" />
 	           </td>
 	         </tr>
 
@@ -186,7 +186,7 @@
 	 			<td><input name="goodsWriter" type="text" size="40"  th:value="${goodsMap['goods'].goodsWriter }" /></td>
 	 							<td>
 	 			 <input  type="button" value="수정반영"  
-				 			th:onclick="'fn_modify_goods(\'' + ${goodsMap['goods'].goodsId} + '\', \'goodsWriter\')'" />
+				 			th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}', 'goodsWriter')|" />
 	 			</td>
 	 			
 	 		</tr>
@@ -194,7 +194,7 @@
 	 			<td >출판사</td>
 	 			<td><input name="goodsPublisher" type="text" size="40"  th:value="${goodsMap['goods'].goodsPublisher }" /></td>
 	 		     <td>
-	 			  <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goodsId }','goodsPublisher')"/>
+	 			  <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId}','goodsPublisher')|"/>
 	 			</td>
 	 			
 	 		</tr>
@@ -202,7 +202,7 @@
 	 			<td >상품정가</td>
 	 			<td><input name="goodsPrice" type="text" size="40" th:value="${goodsMap['goods'].goodsPrice }" /></td>
 	 			<td>
-	 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goodsId }','goodsPrice')"/>
+	 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId }','goodsPrice')|"/>
 	 			</td>
 	 			
 	 		</tr>
@@ -211,7 +211,7 @@
 		 			<td >상품판매가격</td>
 		 			<td><input name="goodsSalesPrice" type="text" size="40" th:value="${goodsMap['goods'].goodsSalesPrice }" /></td>
 		 			<td>
-		 			 <input  type="button" value="수정반영"  th:onclick="fn_modify_goods('${goodsMap['goods'].goodsId }','goodsSalesPrice')"/>
+		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods('${goodsMap['goods'].goodsId }','goodsSalesPrice')|"/>
 		 			</td>
 		 			
 		 		</tr>
@@ -249,7 +249,7 @@
 		 		</tr>
 		 		
 		 		<tr>
-		 			<td >상품 총 페이지수</td>
+		 			<td >상품총페이지수</td>
 		 			<td><input name="goodsTotalPage" type="text" size="40"  th:value="${goodsMap['goods'].goodsTotalPage }"/></td>
 		 			<td>
 		 			 <input  type="button" value="수정반영"  th:onclick="|fn_modify_goods(${goodsMap['goods'].goodsId},'goodsTotalPage')|"/>
@@ -423,10 +423,10 @@
 		        <td>
 					<input type="button" value="수정반영하기"
 					       th:id="'btn_' + ${stat.index}"
-					       th:data-goods-id="${image.goodsId}"
-					       th:data-image-id="${image.imageId}"
-					       th:data-file-type="${image.fileType}"
-						   th:data-file-id="'file_' + ${stat.index}"
+					       th:data-goodsId="${image.goodsId}"
+					       th:data-imageId="${image.imageId}"
+					       th:data-fileType="${image.fileType}"
+						   th:data-fileId="'file_' + ${stat.index}"
 					       onclick="onClickModifyImageFile(this)" />
 					
 				   <input type="button" value="이미지삭제"

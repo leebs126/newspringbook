@@ -74,58 +74,58 @@
 		
 		<result property="goodsFileName" column="goods_fileName" />
 	</resultMap>
-	<insert id="insertNewGoods" parameterType="java.util.Map" >
-		<selectKey resultType="String" keyProperty="goods_id" order="BEFORE">
-	    	select seq_goods_id.nextval from dual
-	    </selectKey>
-	    
-	    <![CDATA[
-		   insert into t_shopping_goods(
-		            goods_id, 
-		            goods_sort,
-                    goods_title,
-                    goods_writer,
-                    goods_publisher,
-					goods_price,
-					goods_sales_price,
-					goods_point,
-					goods_published_date,
-					goods_total_page,
-					goods_isbn,
-					goods_delivery_price,
-					goods_delivery_date,
-					goods_status,
-					goods_writer_intro,
-					goods_intro,
-					goods_publisher_comment,
-					goods_recommendation,
-			        goods_contents_order)
-					  			values(
-					  			      #{goodsId},
-					  			      #{goodsSort},
-					  			      #{goodsTitle},
-					  			      #{goodsWriter},
-					  			     
-					  			      #{goodsPublisher },
-					  			      #{goodsPrice},
-					  			      #{goodsSalesPrice},
-					  			      #{goodsPoint},
-					  			      #{goodsPublishedDate},
-					  			      
-					  			      #{goodsTotalPage},
-					  			      #{goodsIsbn},
-					  			      #{goodsDeliveryPrice },
-					  			      #{goodsDeliveryDate },
-					  			      #{goodsStatus},
-					  			      #{goodsWriterIntro},
-											
-									  #{goodsIntro:VARCHAR},
-					  			      #{goodsPublisherComment:VARCHAR },
-					  			      #{goodsRecommendation :VARCHAR},	
-					  			      #{goodsContentsOrder:VARCHAR}
-					 			 )
-		]]>
-	</insert> 
+<insert id="insertNewGoods" parameterType="java.util.Map" >
+	<selectKey resultType="String" keyProperty="goodsId" order="BEFORE">
+    	SELECT seq_goods_id.nextval FROM dual
+    </selectKey>
+    
+<![CDATA[
+   INSERT INTO t_shopping_goods(
+            goods_id, 
+            goods_sort,
+            goods_title,
+            goods_writer,
+            goods_publisher,
+			goods_price,
+			goods_sales_price,
+			goods_point,
+			goods_published_date,
+			goods_total_page,
+			goods_isbn,
+			goods_delivery_price,
+			goods_delivery_date,
+			goods_status,
+			goods_writer_intro,
+			goods_intro,
+			goods_publisher_comment,
+			goods_recommendation,
+	        goods_contents_order)
+		VALUES(
+		      #{goodsId},
+		      #{goodsSort},
+		      #{goodsTitle},
+		      #{goodsWriter},
+		     
+		      #{goodsPublisher },
+		      #{goodsPrice},
+		      #{goodsSalesPrice},
+		      #{goodsPoint},
+		      #{goodsPublishedDate},
+		      
+		      #{goodsTotalPage},
+		      #{goodsIsbn},
+		      #{goodsDeliveryPrice },
+		      #{goodsDeliveryDate },
+		      #{goodsStatus},
+		      #{goodsWriterIntro},
+					
+			  #{goodsIntro:VARCHAR},
+		      #{goodsPublisherComment:VARCHAR },
+		      #{goodsRecommendation :VARCHAR},	
+		      #{goodsContentsOrder:VARCHAR}
+		 )
+]]>
+</insert> 
 	
 <!--<insert id="insertGoodsImageFile" parameterType="java.util.HashMap">
   <foreach collection="imageFileList" item="imageFile" separator=";" close=";" >

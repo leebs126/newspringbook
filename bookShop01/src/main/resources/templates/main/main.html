@@ -49,7 +49,7 @@
                     <img class="link" th:src="@{/image/1px.gif}" />
                 </a>
                 <img width="121" height="154"
-                     th:src="@{/thumbnails.do(goods_id=${item.goodsId}, fileName=${item.goodsFileName})}" />
+                     th:src="@{/thumbnails.do(goodsId=${item.goodsId}, fileName=${item.goodsFileName})}" />
                 <div class="title" th:text="${item.goodsTitle}">도서 제목</div>
                 <div class="price" th:text="${#numbers.formatInteger(item.goodsPrice, 3, 'COMMA')} + '원'">가격</div>
             </div>

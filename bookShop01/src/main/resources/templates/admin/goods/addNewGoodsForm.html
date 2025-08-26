@@ -8,132 +8,82 @@
 <body>
 <section>
 <script type="text/javascript">
-	
-	/*var cnt = 0;
-	function fn_addFile() {
-	    let html = "";
+  function fn_add_new_goods(form) {
+    const formData = new FormData();
 
-	    if (cnt === 0) {
-	      html += "<br><input type='file' name='main_image' id='f_main_image' onchange='readURL(this, \"preview_main\")'/>";
-	      html += "<br><img id='preview_main' style='width:80%; display:none;' />";
-	    } else {
-	      html += "<br><input type='file' name='detail_image" + cnt + "' id='f_detail_image" + cnt + "' onchange='readURL(this, \"preview_" + cnt + "\")'/>";
-	      html += "<br><img id='preview_" + cnt + "' style='width:80%; display:none;' />";
-	    }
+    // 1) 파일 추가 (메인 이미지 필수)
+    const mainImage = document.querySelector('#f_main_image').files[0];
+    if (!mainImage) {
+      alert("메인 이미지는 반드시 첨부해야 합니다.");
+      return;
+    }
+    formData.append("main_image", mainImage);
 
-	    document.querySelector("#d_file").insertAdjacentHTML("beforeend", html);
-	    cnt++;
-	  }
+    // detail_image들 추가
+    document.querySelectorAll('input[type="file"][name^="detail_image"]').forEach((input, idx) => {
+      if (input.files.length > 0) {
+        formData.append(`detail_image_${idx}`, input.files[0]);
+      }
+    });
 
-	  function readURL(input, imgId) {
-	    if (input.files && input.files[0]) {
-	      const reader = new FileReader();
-	      reader.onload = function (e) {
-	        const img = document.getElementById(imgId);
-	        img.src = e.target.result;
-	        img.style.display = "block";
-	      };
-	      reader.readAsDataURL(input.files[0]);
-	    }
-	  }
-	  
-	  
-	  
-	  function fn_add_new_goods(obj) {
-	      const fileName = $('#f_main_image').val();
+    // 2) 나머지 text/date/select 값 JSON으로 묶기
+    const goodsData = {};
+    form.querySelectorAll("input:not([type=file]), select, textarea").forEach(el => {
+      goodsData[el.name] = el.value;
+    });
 
-	      if (!fileName) {
-	          alert("메인 이미지는 반드시 첨부해야 합니다.");
-	          return;
-	      }
+    formData.append("goodsData", JSON.stringify(goodsData));
 
-	      // submit 전에 빈 파일 input 비활성화
-	      document.querySelectorAll('input[type="file"]').forEach(input => {
-	          if (!input.files || input.files.length === 0) {
-	              //input.disabled = true;
-				  input.remove(); // disabled 대신 remove
-	          }
-	      });
+    // 3) AJAX 전송
+    fetch("/admin/goods/addNewGoods.do", {
+      method: "post",
+      body: formData
+    })
+      .then(res => res.text())
+      .then(result => {
+        alert("상품이 등록되었습니다.");
+        console.log(result);
+      })
+      .catch(err => {
+        console.error(err);
+        alert("상품 등록 중 오류 발생");
+      });
+  }
+  
+  
+  let detailImageCount = 0;
 
-	      obj.submit();
-	  }
-	  */
-	  function fn_add_new_goods(form) {
-	    const formData = new FormData();
+  // 메인 이미지 미리보기
+  function previewMainImage(event) {
+      const img = document.getElementById("preview_main");
+      img.src = URL.createObjectURL(event.target.files[0]);
+  }
 
-	    // 1) 파일 추가 (메인 이미지 필수)
-	    const mainImage = document.querySelector('#f_main_image').files[0];
-	    if (!mainImage) {
-	      alert("메인 이미지는 반드시 첨부해야 합니다.");
-	      return;
-	    }
-	    formData.append("main_image", mainImage);
+  // 상세 이미지 동적 추가
+  function addDetailImage() {
+      detailImageCount++;
+      const container = document.getElementById("detail_images_container");
 
-	    // detail_image들 추가
-	    document.querySelectorAll('input[type="file"][name^="detail_image"]').forEach((input, idx) => {
-	      if (input.files.length > 0) {
-	        formData.append(`detail_image_${idx}`, input.files[0]);
-	      }
-	    });
+      const wrapper = document.createElement("div");
+      wrapper.style.marginTop = "10px";
 
-	    // 2) 나머지 text/date/select 값 JSON으로 묶기
-	    const goodsData = {};
-	    form.querySelectorAll("input:not([type=file]), select, textarea").forEach(el => {
-	      goodsData[el.name] = el.value;
-	    });
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.name = "detail_image_" + detailImageCount;
+      fileInput.accept = "image/*";
+      fileInput.onchange = (e) => {
+          imgPreview.src = URL.createObjectURL(e.target.files[0]);
+      };
 
-	    formData.append("goodsData", JSON.stringify(goodsData));
+      const imgPreview = document.createElement("img");
+      imgPreview.style.maxWidth = "200px";
+      imgPreview.style.marginLeft = "10px";
 
-	    // 3) AJAX 전송
-	    fetch("/admin/goods/addNewGoods.do", {
-	      method: "POST",
-	      body: formData
-	    })
-	      .then(res => res.text())
-	      .then(result => {
-	        alert("상품이 등록되었습니다.");
-	        console.log(result);
-	      })
-	      .catch(err => {
-	        console.error(err);
-	        alert("상품 등록 중 오류 발생");
-	      });
-	  }
-	  
-	  
-	  let detailImageCount = 0;
+      wrapper.appendChild(fileInput);
+      wrapper.appendChild(imgPreview);
 
-	  // 메인 이미지 미리보기
-	  function previewMainImage(event) {
-	      const img = document.getElementById("preview_main");
-	      img.src = URL.createObjectURL(event.target.files[0]);
-	  }
-
-	  // 상세 이미지 동적 추가
-	  function addDetailImage() {
-	      detailImageCount++;
-	      const container = document.getElementById("detail_images_container");
-
-	      const wrapper = document.createElement("div");
-	      wrapper.style.marginTop = "10px";
-
-	      const fileInput = document.createElement("input");
-	      fileInput.type = "file";
-	      fileInput.name = "detail_image_" + detailImageCount;
-	      fileInput.accept = "image/*";
-	      fileInput.onchange = (e) => {
-	          imgPreview.src = URL.createObjectURL(e.target.files[0]);
-	      };
-
-	      const imgPreview = document.createElement("img");
-	      imgPreview.style.maxWidth = "200px";
-	      imgPreview.style.marginLeft = "10px";
-
-	      wrapper.appendChild(fileInput);
-	      wrapper.appendChild(imgPreview);
-
-	      container.appendChild(wrapper);
-	  }  
+      container.appendChild(wrapper);
+  }  
 	  
 </script>
   <form th:action="@{/admin/goods/addNewGoods.do}" method="post" enctype="multipart/form-data">
@@ -154,38 +104,38 @@
             <tr>
               <td width="200">제품분류</td>
               <td width="500">
-                <select name="goods_sort">
+                <select name="goodsSort">
                   <option value="컴퓨터와 인터넷" selected>컴퓨터와 인터넷</option>
                   <option value="디지털 기기">디지털 기기</option>
                 </select>
               </td>
             </tr>
-            <tr><td>제품이름</td><td><input name="goods_title" type="text" size="40" /></td></tr>
-            <tr><td>저자</td><td><input name="goods_writer" type="text" size="40" /></td></tr>
-            <tr><td>출판사</td><td><input name="goods_publisher" type="text" size="40" /></td></tr>
-            <tr><td>제품정가</td><td><input name="goods_price" type="text" size="40" /></td></tr>
-            <tr><td>제품판매가격</td><td><input name="goods_sales_price" type="text" size="40" /></td></tr>
-            <tr><td>제품 구매 포인트</td><td><input name="goods_point" type="text" size="40" /></td></tr>
+            <tr><td>제품이름</td><td><input name="goodsTitle" type="text" size="40" /></td></tr>
+            <tr><td>저자</td><td><input name="goodsWriter" type="text" size="40" /></td></tr>
+            <tr><td>출판사</td><td><input name="goodsPublisher" type="text" size="40" /></td></tr>
+            <tr><td>제품정가</td><td><input name="goodsPrice" type="text" size="40" /></td></tr>
+            <tr><td>제품판매가격</td><td><input name="goodsSalesPrice" type="text" size="40" /></td></tr>
+            <tr><td>제품 구매 포인트</td><td><input name="goodsPoint" type="text" size="40" /></td></tr>
             <tr><td>제품출판일</td>
 				<td>
-					<input name="goods_published_date" type="date" size="40"
+					<input name="goodsPublishedDate" type="date" size="40"
 									           th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" />
 				</td>
 			</tr>
-			<tr><td>제품 총 페이지수</td><td><input name="goods_total_page" type="text" size="40" /></td></tr>
-            <tr><td>ISBN</td><td><input name="goods_isbn" type="text" size="40" /></td></tr>
-            <tr><td>제품 배송비</td><td><input name="goods_delivery_price" type="text" size="40" /></td></tr>
+			<tr><td>제품 총 페이지수</td><td><input name="goodsTotalPage" type="text" size="40" /></td></tr>
+            <tr><td>ISBN</td><td><input name="goodsIsbn" type="text" size="40" /></td></tr>
+            <tr><td>제품 배송비</td><td><input name="goodsDeliveryPrice" type="text" size="40" /></td></tr>
             
 			<tr><td>제품 도착 예정일</td>
 				<td>
-					<input name="goods_delivery_date" type="date" size="40" 
+					<input name="goodsDeliveryDate" type="date" size="40" 
 							th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" />
 				</td>
 			</tr>
             <tr>
               <td>제품종류</td>
               <td>
-                <select name="goods_status">
+                <select name="goodsStatus">
                   <option value="bestseller">베스트셀러</option>
                   <option value="steadyseller">스테디셀러</option>
                   <option value="newbook" selected>신간</option>
@@ -200,35 +150,35 @@
         <div class="tab_content" id="tab2">
           <h4>책목차</h4>
           <table>
-            <tr><td>책목차</td><td><textarea rows="100" cols="80" name="goods_contents_order"></textarea></td></tr>
+            <tr><td>책목차</td><td><textarea rows="100" cols="80" name="goodsContentsOrder"></textarea></td></tr>
           </table>
         </div>
 
        <div class="tab_content" id="tab3">
          <h4>제품 저자 소개</h4>
           <table>
-            <tr><td>제품 저자 소개</td><td><textarea rows="100" cols="80" name="goods_writer_intro"></textarea></td></tr>
+            <tr><td>제품 저자 소개</td><td><textarea rows="100" cols="80" name="goodsWriterIntro"></textarea></td></tr>
           </table>
         </div>
 
         <div class="tab_content" id="tab4">
           <h4>제품소개</h4>
           <table>
-            <tr><td>제품소개</td><td><textarea rows="100" cols="80" name="goods_intro"></textarea></td></tr>
+            <tr><td>제품소개</td><td><textarea rows="100" cols="80" name="goodsIntro"></textarea></td></tr>
           </table>
         </div>
 
         <div class="tab_content" id="tab5">
           <h4>출판사 제품 평가</h4>
           <table>
-            <tr><td>출판사 제품 평가</td><td><textarea rows="100" cols="80" name="goods_publisher_comment"></textarea></td></tr>
+            <tr><td>출판사 제품 평가</td><td><textarea rows="100" cols="80" name="goodsPublisherComment"></textarea></td></tr>
           </table>
         </div>
 
         <div class="tab_content" id="tab6">
           <h4>추천사</h4>
           <table>
-            <tr><td>추천사</td><td><textarea rows="100" cols="80" name="goods_recommendation"></textarea></td></tr>
+            <tr><td>추천사</td><td><textarea rows="100" cols="80" name="goodsRecommendation"></textarea></td></tr>
           </table>
         </div>
         <div class="tab_content" id="tab7">

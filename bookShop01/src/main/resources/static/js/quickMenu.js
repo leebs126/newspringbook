@@ -12,10 +12,10 @@
 	    // 다음 인덱스로 이동, 마지막이면 다시 처음으로 (챗gpt 이용해서 수정))
 	    array_index = (array_index + 1) % totalGoods;
 
-	    var goods_id = _h_goods_id[array_index].value;
+	    var goodsId = _h_goods_id[array_index].value;
 	    var fileName = _h_goods_fileName[array_index].value;
 
-	    img_sticky.src = SERVER_URL + "?goods_id=" + goods_id + "&fileName=" + fileName;
+	    img_sticky.src = SERVER_URL + "?goodsId=" + goodsId + "&fileName=" + fileName;
 	    cur_goods_num.innerHTML = array_index + 1;
 	}
 
@@ -29,9 +29,9 @@
 	if(array_index >0)
 		array_index--;
 	
-	var goods_id=_h_goods_id[array_index].value;
+	var goodsId=_h_goods_id[array_index].value;
 	var fileName=_h_goods_fileName[array_index].value;
-	img_sticky.src=SERVER_URL+"?goods_id="+goods_id+"&fileName="+fileName;
+	img_sticky.src=SERVER_URL+"?goodsId="+goodsId+"&fileName="+fileName;
 	cur_goods_num.innerHTML=array_index+1;
 }
 
@@ -44,22 +44,22 @@ function goodsDetail(){
 	var len=h_goods_id.length;
 	
 	if(len>1){
-		goods_id=h_goods_id[arrIdx].value;
+		goodsId=h_goods_id[arrIdx].value;
 	}else{
-		goods_id=h_goods_id.value;
+		goodsId=h_goods_id.value;
 	}
 	
 	
 	var formObj=document.createElement("form");
 	var i_goods_id = document.createElement("input"); 
     
-	i_goods_id.name="goods_id";
-	i_goods_id.value=goods_id;
+	i_goods_id.name="goodsId";
+	i_goods_id.value=goodsId;
 	
     formObj.appendChild(i_goods_id);
     document.body.appendChild(formObj); 
     formObj.method="get";
-    formObj.action="/goods/goodsDetail.do?goods_id="+goods_id;
+    formObj.action="/goods/goodsDetail.do?goodsId="+goodsId;
     formObj.submit();
 	
 	
