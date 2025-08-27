@@ -22,7 +22,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	@Autowired
 	private AdminOrderDAO adminOrderDAO;
 	
-	public Map<String, Object>  listNewOrders(Map condMap) throws Exception{
+	public Map<String, Object>  listNewOrders(Map<String,Object> condMap) throws Exception{
 		Map<String, Object> newOrderMap =new HashMap<String, Object>();
 		List<OrderVO> newOrdersList = adminOrderDAO.selectNewOrdersList(condMap);
 		int totalOrdersCount = adminOrderDAO.selectTotalOrders(condMap);
@@ -34,14 +34,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	}
 	
 	@Override
-	public void  modifyDeliveryState(Map deliveryMap) throws Exception {
+	public void  modifyDeliveryState(Map<String, String> deliveryMap) throws Exception {
 		adminOrderDAO.updateDeliveryState(deliveryMap);
 	}
 	
 	
 	@Override
-	public Map adminOrderDetail(int orderId) throws Exception {
-		Map orderDataMap=new HashMap();
+	public Map<String, Object> adminOrderDetail(int orderId) throws Exception {
+		Map<String, Object> orderDataMap=new HashMap<>();
 		ArrayList<OrderVO> orderList =adminOrderDAO.selectAdminOrderDetail(orderId);
 		OrderVO deliveryInfo=(OrderVO)orderList.get(0);
 		String memberId=(String)deliveryInfo.getMemberId();

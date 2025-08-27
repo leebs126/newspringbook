@@ -14,7 +14,7 @@
 	.bg-lightgray { background-color: lightgray; }
 	.bg-orange { background-color: orange; }	
 </style>
-<script th:if="${order_goods_list != null}">
+<script th:if="${newOrdersMap != null}">
 window.onload = function() {
     init();
 };
@@ -58,7 +58,7 @@ function  calcPeriod(search_period){
 	var beginDate,endDate;
 	
 	endYear = dt.getFullYear();
-	endMonth = dt.getMonth()+1;
+	endMonth = dt.getMonth() + 1;
 	endDay = dt.getDate();
 	if(search_period=='today'){
 		beginYear=endYear;
@@ -115,8 +115,8 @@ function  calcPeriod(search_period){
 	return beginDate+","+endDate;
 }
 
-function fn_modify_order_state(order_id, select_id){
-	var s_delivery_state=document.getElementById(select_id);
+function fn_modify_order_state(orderId, selectId){
+	var s_delivery_state=document.getElementById(selectId);
     var index = s_delivery_state.selectedIndex;
     var value = s_delivery_state[index].value;
 	 
@@ -125,20 +125,20 @@ function fn_modify_order_state(order_id, select_id){
 		async : false,
 		url : "/admin/order/modifyDeliveryState.do",
 		data : {
-			order_id:order_id,
-			"delivery_state":value
+			orderId:orderId,
+			deliveryState:value
 		},
 		success : function(data, textStatus) {
-			if(data.trim()=='mod_success'){
+			if(data.trim()=='modSuccess'){
 				alert("배송 정보를 수정했습니다.");
 				location.href="/admin/order/adminOrderMain.do";
-			}else if(data.trim()=='failed'){
+			}else{
 				alert("다시 시도해 주세요.");	
 			}
 			
 		},
 		error : function(data, textStatus) {
-			alert("에러가 발생했습니다."+data);
+			alert("에러가 발생했습니다." + data);
 		},
 		complete : function(data, textStatus) {
 			//alert("작업을완료 했습니다");
@@ -228,7 +228,7 @@ function fn_detail_search(){
     var i_search_section = document.createElement("input");
 	var i_search_pageNum = document.createElement("input");
 	
-    i_command.name="command";
+//    i_command.name="command";
     i_beginDate.name="beginDate";
     i_endDate.name="endDate";
     i_search_type.name="searchType";
@@ -236,7 +236,7 @@ function fn_detail_search(){
     i_search_section.name="section";
 	i_search_pageNum.name="pageNum";
 	
-    i_command.value="list_detail_order_goods";
+  //  i_command.value="list_detail_order_goods";
 	i_beginDate.value=beginYear+"-"+beginMonth+"-"+beginDay;
     i_endDate.value=endYear+"-"+endMonth+"-"+endDay;
     i_search_type.value=search_type;
@@ -245,7 +245,7 @@ function fn_detail_search(){
 	i_search_pageNum.value="1";
 
 		
-    formObj.appendChild(i_command);
+    //formObj.appendChild(i_command);
     formObj.appendChild(i_beginDate);
     formObj.appendChild(i_endDate);
     formObj.appendChild(i_search_type);
@@ -381,40 +381,40 @@ function fn_detail_search(){
                 <td>배송상태</td>
                 <td>배송수정</td>
             </tr>
-			<tr th:each="entry,iStat : ${newOrdersMap}"
-			    th:with="newOrderList=${entry.value}"
+			<tr th:each="entry, iStat : ${newOrdersMap}"
+			    th:with="newOrdersList=${entry.value}"
 			    th:classappend="${
-			        newOrderList[0].delivery_state == 'delivery_prepared' ? 'bg-lightgreen' :
-			        (newOrderList[0].delivery_state == 'finished_delivering' ? 'bg-lightgray' : 'bg-orange')
+			        newOrdersList[0].deliveryState == 'delivery_prepared' ? 'bg-lightgreen' :
+			        (newOrdersList[0].deliveryState == 'finished_delivering' ? 'bg-lightgray' : 'bg-orange')
 			    }">
 				  <td>
 					<a th:href="'javascript:fn_detail_order(' + ${entry.key} + ')'">
 					    <strong th:text="${entry.key}"></strong>
 					</a>
 			      </td>
-				  <th:block th:with="newOrderList=${entry.value}">
-				  <td th:if="${#lists.size(newOrderList) > 0}" th:text="${newOrderList[0].pay_order_time}">주문일자</td>
+				  <th:block th:with="newOrdersList=${entry.value}">
+				  <td th:if="${#lists.size(newOrdersList) > 0}" th:text="${newOrdersList[0].payOrderTime}">주문일자</td>
 				  <td align='left' style="padding-left:100px;">
 				    <ul>
 				      <li th:each="item : ${entry.value}">
-				        <span th:text="${item.goods_title}"></span> /
-				        <span th:text="${item.order_goods_qty}"></span>개
+				        <span th:text="${item.goodsTitle}"></span> /
+				        <span th:text="${item.orderGoodsQty}"></span>개
 				      </li>
 				    </ul>
 				  </td>
 				  <td>
 					<select th:id="'s_delivery_state' + ${iStat.index}">
-	                     <option value="delivery_prepared" th:selected="${newOrderList[0].delivery_state=='delivery_prepared'}">배송준비중</option>
-	                     <option value="delivering" th:selected="${newOrderList[0].delivery_state=='delivering'}">배송중</option>
-	                     <option value="finished_delivering" th:selected="${newOrderList[0].delivery_state=='finished_delivering'}">배송완료</option>
-	                     <option value="cancel_order" th:selected="${newOrderList[0].delivery_state=='cancel_order'}">주문취소</option>
-	                     <option value="returning_goods" th:selected="${newOrderList[0].delivery_state=='returning_goods'}">반품</option>
+	                     <option value="delivery_prepared" th:selected="${newOrdersList[0].deliveryState=='delivery_prepared'}">배송준비중</option>
+	                     <option value="delivering" th:selected="${newOrdersList[0].deliveryState=='delivering'}">배송중</option>
+	                     <option value="finished_delivering" th:selected="${newOrdersList[0].deliveryState=='finished_delivering'}">배송완료</option>
+	                     <option value="cancel_order" th:selected="${newOrdersList[0].deliveryState=='cancel_order'}">주문취소</option>
+	                     <option value="returning_goods" th:selected="${newOrdersList[0].deliveryState=='returning_goods'}">반품</option>
 					 </select>
 					
 				  </td>
 				  <td>
 			       <input  type="button" value="배송수정" 
-				   				th:onclick="'fn_modify_order_state(' + ${newOrderList[0].order_id} + ', \'s_delivery_state' + ${iStat.index} + '\')'">
+				   				th:onclick="'fn_modify_order_state(' + ${newOrdersList[0].orderId} + ', \'s_delivery_state' + ${iStat.index} + '\')'">
 				  </th:block>
 				</tr>
             <tr>

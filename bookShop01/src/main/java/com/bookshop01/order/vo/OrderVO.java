@@ -13,6 +13,7 @@ public class OrderVO {
 	private int goodsId;
 	private String goodsTitle;
 	private int goodsSalesPrice;
+	private int goodsDiscountPrice; //각 상품할인금액
 	private int totalGoodsPrice;
 	private int cartGoodsQty; //장바구니에 담긴 상품수
 	private int orderGoodsQty; //최종 주문 상품수

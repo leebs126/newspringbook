@@ -116,7 +116,7 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		String message = null;
 		ResponseEntity resEntity = null;
 		HttpHeaders responseHeaders = new HttpHeaders();
-		message  = "mod_success";
+		message  = "modSuccess";
 		resEntity =new ResponseEntity(message, responseHeaders, HttpStatus.OK);
 		return resEntity;
 		
@@ -181,7 +181,7 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 			throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
-		Map orderDataMap =adminOrderService.adminOrderDetail(orderId);
+		Map<String, Object> orderDataMap =adminOrderService.adminOrderDetail(orderId);
 		List<OrderVO> orderList= (List<OrderVO>)orderDataMap.get("orderList");
 		Map<String, List<OrderVO>> orderMap = new HashMap<>();
 		orderMap.put("orderList", orderList);
@@ -190,23 +190,32 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 		
 		
 		int finalTotalOrderPrice = 0;  //최종결제금액
-		int totalOrderPrice = 0; 		//총주문액
+		int totalOrderGoodsPrice = 0; 		//총주문액
 		int totalDeliveryPrice = 0;		//총배송비
 		int totalDiscountedPrice = 0;	//총할인액
 		int totalOrderGoodsQty = 0; 	//총주문개수
 		int orderGoodsQty = 0;			//총주문수량
+		int goodsDiscountPrice = 0;    //각상품 할인판매금액
 		for (OrderVO orderVO : orderList) {
 			orderGoodsQty = orderVO.getOrderGoodsQty();
-			totalOrderPrice+= orderVO.getGoodsPrice() * orderGoodsQty;
+			totalOrderGoodsPrice+= orderVO.getGoodsPrice() * orderGoodsQty;
 			totalDeliveryPrice += orderVO.getGoodsDeliveryPrice();
 			totalOrderGoodsQty+= orderGoodsQty;
+			goodsDiscountPrice = (int)(orderVO.getGoodsPrice() * GOODS_DISCOUNT_RATE);
+			orderVO.setGoodsDiscountPrice(goodsDiscountPrice);
 		}
 		
-		totalDiscountedPrice = (int)(totalOrderPrice * 0.1);  //10프로 할인
-		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
+		if(totalOrderGoodsPrice >=AVAILABLE_DELIVERY_ORDER_PRICE) {
+			totalDeliveryPrice = 0;
+		}else {
+			totalDeliveryPrice = GOODS_DELIVERY_PRICE; //1건당 배송비 1500원
+		}
+		
+		totalDiscountedPrice = (int)(totalOrderGoodsPrice * GOODS_DISCOUNT_RATE);  //10프로 할인
+		finalTotalOrderPrice = totalOrderGoodsPrice - totalDiscountedPrice;
 		
 		mav.addObject("finalTotalOrderPrice", finalTotalOrderPrice);
-		mav.addObject("totalOrderPrice", totalOrderPrice);
+		mav.addObject("totalOrderGoodsPrice", totalOrderGoodsPrice);
 		mav.addObject("totalOrderGoodsQty", totalOrderGoodsQty);
 		mav.addObject("totalDeliveryPrice", totalDeliveryPrice);
 		mav.addObject("totalDiscountedPrice", totalDiscountedPrice);

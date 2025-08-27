@@ -9,7 +9,7 @@
 <body>
 <section>
 <script type="text/javascript" th:inline="javascript">
-	function fn_modify_delivery_state(_order_id){
+	function fn_modify_delivery_state(orderId){
 	    var s_delivery_state = document.getElementById("s_delivery_state");
 	    var index = s_delivery_state.selectedIndex;
 	    var value = s_delivery_state[index].value;
@@ -19,14 +19,14 @@
 	        async : false,
 	        url : "/admin/order/modifyDeliveryState.do",
 	        data : {
-	            order_id: _order_id,
-	            'delivery_state': value
+	            orderId: orderId,
+	            deliveryState : value
 	        },
 	        success : function(data) {
-	            if(data.trim() === 'mod_success'){
+	            if(data.trim() === 'modSuccess'){
 	                alert("배송 정보를 수정했습니다.");
 	               // location.href = "/admin/order/admiinOrderDetail.do?order_id=" + _order_id;
-	            } else if(data.trim() === 'failed'){
+	            } else{
 	                alert("다시 시도해 주세요.");
 	            }
 	        },
@@ -45,7 +45,8 @@
             <td>수량</td>
             <td>정가</td>
             <td>예상적립금</td>
-			<td>주문금액</td>
+			<td>할인액(10%)</td>
+			<td>결제금액</td>
 			<td>배송비</td>
             <td>총주문금액</td>
         </tr>
@@ -54,27 +55,28 @@
 	        <tr th:each="item, iterStat : ${orderList}">
 	            <!--<td th:text="${orderId}"></td>-->
 				<td th:if="${iterStat.index == 0}" th:rowspan="${#lists.size(orderList)}" style="background-color: #d0ebff;" >
-					<h2 th:text="${item.order_id}"></h2>
+					<h2 th:text="${item.orderId}"></h2>
 				</td>
 	            <td class="goods_image">
-	                <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}">
-	                    <img width="75" th:src="@{/thumbnails.do(goods_id=${item.goods_id},fileName=${item.goods_fileName})}" alt="">
+	                <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}">
+	                    <img width="75" th:src="@{/thumbnails.do(goodsId=${item.goodsId},fileName=${item.goodsFileName})}" alt="">
 	                </a>
 	            </td>
 	            <td>
 	                <h2>
-	                    <a th:href="@{/goods/goodsDetail.do(goods_id=${item.goods_id})}" 
-	                       th:text="${item.goods_title}"></a>
+	                    <a th:href="@{/goods/goodsDetail.do(goodsId=${item.goodsId})}" 
+	                       th:text="${item.goodsTitle}"></a>
 	                </h2>
 	            </td>
-	            <td><h2 th:text="${item.order_goods_qty} + '개'"></h2></td>
-	            <td><h2 th:text="${item.goods_price} + '원'"></h2></td>
-	            <td><h2 th:text="${1500 * item.order_goods_qty} + '원'"></h2></td>
-				<td><h2 th:text="${item.goods_sales_price} + '원'"></h2></td>
+	            <td><h2 th:text="${item.orderGoodsQty} + '개'"></h2></td>
+	            <td><h2 th:text="${item.goodsPrice} + '원'"></h2></td>
+	            <td><h2 th:text="${1500 * item.orderGoodsQty} + '원'"></h2></td>
+				<td><h2 th:text="${item.orderGoodsQty * item.goodsDiscountPrice} + '원'"></h2></td>
+				<td><h2 th:text="${item.orderGoodsQty * item.goodsSalesPrice} + '원'"></h2></td>
 				<td th:if="${iterStat.index == 0}"				
 					th:rowspan="${#lists.size(orderList)}" 
 					style="background-color: #a9a9a9;">
-					<h2 th:text="${finalTotalOrderPrice >= 15000 ? '0원' : '1500원'}"></h2>
+					<h2 th:text="${totalDeliveryPrice}"></h2>
 				</td>
 				<td th:if="${iterStat.index == 0}" 
 			    	  th:rowspan="${#lists.size(orderList)}" 
@@ -97,31 +99,31 @@
             <tbody>
                 <tr class="dot_line">
                     <td class="fixed_join">배송방법</td>
-                    <td th:text="${orderDataMap.deliveryInfo.delivery_method}"></td>
+                    <td th:text="${orderDataMap.deliveryInfo.deliveryMethod}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">받으실 분</td>
-                    <td th:text="${orderDataMap.deliveryInfo.receiver_name}"></td>
+                    <td th:text="${orderDataMap.deliveryInfo.receiverName}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">휴대폰번호</td>
-                    <td th:text="${orderDataMap.deliveryInfo.receiver_hp1} + '-' + ${orderDataMap.deliveryInfo.receiver_hp2} + '-' + ${orderDataMap.deliveryInfo.receiver_hp3}"></td>
+                    <td th:text="${orderDataMap.deliveryInfo.receiverHp1} + '-' + ${orderDataMap.deliveryInfo.receiverHp2} + '-' + ${orderDataMap.deliveryInfo.receiverHp3}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">유선전화(선택)</td>
-                    <td th:text="${orderDataMap.deliveryInfo.receiver_tel1} + '-' + ${orderDataMap.deliveryInfo.receiver_tel2} + '-' + ${orderDataMap.deliveryInfo.receiver_tel3}"></td>
+                    <td th:text="${orderDataMap.deliveryInfo.receiverTel1} + '-' + ${orderDataMap.deliveryInfo.receiverTel2} + '-' + ${orderDataMap.deliveryInfo.receiverTel3}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">주소</td>
-                    <td th:utext="${orderDataMap.deliveryInfo.delivery_address}"></td>
+                    <td th:utext="${orderDataMap.deliveryInfo.deliveryAddress}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">배송 메시지</td>
-                    <td th:text="${orderDataMap.deliveryInfo.delivery_message}"></td>
+                    <td th:text="${orderDataMap.deliveryInfo.deliveryMessage}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">선물 포장</td>
-                    <td th:text="${orderDataMap.deliveryInfo.gift_wrapping}"></td>
+                    <td th:text="${orderDataMap.deliveryInfo.giftWrapping}"></td>
                 </tr>
             </tbody>
         </table>
@@ -134,7 +136,7 @@
             <tbody>
                 <tr class="dot_line">
                     <td><h2>이름</h2></td>
-                    <td><input type="text" th:value="${orderDataMap.orderer.member_name}" size="15" disabled></td>
+                    <td><input type="text" th:value="${orderDataMap.orderer.memberName}" size="15" disabled></td>
                 </tr>
                 <tr class="dot_line">
                     <td><h2>핸드폰</h2></td>
@@ -155,15 +157,15 @@
             <tbody>
                 <tr class="dot_line">
                     <td class="fixed_join">결제방법</td>
-                    <td th:utext="${orderDataMap.deliveryInfo.pay_method}"></td>
+                    <td th:utext="${orderDataMap.deliveryInfo.payMethod}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">결제카드</td>
-                    <td th:text="${orderDataMap.deliveryInfo.card_com_name}"></td>
+                    <td th:text="${orderDataMap.deliveryInfo.cardComName}"></td>
                 </tr>
                 <tr class="dot_line">
                     <td class="fixed_join">할부기간</td>
-                    <td th:text="${orderDataMap.deliveryInfo.card_pay_month}"></td>
+                    <td th:text="${orderDataMap.deliveryInfo.cardPayMonth}"></td>
                 </tr>
             </tbody>
         </table>
@@ -177,17 +179,17 @@
                 <tr class="dot_line">
                     <td>
                         <select name="s_delivery_state" id="s_delivery_state">
-                            <option value="delivery_prepared" th:selected="${orderDataMap.deliveryInfo.delivery_state == 'delivery_prepared'}">배송준비중</option>
-                            <option value="delivering" th:selected="${orderDataMap.deliveryInfo.delivery_state == 'delivering'}">배송중</option>
-                            <option value="finished_delivering" th:selected="${orderDataMap.deliveryInfo.delivery_state == 'finished_delivering'}">배송완료</option>
-                            <option value="cancel_order" th:selected="${orderDataMap.deliveryInfo.delivery_state == 'cancel_order'}">주문취소</option>
-                            <option value="returning_goods" th:selected="${orderDataMap.deliveryInfo.delivery_state == 'returning_goods'}">반품</option>
+                            <option value="delivery_prepared" th:selected="${orderDataMap.deliveryInfo.deliveryState == 'delivery_prepared'}">배송준비중</option>
+                            <option value="delivering" th:selected="${orderDataMap.deliveryInfo.deliveryState == 'delivering'}">배송중</option>
+                            <option value="finished_delivering" th:selected="${orderDataMap.deliveryInfo.deliveryState == 'finished_delivering'}">배송완료</option>
+                            <option value="cancel_order" th:selected="${orderDataMap.deliveryInfo.deliveryState == 'cancel_order'}">주문취소</option>
+                            <option value="returning_goods" th:selected="${orderDataMap.deliveryInfo.deliveryState == 'returning_goods'}">반품</option>
                         </select>
-                        <input type="hidden" name="h_delivery_state" th:value="${orderDataMap.deliveryInfo.delivery_state}">
+                        <input type="hidden" name="h_delivery_state" th:value="${orderDataMap.deliveryInfo.deliveryState}">
                     </td>
                     <td width="10%">
                         <input type="button" value="배송수정"
-                               th:onclick="'fn_modify_delivery_state(' + ${orderDataMap.deliveryInfo.order_id} + ')'">
+                               th:onclick="'fn_modify_delivery_state(' + ${orderDataMap.deliveryInfo.orderId} + ')'">
                     </td>
                 </tr>
             </tbody>

@@ -13,4 +13,5 @@ public class CartVO {
 	private int cartGoodsQty;
 	private String creDate;
 	private int goodsPrice;
+	private int goodsDiscountPrice;
 }

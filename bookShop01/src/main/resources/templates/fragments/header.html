@@ -72,7 +72,7 @@
         <ul>
             <li th:if="${session.isLogOn}"><a th:href="@{/member/logout.do}">로그아웃</a></li>
             <li th:if="${session.isLogOn}"><a th:href="@{/mypage/myPageMain.do}">마이페이지</a></li>
-            <li th:if="${session.isLogOn}"><a th:href="@{/cart/myCartList.do}">장바구니</a></li>
+            <li th:if="${session.isLogOn}"><a th:href="@{/cart/myCartMain.do}">장바구니</a></li>
             <li th:if="${session.isLogOn}"><a href="#">주문배송</a></li>
             <li th:unless="${session.isLogOn}"><a th:href="@{/member/loginForm.do}">로그인</a></li>
             <li th:unless="${session.isLogOn}"><a th:href="@{/member/memberForm.do}">회원가입</a></li>

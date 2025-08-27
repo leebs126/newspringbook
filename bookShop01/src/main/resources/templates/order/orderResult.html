@@ -42,11 +42,11 @@
             <td><h2 th:text="${item.goodsPrice} + '원'"></h2></td>
             <td><h2>0원</h2></td>
             <td><h2 th:text="${1500 * item.orderGoodsQty} + '원'"></h2></td>
-			<td><h2 th:text="${session.totalDiscountedPrice} + '원'"></h2></td>
+			<td><h2 th:text="${item.orderGoodsQty * item.goodsDiscountPrice} + '원'"></h2></td>
 			<td th:if="${iterStat.index == 0}" 
 		    	  th:rowspan="${#lists.size(myOrderList)}" 
 		     			 style="background-color: #e0f7da;">
-		    	<h2 th:text="${session.finalTotalOrderPrice} + '원'"></h2>
+		    	<h2 th:text="${session.finalTotalOrdersPrice} + '원'"></h2>
 		 	</td>
           </tr>
 		   </th:block>

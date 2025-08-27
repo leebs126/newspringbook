@@ -1,7 +1,9 @@
 package com.bookshop01.cart.controller;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -18,6 +20,7 @@ import com.bookshop01.cart.service.CartService;
 import com.bookshop01.cart.vo.CartVO;
 import com.bookshop01.common.base.BaseController;
 import com.bookshop01.member.vo.MemberVO;
+import com.bookshop01.order.vo.OrderVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,7 +39,7 @@ public class CartControllerImpl extends BaseController implements CartController
 	
 	
 	@Override
-	@GetMapping(value="/myCartList.do")
+	@GetMapping(value="/myCartMain.do")
 	public ModelAndView myCartMain(HttpServletRequest request, HttpServletResponse response)  throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
@@ -51,17 +54,24 @@ public class CartControllerImpl extends BaseController implements CartController
 		int totalOrderGoodsPrice = 0; //총상품주문액
 		int finalTotalOrderPrice = 0;    //최종결제비
 		int totalDiscountedPrice = 0; //총할인금액
+		int totalNormalGoodsPrice = 0; //주문 정가 총액
+		int OrderGoodsQty = 0;  //각상품별 주문수량개수
+		int goodsDiscountPrice = 0;    //각상품 할인판매금액
 		if(cartMap ==null) {
 			session.setAttribute("cartMap", null);
 		}else {
 			session.setAttribute("cartMap", cartMap);  				//장바구니 목록 화면에서 상품 주문 시 사용하기 위해서 장바구니 목록을 세션에 저장한다.
 			List<CartVO> myCartList = cartMap.get("myCartList");
 			
+			
 			for(CartVO cartVO : myCartList) {
-				totalOrderGoodsQty += cartVO.getCartGoodsQty();
-				totalOrderGoodsPrice += (cartVO.getCartGoodsQty() * cartVO.getGoodsPrice());
+				OrderGoodsQty = cartVO.getCartGoodsQty();
+				totalOrderGoodsPrice += (OrderGoodsQty * cartVO.getGoodsPrice());
+				totalOrderGoodsQty += OrderGoodsQty;
+				goodsDiscountPrice = (int)(cartVO.getGoodsPrice() * GOODS_DISCOUNT_RATE);
+				cartVO.setGoodsDiscountPrice(goodsDiscountPrice);
 			}
-			totalOrderGoodsPrice=totalOrderGoodsPrice - (int)(totalOrderGoodsPrice*GOODS_DISCOUNT_RATE);
+			totalNormalGoodsPrice = totalOrderGoodsPrice - (int)(totalOrderGoodsPrice * GOODS_DISCOUNT_RATE);
 		}
 		if(totalOrderGoodsPrice >=AVAILABLE_DELIVERY_ORDER_PRICE) {
 			totalDeliveryPrice = 0;
@@ -69,8 +79,8 @@ public class CartControllerImpl extends BaseController implements CartController
 			totalDeliveryPrice = GOODS_DELIVERY_PRICE; //1건당 배송비 1500원
 		}
 		
-		finalTotalOrderPrice = totalOrderGoodsPrice + totalDeliveryPrice;
-		totalDiscountedPrice = (int)(totalOrderGoodsPrice * 0.1);
+		finalTotalOrderPrice = totalNormalGoodsPrice + totalDeliveryPrice;
+		totalDiscountedPrice = (int)(totalOrderGoodsPrice * GOODS_DISCOUNT_RATE);
 		
 		mav.addObject("totalOrderGoodsQty", totalOrderGoodsQty);
 		mav.addObject("totalDeliveryPrice", totalDeliveryPrice);
@@ -135,7 +145,8 @@ public class CartControllerImpl extends BaseController implements CartController
 			                          HttpServletRequest request, HttpServletResponse response)  throws Exception{
 		ModelAndView mav=new ModelAndView();
 		cartService.removeCartGoods(cartId);
-		mav.setViewName("redirect:/cart/myCartList.do");
+		mav.setViewName("redirect:/cart/myCartMain.do");
 		return mav;
 	}
+	
 }

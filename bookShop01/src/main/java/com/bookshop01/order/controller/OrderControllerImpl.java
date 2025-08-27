@@ -111,7 +111,7 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		}
 		
 		//최종결제금액, 총주문액, 총배송비,총할인액을 구해서 session에 저장하는 메서드
-		calcOrderGoodsInfo(request,myOrderList);
+		calcOrderGoodsInfo(request, myOrderList);
 		
 		return mav;
 	}	
@@ -180,26 +180,35 @@ public class OrderControllerImpl extends BaseController implements OrderControll
 		Map<Integer, List<OrderVO>> myOrderMap = new TreeMap<>(Comparator.reverseOrder());
 		myOrderMap.put(orderSeq++, myOrderList);
 		
-		int finalTotalOrderPrice = 0;  //최종결제금액
-		int totalOrderPrice = 0; 		//총주문액
+		int finalTotalOrdersPrice = 0;  //최종결제금액
+		int totalOrderGoodsPrice = 0; 		//총주문액
 		int totalDeliveryPrice = 0;		//총배송비
 		int totalDiscountedPrice = 0;	//총할인액
 		int totalOrderGoodsQty = 0; 	//총주문개수
 		int orderGoodsQty = 0;			//총주문수량
+		int goodsDiscountPrice = 0;    //각상품 할인판매금액
 		for (OrderVO orderVO : myOrderList) {
 			orderGoodsQty = orderVO.getOrderGoodsQty();
-			totalOrderPrice+= orderVO.getGoodsPrice() * orderGoodsQty;
-			totalDeliveryPrice += orderVO.getGoodsDeliveryPrice();
+			totalOrderGoodsPrice+= orderVO.getGoodsPrice() * orderGoodsQty;
 			totalOrderGoodsQty+= orderGoodsQty;
+			goodsDiscountPrice = (int)(orderVO.getGoodsPrice() * GOODS_DISCOUNT_RATE);
+			orderVO.setGoodsDiscountPrice(goodsDiscountPrice);
 		}
 		
-		totalDiscountedPrice = (int)(totalOrderPrice * GOODS_DISCOUNT_RATE);  //10프로 할인
-		finalTotalOrderPrice = totalOrderPrice - totalDiscountedPrice;
+		totalDiscountedPrice = (int)(totalOrderGoodsPrice * GOODS_DISCOUNT_RATE);  //10프로 할인
+		
+		if(totalOrderGoodsPrice >=AVAILABLE_DELIVERY_ORDER_PRICE) {
+			totalDeliveryPrice = 0;
+		}else {
+			totalDeliveryPrice = GOODS_DELIVERY_PRICE; //1건당 배송비 1500원
+		}
+		
+		finalTotalOrdersPrice = totalOrderGoodsPrice - totalDiscountedPrice;
 		
 		session.setAttribute("myOrderMap", myOrderMap);
 		session.setAttribute("orderer", orderer);
-		session.setAttribute("finalTotalOrderPrice", finalTotalOrderPrice);
-		session.setAttribute("totalOrderPrice", totalOrderPrice);
+		session.setAttribute("finalTotalOrdersPrice", finalTotalOrdersPrice);
+		session.setAttribute("totalOrderGoodsPrice", totalOrderGoodsPrice);
 		session.setAttribute("totalOrderGoodsQty", totalOrderGoodsQty);
 		session.setAttribute("totalDeliveryPrice", totalDeliveryPrice);
 		session.setAttribute("totalDiscountedPrice", totalDiscountedPrice);
