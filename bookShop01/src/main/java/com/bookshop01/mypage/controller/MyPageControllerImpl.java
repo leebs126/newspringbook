@@ -146,11 +146,15 @@ public class MyPageControllerImpl extends BaseController  implements MyPageContr
 		int totalDiscountedPrice = 0;	//총할인액
 		int totalOrderGoodsQty = 0; 	//총주문개수
 		int orderGoodsQty = 0;			//총주문수량
+		int goodsDiscountPrice = 0;    //각상품 할인액
 		for (OrderVO orderVO : _myOrderList) {
 			orderGoodsQty = orderVO.getOrderGoodsQty();
 			totalOrderPrice+= orderVO.getGoodsPrice() * orderGoodsQty;
 			totalDeliveryPrice += orderVO.getGoodsDeliveryPrice();
 			totalOrderGoodsQty+= orderGoodsQty;
+			
+			goodsDiscountPrice = (int)(orderVO.getGoodsPrice() * GOODS_DISCOUNT_RATE);
+			orderVO.setGoodsDiscountPrice(goodsDiscountPrice);
 		}
 		
 		totalDiscountedPrice = (int)(totalOrderPrice * GOODS_DISCOUNT_RATE);  //10% 할인

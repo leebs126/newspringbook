@@ -24,7 +24,7 @@
           <th>배송비</th>
           <th>예상적립금</th>
 		  <th>정가</th>
-          <th>할인가<br>(10% 할인)</th>
+          <th>할인액<br>(10%)</th>
           <th>총주문금액</th>
         </tr>
 		<th:block th:each="entry : ${myOrderMap}">
@@ -48,7 +48,7 @@
 			  <td><span th:text="${1500 * item.orderGoodsQty} + '원'"></span></td>
 		      <td><span th:text="${item.goodsPrice} + '원'"></span></td>
 		      <td>
-				<span th:text="${item.goodsSalesPrice} + '원'"></span>
+				<span th:text="${item.goodsDiscountPrice} + '원'"></span>
 			  </td>
 		      
 		      

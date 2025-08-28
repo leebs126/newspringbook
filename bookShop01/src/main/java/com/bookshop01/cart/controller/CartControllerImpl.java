@@ -56,7 +56,7 @@ public class CartControllerImpl extends BaseController implements CartController
 		int totalDiscountedPrice = 0; //총할인금액
 		int totalNormalGoodsPrice = 0; //주문 정가 총액
 		int OrderGoodsQty = 0;  //각상품별 주문수량개수
-		int goodsDiscountPrice = 0;    //각상품 할인판매금액
+		int goodsDiscountPrice = 0;    //각상품 할인액
 		if(cartMap ==null) {
 			session.setAttribute("cartMap", null);
 		}else {
