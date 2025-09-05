@@ -17,71 +17,70 @@ import org.springframework.stereotype.Component;
 public class LoggingAdvice {
 	private static final Logger logger = LoggerFactory.getLogger(LoggingAdvice.class);
 
-	// target ¸Ş¼­µåÀÇ ÆÄ¶ó¹ÌÅÍµî Á¤º¸¸¦ Ãâ·ÂÇÕ´Ï´Ù.
+
+	// target ë©”ì„œë“œì˜ íŒŒë¼ë¯¸í„°ë“± ì •ë³´ë¥¼ ì¶œë ¥í•©ë‹ˆë‹¤.
 	@Before("execution(* com.bookshop01.*.service.*.*(..)) or "
-			+ "execution(* com.bookshop01.*.dao.*.*(..))")
+	        + "execution(* com.bookshop01.*.dao.*.*(..))")
 	public void startLog(JoinPoint jp) {
-
 		logger.info("-------------------------------------");
 		logger.info("-------------------------------------");
 
-		// Àü´ŞµÇ´Â ¸ğµç ÆÄ¶ó¹ÌÅÍµéÀ» ObjectÀÇ ¹è¿­·Î °¡Á®¿É´Ï´Ù. 
+		/* ì „ë‹¬ë˜ëŠ” ëª¨ë“  íŒŒë¼ë¯¸í„°ë“¤ì„ Objectì˜ ë°°ì—´ë¡œ ê°€ì ¸ì˜µë‹ˆë‹¤. */
 		logger.info("1:" + Arrays.toString(jp.getArgs()));
 
-		//ÇØ´ç AdviceÀÇ Å¸ÀÔÀ» ¾Ë¾Æ³À´Ï´Ù. 
+		/* í•´ë‹¹ Adviceì˜ íƒ€ì…ì„ ì•Œì•„ëƒ…ë‹ˆë‹¤. */
 		logger.info("2:" + jp.getKind());
 
-		// ½ÇÇàÇÏ´Â ´ë»ó °´Ã¼ÀÇ ¸Ş¼Òµå¿¡ ´ëÇÑ Á¤º¸¸¦ ¾Ë¾Æ³¾ ¶§ »ç¿ëÇÕ´Ï´Ù. 
+		/* ì‹¤í–‰í•˜ëŠ” ëŒ€ìƒ ê°ì²´ì˜ ë©”ì†Œë“œì— ëŒ€í•œ ì •ë³´ë¥¼ ì•Œì•„ë‚¼ ë•Œ ì‚¬ìš©í•©ë‹ˆë‹¤. */
 		logger.info("3:" + jp.getSignature().getName());
 
-		// target °´Ã¼¸¦ ¾Ë¾Æ³¾ ¶§ »ç¿ëÇÕ´Ï´Ù. 
+		/* target ê°ì²´ë¥¼ ì•Œì•„ë‚¼ ë•Œ ì‚¬ìš©í•©ë‹ˆë‹¤. */
 		logger.info("4:" + jp.getTarget().toString());
 
-		// Advice¸¦ ÇàÇÏ´Â °´Ã¼¸¦ ¾Ë¾Æ³¾ ¶§ »ç¿ëÇÕ´Ï´Ù. 
+		/* Adviceë¥¼ í–‰í•˜ëŠ” ê°ì²´ë¥¼ ì•Œì•„ë‚¼ ë•Œ ì‚¬ìš©í•©ë‹ˆë‹¤. */
 		logger.info("5:" + jp.getThis().toString());
 
 	}
 	
 	@After("execution(* com.bookshop01.*.service.*.*(..)) or "
-			+ "execution(* com.bookshop01.*.*.dao.*.*(..))")
+	        + "execution(* com.bookshop01.*.dao.*.*(..))")
 	public void after(JoinPoint jp) { 
 		logger.info("-------------------------------------");
 		logger.info("-------------------------------------");
 
-		// Àü´ŞµÇ´Â ¸ğµç ÆÄ¶ó¹ÌÅÍµéÀ» ObjectÀÇ ¹è¿­·Î °¡Á®¿É´Ï´Ù. 
+		// ì „ë‹¬ë˜ëŠ” ëª¨ë“  íŒŒë¼ë¯¸í„°ë“¤ì„ Objectì˜ ë°°ì—´ë¡œ ê°€ì ¸ì˜µë‹ˆë‹¤. 
 		logger.info("1:" + Arrays.toString(jp.getArgs()));
 
-		// ÇØ´ç AdviceÀÇ Å¸ÀÔÀ» ¾Ë¾Æ³À´Ï´Ù. 
+		// í•´ë‹¹ Adviceì˜ íƒ€ì…ì„ ì•Œì•„ëƒ…ë‹ˆë‹¤. 
 		logger.info("2:" + jp.getKind());
 
-		// ½ÇÇàÇÏ´Â ´ë»ó °´Ã¼ÀÇ ¸Ş¼Òµå¿¡ ´ëÇÑ Á¤º¸¸¦ ¾Ë¾Æ³¾ ¶§ »ç¿ëÇÕ´Ï´Ù.
+		// ì‹¤í–‰í•˜ëŠ” ëŒ€ìƒ ê°ì²´ì˜ ë©”ì†Œë“œì— ëŒ€í•œ ì •ë³´ë¥¼ ì•Œì•„ë‚¼ ë•Œ ì‚¬ìš©í•©ë‹ˆë‹¤.
 		logger.info("3:" + jp.getSignature().getName());
 
-		// target °´Ã¼¸¦ ¾Ë¾Æ³¾ ¶§ »ç¿ëÇÕ´Ï´Ù. 
+		// target ê°ì²´ë¥¼ ì•Œì•„ë‚¼ ë•Œ ì‚¬ìš©í•©ë‹ˆë‹¤. 
 		logger.info("4:" + jp.getTarget().toString());
 
-		// Advice¸¦ ÇàÇÏ´Â °´Ã¼¸¦ ¾Ë¾Æ³¾ ¶§ »ç¿ëÇÕ´Ï´Ù 
+		// Adviceë¥¼ í–‰í•˜ëŠ” ê°ì²´ë¥¼ ì•Œì•„ë‚¼ ë•Œ ì‚¬ìš©í•©ë‹ˆë‹¤ 
 		logger.info("5:" + jp.getThis().toString());
 	
 	}
 
 
-	// target ¸Ş¼ÒµåÀÇ µ¿ÀÛ ½Ã°£À» ÃøÁ¤ÇÕ´Ï´Ù.
+	// target ë©”ì†Œë“œì˜ ë™ì‘ ì‹œê°„ì„ ì¸¡ì •í•©ë‹ˆë‹¤.
 	@Around("execution(* com.bookshop01.*.service.*.*(..)) or "
-			+ "execution(* com.bookshop01.*.dao.*.*(..))")
+	        + "execution(* com.bookshop01.*.dao.*.*(..))")
 	public Object timeLog(ProceedingJoinPoint pjp) throws Throwable {
 		long startTime = System.currentTimeMillis();
 		logger.info(Arrays.toString(pjp.getArgs()));
 
-		// ½ÇÁ¦ Å¸°ÙÀ» ½ÇÇàÇÏ´Â ºÎºĞÀÌ´Ù. ÀÌ ºÎºĞÀÌ ¾øÀ¸¸é advice°¡ Àû¿ëµÈ ¸Ş¼Òµå°¡ µ¿ÀÛÇÏÁö¾Ê½À´Ï´Ù.
-		Object result = pjp.proceed(); // proceed´Â Exception º¸´Ù »óÀ§ ThrowableÀ» Ã³¸®ÇØ¾ß ÇÕ´Ï´Ù.
+		// ì‹¤ì œ íƒ€ê²Ÿì„ ì‹¤í–‰í•˜ëŠ” ë¶€ë¶„ì´ë‹¤. ì´ ë¶€ë¶„ì´ ì—†ìœ¼ë©´ adviceê°€ ì ìš©ëœ ë©”ì†Œë“œê°€ ë™ì‘í•˜ì§€ì•ŠìŠµë‹ˆë‹¤.
+		Object result = pjp.proceed(); // proceedëŠ” Exception ë³´ë‹¤ ìƒìœ„ Throwableì„ ì²˜ë¦¬í•´ì•¼ í•©ë‹ˆë‹¤.
 
 		long endTime = System.currentTimeMillis();
-		// target ¸Ş¼ÒµåÀÇ µ¿ÀÛ ½Ã°£À» Ãâ·ÂÇÑ´Ù.
-		logger.info(pjp.getSignature().getName() + " : " + (endTime - startTime)); 
+		logger.info(pjp.getSignature().getName() + " : " + (endTime - startTime)); // target ë©”ì†Œë“œì˜ ë™ì‘ ì‹œê°„ì„ ì¶œë ¥í•œë‹¤.
 		logger.info("==============================");
 
-		// Around¸¦ »ç¿ëÇÒ °æ¿ì ¹İµå½Ã Object¸¦ ¸®ÅÏÇØ¾ß ÇÕ´Ï´Ù.
+		// Aroundë¥¼ ì‚¬ìš©í•  ê²½ìš° ë°˜ë“œì‹œ Objectë¥¼ ë¦¬í„´í•´ì•¼ í•©ë‹ˆë‹¤.
 		return result;
 	}
 
