@@ -25,7 +25,7 @@
 	        success : function(data) {
 	            if(data.trim() === 'modSuccess'){
 	                alert("배송 정보를 수정했습니다.");
-	               // location.href = "/admin/order/admiinOrderDetail.do?order_id=" + _order_id;
+	               location.href = "/admin/order/admiinOrderDetail.do?orderId=" + orderId;
 	            } else{
 	                alert("다시 시도해 주세요.");
 	            }
@@ -70,7 +70,7 @@
 	            </td>
 	            <td><h2 th:text="${item.orderGoodsQty} + '개'"></h2></td>
 	            <td><h2 th:text="${item.orderGoodsQty * item.goodsPrice} + '원'"></h2></td>
-	            <td><h2 th:text="${1500 * item.orderGoodsQty} + '원'"></h2></td>
+	            <td><h2 th:text="${savingPoints * item.orderGoodsQty} + '원'"></h2></td>
 				<td><h2 th:text="${item.orderGoodsQty * item.goodsDiscountPrice} + '원'"></h2></td>
 				<td><h2 th:text="${item.orderGoodsQty * item.goodsSalesPrice} + '원'"></h2></td>
 				<td th:if="${iterStat.index == 0}"				

@@ -177,8 +177,9 @@ public class AdminOrderControllerImpl extends BaseController  implements AdminOr
 
 	@Override
 	@RequestMapping(value="/adminOrderDetail.do" ,method={RequestMethod.GET,RequestMethod.POST})
-	public ModelAndView adminOrderDetail(@RequestParam("orderId") int orderId, HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
+	public ModelAndView adminOrderDetail(@RequestParam("orderId") int orderId, 
+										HttpServletRequest request, 
+										HttpServletResponse response) throws Exception {
 		String viewName=(String)request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView(viewName);
 		Map<String, Object> orderDataMap =adminOrderService.adminOrderDetail(orderId);

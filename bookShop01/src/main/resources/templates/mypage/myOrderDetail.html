@@ -45,7 +45,7 @@
 				  <span th:text="${item.goodsTitle}"></span>/<span th:text="${item.orderGoodsQty}"></span>개
 		      </td>
 			 <td><span th:text="${item.goodsDeliveryPrice} + '원'"></span></td>
-			  <td><span th:text="${1500 * item.orderGoodsQty} + '원'"></span></td>
+			  <td><span th:text="${savingPoints * item.orderGoodsQty} + '원'"></span></td>
 		      <td><span th:text="${item.goodsPrice} + '원'"></span></td>
 		      <td>
 				<span th:text="${item.goodsDiscountPrice} + '원'"></span>
