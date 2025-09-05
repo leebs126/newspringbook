@@ -2,24 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title th:text="${title} ?: '홈페이지'"></title>
+   <title th:fragment="title">기본 제목</title>
   <style>
     #container { width: 100%; margin: 0 auto; text-align: center; }
     #header { padding: 5px; margin-bottom: 5px; background-color: lightgreen; }
-    #sidebar-left { width: 15%; height: 700px; padding: 5px; margin-right: 5px; margin-bottom: 5px; float: left; background-color: yellow; font-size: 10px; }
+    #side { width: 15%; height: 700px; padding: 5px; margin-right: 5px; margin-bottom: 5px; float: left; background-color: yellow; font-size: 10px; }
     #content { width: 75%; padding: 5px; margin-right: 5px; float: left; }
     #footer { clear: both; padding: 5px; background-color: lightblue; }
   </style>
 </head>
 <body>
-  <div id="container">
-    <div id="header" th:replace="fragments/header :: header"></div>
-    <div id="sidebar-left" th:replace="fragments/side :: side"></div>
-    <div id="content">
-      <!-- 각 페이지에서 이 부분을 채움 -->
-      <div th:replace="${content}"></div>
+  <div th:fragment="layout (body, title)">
+	<div id="container">
+	      <div id="header" th:replace="fragments/header :: header"></div>
+	      <div id="side" th:replace="fragments/side :: side"></div>
+	      <div id="content" th:insert="${body}"></div>
+	      <div id="footer" th:replace="fragments/footer :: footer"></div>
     </div>
-    <div id="footer" th:replace="fragments/footer :: footer"></div>
   </div>
 </body>
 </html>

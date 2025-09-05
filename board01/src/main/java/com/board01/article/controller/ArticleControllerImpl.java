@@ -75,14 +75,14 @@ public class ArticleControllerImpl implements ArticleController {
 		HttpSession session = request.getSession();
 		MemberVO memberVO = (MemberVO)session.getAttribute("member");
 		
-		String id = null;
+		String memId = null;
 		if(memberVO != null) {
-			id = memberVO.getId();
+			memId = memberVO.getMemId();
 		}
 		
-		Map viewMap = new HashMap();
+		Map<String, Object> viewMap = new HashMap();
 		viewMap.put("articleNO", articleNO);
-		viewMap.put("id", id);
+		viewMap.put("memId", memId);
 		
 //		Map articleMap = boardService.viewArticle(articleNO);
 		Map articleMap = articleService.viewArticle(viewMap);
@@ -146,8 +146,8 @@ public class ArticleControllerImpl implements ArticleController {
 		// 로그인 시 세션에 저장된 회원 정보에서 글쓴이 아이디를 얻어와서 Map에 저장합니다.
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("member");
-		String id = memberVO.getId();
-		articleMap.put("id", id);
+		String memId = memberVO.getMemId();
+		articleMap.put("imemId", memId);
 		String parentNO = (String)session.getAttribute("parentNO")  ;
 		articleMap.put("parentNO" , (parentNO == null ? 0 : parentNO));
 		session.removeAttribute("parentNO");
@@ -229,8 +229,8 @@ public class ArticleControllerImpl implements ArticleController {
 		// 로그인 시 세션에 저장된 회원 정보에서 글쓴이 아이디를 얻어와서 Map에 저장합니다.
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("member");
-		String id = memberVO.getId();
-		articleMap.put("id", id);
+		String memId = memberVO.getMemId();
+		articleMap.put("memId", memId);
 		
 		//세션에 저장한 부모글과 글그룹번호를 가지고 온다.
 		String parentNO = (String)session.getAttribute("parentNO")  ;

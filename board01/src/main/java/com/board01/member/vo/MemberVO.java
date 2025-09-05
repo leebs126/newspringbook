@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Component("memberVO")
 public class MemberVO {
-	private String id;
+	private String memId;
 	private String pwd;
 	private String name;
 	private String email;
@@ -17,8 +17,8 @@ public class MemberVO {
 		
 	}
 
-	public MemberVO(String id, String pwd, String name, String email) {
-		this.id = id;
+	public MemberVO(String memId, String pwd, String name, String email) {
+		this.memId = memId;
 		this.pwd = pwd;
 		this.name = name;
 		this.email = email;

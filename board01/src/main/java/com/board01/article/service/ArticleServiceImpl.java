@@ -26,8 +26,8 @@ public class ArticleServiceImpl  implements ArticleService{
 	@Autowired
 	private CommentRepository commentRepository;
 	
-	public Map listArticles(Map  pagingMap) throws Exception{
-		Map articlesMap = new HashMap();
+	public Map<String, Object> listArticles(Map  pagingMap) throws Exception{
+		Map<String, Object> articlesMap = new HashMap<>();
 		List<ArticleVO> articlesList = articleRepository.selectAllArticlesList(pagingMap);
 		int totArticles = articleRepository.selectTotArticles();
 		articlesMap.put("articlesList", articlesList);

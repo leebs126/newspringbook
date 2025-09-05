@@ -30,7 +30,7 @@
                         articleNO,
                         parentNO,
                         title,
-                        id,
+                        memId,
                         writeDate
                             from (
                                 select 
@@ -39,7 +39,7 @@
                                     articleNO,
                                     parentNO,
                                     title,
-                                    id,
+                                    memId,
                                     writeDate
                                     from (
 			                                select * from t_board1
@@ -133,11 +133,11 @@
 	<!--다중 이미지 새글 추가 SQL문 -->
 	<insert id="insertNewArticle" parameterType="java.util.Map">
     <![CDATA[
-      insert into t_board1(groupNO, articleNO, parentNO, id, title, content, imageFileName)
+      insert into t_board1(groupNO, articleNO, parentNO, memId, title, content, imageFileName)
       values(#{groupNO},
                #{articleNO},
       		   #{parentNO}, 
-      		   #{id}, 
+      		   #{memId}, 
       		   #{title}, 
       		   #{content}, 
       		   null)
@@ -147,11 +147,11 @@
 		<!--다중 이미지 답글 추가 SQL문 -->
 	<insert id="insertReplyArticle" parameterType="java.util.Map">
     <![CDATA[
-      insert into t_board1(groupNO, articleNO, parentNO, id, title, content, imageFileName)
+      insert into t_board1(groupNO, articleNO, parentNO, memId, title, content, imageFileName)
       values(#{groupNO},
                #{articleNO},
       		   #{parentNO}, 
-      		   #{id}, 
+      		   #{memId}, 
       		   #{title}, 
       		   #{content}, 
       		   null)

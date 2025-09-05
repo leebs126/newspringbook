@@ -35,7 +35,7 @@ public class CommentControllerImpl implements CommentController {
 		
 		HttpSession session = request.getSession();
 		MemberVO member = (MemberVO)session.getAttribute("member");
-		String replyID = member.getId();  //로그인  사용자 아이디를 얻음
+		String replyID = member.getMemId();  //로그인  사용자 아이디를 얻음
 		commentVO.setReplyID(replyID);
 		CommentVO newCommentVO = commentService.addNewComment(commentVO);
 
@@ -85,7 +85,7 @@ public class CommentControllerImpl implements CommentController {
 		
 		HttpSession session = request.getSession();
 		MemberVO member = (MemberVO)session.getAttribute("member");
-		String replyID = member.getId();  //로그인  사용자 아이디를 얻음
+		String replyID = member.getMemId();  //로그인  사용자 아이디를 얻음
 		commentVO.setReplyID(replyID);
 		CommentVO newCommentVO = commentService.addReplyComment(commentVO);
 

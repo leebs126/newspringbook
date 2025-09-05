@@ -1,11 +1,64 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+	  th:replace="layout :: layout(~{::body}, ~{::title})">
+
+<head>
+    <title th:fragment="title">게시판 목록</title>
+</head>
+
+<body>
+<div th:fragment="body">
+    <h2>게시판 목록</h2>
+<!--
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <th>글번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+                <th>조회수</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="article, stat : ${articles}">
+                <td th:text="${article.articleNo}">1</td>
+                <td>
+                    <a th:href="@{/article/view(articleNo=${article.articleNo})}"
+                       th:text="${article.title}">제목</a>
+                </td>
+                <td th:text="${article.writer}">작성자</td>
+                <td th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">2025-09-05</td>
+                <td th:text="${article.viewCnt}">0</td>
+            </tr>
+        </tbody>
+    </table>
+
+     페이지 네비게이션 
+    <div style="margin-top:20px; text-align:center;">
+        <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/article/listArticles(page=${pageNum})}"
+               th:text="${pageNum}"
+               th:classappend="${pageNum == currentPage} ? 'active' : ''"
+               style="margin:0 5px;"></a>
+        </span>
+    </div>
+-->
+</div>
+</body>
+</html>
+
+
+<!--<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
       th:replace="layout :: layout(~{::body}, ~{::title})">
 <head>
   <title>게시판 목록</title>
 </head>
 <body>
   <h2>게시판 목록</h2>
-  <!-- 실제 게시판 내용 -->
+   실제 게시판 내용 
+  <p>실제 게시판 내용</p>
 </body>
 </html>
+-->
