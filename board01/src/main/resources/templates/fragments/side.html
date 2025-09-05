@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <style>.no-underline { text-decoration:none; }</style>
+</head>
+<body>
+<div th:fragment="side">
+  <h1>사이드 메뉴</h1>
+  <h1>
+    <a th:href="@{/member/listMembers}" class="no-underline">회원관리</a><br>
+    <a th:href="@{/article/listArticles}" class="no-underline">게시판관리</a><br>
+    <a href="#" class="no-underline">상품관리</a><br>
+  </h1>
+</div>
+</body>
+</html>
