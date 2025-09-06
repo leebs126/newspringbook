@@ -1,50 +1,83 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	  th:replace="layout :: layout(~{::body}, ~{::title})">
+	  th:replace="layout :: layout(~{::title}, ~{::body})">
 
 <head>
     <title th:fragment="title">게시판 목록</title>
 </head>
 
 <body>
-<div th:fragment="body">
-    <h2>게시판 목록</h2>
-<!--
-    <table border="1" width="100%">
-        <thead>
-            <tr>
-                <th>글번호</th>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>작성일</th>
-                <th>조회수</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="article, stat : ${articles}">
-                <td th:text="${article.articleNo}">1</td>
-                <td>
-                    <a th:href="@{/article/view(articleNo=${article.articleNo})}"
-                       th:text="${article.title}">제목</a>
-                </td>
-                <td th:text="${article.writer}">작성자</td>
-                <td th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">2025-09-05</td>
-                <td th:text="${article.viewCnt}">0</td>
-            </tr>
-        </tbody>
-    </table>
+	<div th:fragment="body">
+	    <h2>게시판 목록</h2>
+	    <!--<p>총 글 수: <span th:text="${articlesMap.totArticles}">0</span> 개</p>-->
+		<!--<span th:text="${articlesMap}">0</span> 개-->
+	    <table border="1" width="100%">
+	        <thead>
+	            <tr  style="background:#33ff00; height: 30px;">
+	                <th>글번호</th>
+	                <th>제목</th>
+	                <th>작성자</th>
+	                <th>작성일</th>
+	                <th>조회수</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+				<!-- groupNO 단위로 순회 -->
+		       <tr th:each="entry : ${articlesMap}">
+		            <!--entry.value 가 실제 List<ArticleVO> -->
+				  <td colspan="5">
+		          <th:block th:each="article, iterStat : ${entry.value}">
+				  <!--<td>
+                       <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+                          th:text="${article.title}">제목</a>
+                   </td>-->
+		           <!-- <tr>-->
+						  <!--<td th:text="${iterStat.index + 1}">1</td>-->
+					
+						
+					<span th:text="${((pageNum != null ? pageNum : 1) - 1) * 10 + iterStat.index + 1}"></span>
+	               <!-- 글번호 (페이징 적용된 번호) 
+	               <td th:text="${((pageNum != null ? pageNum : 1) - 1) * 10 + iterStat.index + 1}">1</td>
+				   <td th:text="${stat.index + 1}">1</td>
+	                제목 -->
+	                   <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+	                      th:text="${article.title}">제목</a>
+	               <span th:text="${article.memId}">작성자</span>
+	               <span th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">2025-09-05</span>
+	               <span th:text="${article.viewCnt}">0</span>
+						
+						<br>
+					<!--	  	  <td th:text="${article.groupNO}">1</td>
+		                    글번호 (페이징 적용된 번호) 
+		                   <td th:text="${((pageNum != null ? pageNum : 1) - 1) * 10 + iterStat.index + 1}">1</td>
+						   <td th:text="${stat.index + 1}">1</td>
+		                    제목 
+		                   <td>
+		                       <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+		                          th:text="${article.title}">제목</a>
+		                   </td>
+		                   <td th:text="${article.memId}">작성자</td>
+		                   <td th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">2025-09-05</td>
+		                   <td th:text="${article.viewCnt}">0</td>-->
+					
+						   <!--</tr>-->
+		           </th:block>
+				   </td>
+		       </tr>
+	        </tbody>
+	    </table>
+		
+		
+		<div style="margin-top:20px; text-align:center;">
+		        <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
+		            <a th:href="@{/article/listArticles.do(pageNum=${pageNum})}"
+		               th:text="${pageNum}"
+		               th:classappend="${pageNum == currentPage} ? 'active' : ''"
+		               style="margin:0 5px;"></a>
+		        </span>
+		  </div>
+	</div>
 
-     페이지 네비게이션 
-    <div style="margin-top:20px; text-align:center;">
-        <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/article/listArticles(page=${pageNum})}"
-               th:text="${pageNum}"
-               th:classappend="${pageNum == currentPage} ? 'active' : ''"
-               style="margin:0 5px;"></a>
-        </span>
-    </div>
--->
-</div>
 </body>
 </html>
 

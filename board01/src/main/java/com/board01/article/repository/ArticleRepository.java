@@ -12,7 +12,7 @@ import com.board01.article.vo.ImageVO;
 @Mapper
 public interface ArticleRepository {
 	public List<ArticleVO> selectAllArticlesList(Map<String, Integer> pagingMap) throws DataAccessException;
-	public int selectTotArticles() throws DataAccessException;
+	public int selectTotalArticles() throws DataAccessException;
 	
 	public int insertNewArticle(Map articleMap) throws DataAccessException;
 	public void insertNewImage(Map articleMap) throws DataAccessException;

@@ -9,16 +9,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface ArticleController {
-	public ModelAndView listArticles(HttpServletRequest request, HttpServletResponse response) throws Exception;
+	public ModelAndView listArticles(@RequestParam(value="section", required=false) String _section, 
+									@RequestParam(value="pageNum", required=false) String _pageNum, 
+									HttpServletRequest request, HttpServletResponse response) throws Exception; 
+	
 	public ResponseEntity addNewArticle(MultipartHttpServletRequest multipartRequest,HttpServletResponse response) throws Exception;
+	
 	public ResponseEntity addReplyArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response) throws Exception; 
+	
 	public ModelAndView viewArticle(@RequestParam("articleNO") int articleNO,
 												@RequestParam(value="removeCompleted", required=false) String removeCompleted,
 												HttpServletRequest request, 
 												HttpServletResponse response) throws Exception;
+	
 	public ResponseEntity  removeArticle(@RequestParam("articleNO") int articleNO,
                               			HttpServletRequest request, 
                               			HttpServletResponse response) throws Exception;
+	
 	public void removeModImage(HttpServletRequest request, HttpServletResponse response) throws Exception;
 	
 	

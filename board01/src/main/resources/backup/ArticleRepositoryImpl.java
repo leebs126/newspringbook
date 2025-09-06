@@ -30,7 +30,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 	
 
 	@Override
-	public int selectTotArticles() throws DataAccessException {
+	public int selectTotalArticles() throws DataAccessException {
 		int totArticles = sqlSession.selectOne("mapper.article.selectTotArticles");
 		return totArticles;
 	}

@@ -19,9 +19,9 @@ public class ArticleVO {
 	private String title;
 	private String content;
 	private String imageFileName;
-	private String id;
+	private String memId;
 	private Date  writeDate;
-	private int viewCounts;
+	private int viewCnt;
 	
 	public String getImageFileName() {
 		try {

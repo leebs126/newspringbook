@@ -124,9 +124,9 @@
 		 ]]>
 	</select>
 
-	<select id="selectTotArticles" resultType="int">
+	<select id="selectTotalArticles" resultType="int">
 		<![CDATA[  
-			select count(distinct groupNO) from t_board1
+			SELECT COUNT(DISTINCT groupNO) FROM t_board1
 		 ]]>
 	</select>
 
@@ -225,16 +225,16 @@
 
 	<select id="selectNewImageFileNO" resultType="int">
     <![CDATA[
-      SELECT  nvl(max(imageFileNO),0) from t_imageFile1		
+      SELECT  NVL(MAX(imageFileNO),0) FROM t_imageFile1		
     ]]>
 	</select>
 
 
 	<select id="selectImageFileList" resultMap="imgResult" parameterType="int">
     <![CDATA[
-      SELECT * from t_imageFile1
-      where articleNO=#{articleNO}
-      order by imageFileNO	
+      SELECT * FROM t_imageFile1
+      WHERE articleNO=#{articleNO}
+      ORDER BY imageFileNO	
     ]]>
 	</select>
 
@@ -256,7 +256,7 @@
 			sysdate)
 		</foreach>
 	</insert>
-	
+	<!--
 	<update id="updateViewCounts" parameterType="int">
 	    <![CDATA[
 	      update t_board1
@@ -264,7 +264,7 @@
 		  where
 		     articleNO=#{articleNO}
 	    ]]>
-	</update>
+	</update>-->
 
 	
 

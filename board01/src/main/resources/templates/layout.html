@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, body)">
 <head>
   <meta charset="UTF-8">
    <title th:fragment="title">기본 제목</title>
-  <style>
-    #container { width: 100%; margin: 0 auto; text-align: center; }
-    #header { padding: 5px; margin-bottom: 5px; background-color: lightgreen; }
-    #side { width: 15%; height: 700px; padding: 5px; margin-right: 5px; margin-bottom: 5px; float: left; background-color: yellow; font-size: 10px; }
-    #content { width: 75%; padding: 5px; margin-right: 5px; float: left; }
-    #footer { clear: both; padding: 5px; background-color: lightblue; }
-  </style>
+   <style>
+   	    #container { width: 100%; margin: 0 auto; text-align: center; }
+   	    #header { padding: 5px; margin-bottom: 5px; background-color: lightgreen; }
+   	    #side { width: 15%; height: 700px; padding: 5px; margin-right: 5px; margin-bottom: 5px; float: left; background-color: yellow; font-size: 10px; }
+   	    #content { width: 75%; padding: 5px; margin-right: 5px; float: left; }
+   	    #footer { clear: both; padding: 5px; background-color: lightblue; }
+   	  </style>
 </head>
 <body>
-  <div th:fragment="layout (body, title)">
+	
 	<div id="container">
 	      <div id="header" th:replace="fragments/header :: header"></div>
 	      <div id="side" th:replace="fragments/side :: side"></div>
 	      <div id="content" th:insert="${body}"></div>
 	      <div id="footer" th:replace="fragments/footer :: footer"></div>
-    </div>
-  </div>
+	</div>
 </body>
 </html>

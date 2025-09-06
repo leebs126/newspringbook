@@ -29,10 +29,9 @@ public class ArticleServiceImpl  implements ArticleService{
 	public Map<String, Object> listArticles(Map  pagingMap) throws Exception{
 		Map<String, Object> articlesMap = new HashMap<>();
 		List<ArticleVO> articlesList = articleRepository.selectAllArticlesList(pagingMap);
-		int totArticles = articleRepository.selectTotArticles();
+		int totalArticles = articleRepository.selectTotalArticles();
 		articlesMap.put("articlesList", articlesList);
-		articlesMap.put("totArticles", totArticles);
-		//articlesMap.put("totArticles", 170);
+		articlesMap.put("totalArticles", totalArticles);
 		return articlesMap;
 		
 	}
@@ -62,16 +61,16 @@ public class ArticleServiceImpl  implements ArticleService{
 		Map articleMap = new HashMap();
 		
 		int articleNO = (Integer)viewMap.get("articleNO");
-		String id = (String) viewMap.get("id");
+		String memId = (String) viewMap.get("memId");
 		
 		//조회수를 갱신하기 전 먼저 글번호에 해당되는 글정보를 조회한 후, 로그인 아이디와 글쓴이 아이디를 비교한다.
 		ArticleVO articleVO = articleRepository.selectArticle(articleNO); 
-		String writerId = articleVO.getId();
+		String writerId = articleVO.getMemId();
 		
-		if(id == null || !(id.equals(writerId))) {  //로그인 아이디와 글쓴이 아이디가 같지 않으면 조회수를 1증가 시킴
-			articleRepository.updateViewCounts(articleNO);
-			articleVO = articleRepository.selectArticle(articleNO);
-		}
+//		if(id == null || !(id.equals(writerId))) {  //로그인 아이디와 글쓴이 아이디가 같지 않으면 조회수를 1증가 시킴
+//			articleRepository.updateViewCounts(articleNO);
+//			articleVO = articleRepository.selectArticle(articleNO);
+//		}
 		
 		List<ImageVO> imageFileList = articleRepository.selectImageFileList(articleNO);
 		articleMap.put("article", articleVO);

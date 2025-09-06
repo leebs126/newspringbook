@@ -5,11 +5,15 @@ package com.board01.article.controller;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +40,7 @@ import jakarta.servlet.http.HttpSession;
 @Primary
 public class ArticleControllerImpl implements ArticleController {
 	private static final String ARTICLE_IMAGE_REPO = "C:\\board\\article_image";
+	private static final int ARTICLES_PER_PAGE = 10;
 	@Autowired
 	private ArticleService articleService;
 	@Autowired
@@ -43,25 +48,75 @@ public class ArticleControllerImpl implements ArticleController {
 
 	@Override
 	@RequestMapping(value = "/article/listArticles.do", method = { RequestMethod.GET, RequestMethod.POST })
-	public ModelAndView listArticles(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		String _section=request.getParameter("section");
-		String _pageNum=request.getParameter("pageNum");
+	public ModelAndView listArticles(@RequestParam(value="section", required=false) String _section, 
+									@RequestParam(value="pageNum", required=false) String _pageNum, 
+									HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String viewName = (String) request.getAttribute("viewName");
+		ModelAndView mav = new ModelAndView(viewName);
+		
 		int section = Integer.parseInt(((_section==null)? "1":_section) );
 		int pageNum = Integer.parseInt(((_pageNum==null)? "1":_pageNum));
 		Map<String, Integer> pagingMap=new HashMap<>();
 		pagingMap.put("section", section);
 		pagingMap.put("pageNum", pageNum);
-		Map articlesMap = articleService.listArticles(pagingMap);
-
-		articlesMap.put("section", section);
-		articlesMap.put("pageNum", pageNum);
+		Map _articlesMap = articleService.listArticles(pagingMap);
+		List<ArticleVO> _articlesList = (List<ArticleVO>)_articlesMap.get("articlesList");
 		
-		String viewName = (String) request.getAttribute("viewName");
+		Set<Integer> groupNOSet = new HashSet<>();
+		for (ArticleVO articleVO : _articlesList) {
+		    groupNOSet.add(articleVO.getGroupNO());
+		}
 		
-		ModelAndView mav = new ModelAndView(viewName);
+		List<Integer> groupNOList = new ArrayList<>(groupNOSet);
+		Map<Integer, List<ArticleVO>> articlesMap = new TreeMap<>(Comparator.reverseOrder());
+		
+		for (int groupNO : groupNOList) {
+			List<ArticleVO> articlesList = new ArrayList<>();
+		    for (ArticleVO articleVO : _articlesList) {
+		        if (groupNO == articleVO.getGroupNO()) {
+		        	articlesList.add(articleVO);
+		        }
+		    }
+		    articlesMap.put(groupNO, articlesList);
+		}
+		
+		//페이징 기능 구현 코드 추가
+		int totalArticles = (Integer)_articlesMap.get("totalArticles");
+		int totalPages = (int) Math.ceil((double)totalArticles / ARTICLES_PER_PAGE);
+		
+		
+		mav.addObject("section", section);
+		mav.addObject("pageNum", pageNum);
 		mav.addObject("articlesMap", articlesMap);
+		mav.addObject("totalPages", totalPages);
 		return mav;
+		
+		
+//		Map<String, Object> _myOrdersMap = myPageService.listMyOrderGoods(condMap);
+//		List<OrderVO> _myOrdersList = (List<OrderVO>)_myOrdersMap.get("myOrdersList");
+//		Set<Integer> orderIdSet = new HashSet<>();
+//		for (OrderVO orderVO : _myOrdersList) {
+//		    orderIdSet.add(orderVO.getOrderId());
+//		}		
+//		
+//		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
+//		Map<Integer, List<OrderVO>> myOrdersMap = new TreeMap<>(Comparator.reverseOrder());
+//		
+//		for (int orderId : orderIdList) {
+//			List<OrderVO> myOrderList = new ArrayList<>();
+//		    for (OrderVO orderVO : _myOrdersList) {
+//		        if (orderId == orderVO.getOrderId()) {
+//		            myOrderList.add(orderVO);
+//		        }
+//		    }
+//		    myOrdersMap.put(orderId, myOrderList);
+//		}	
+//		 
+//		mav.addObject("message", message);
+//		mav.addObject("myOrdersMap", myOrdersMap);
+//		
+		
+		
 
 	}
 
@@ -69,8 +124,9 @@ public class ArticleControllerImpl implements ArticleController {
 	// 다중 이미지 보여주기
 	@GetMapping("/article/viewArticle.do")
 	public ModelAndView viewArticle(@RequestParam("articleNO") int articleNO, 
-												@RequestParam(value="removeCompleted", required=false) String removeCompleted,
-												HttpServletRequest request, HttpServletResponse response) throws Exception {
+									@RequestParam(value="removeCompleted", required=false) String removeCompleted,
+									HttpServletRequest request, 
+									HttpServletResponse response) throws Exception {
 		String viewName = (String) request.getAttribute("viewName");
 		HttpSession session = request.getSession();
 		MemberVO memberVO = (MemberVO)session.getAttribute("member");
