@@ -4,14 +4,89 @@
 
 <head>
     <title th:fragment="title">게시판 목록</title>
+	<!-- CSS -->
+	<style>
+	  .cell-item {
+	    padding: 4px 0;
+	    text-align: center;   /* 가운데 정렬 */
+	    border-bottom: 1px solid #ccc;
+	  }
+
+	  table {
+	    border-collapse: collapse;
+	  }
+
+	  th, td {
+	    padding: 8px;
+	  }
+	</style>	
 </head>
 
 <body>
 	<div th:fragment="body">
 	    <h2>게시판 목록</h2>
+		
+		<table border="1" width="100%">
+		  <thead>
+		    <tr style="background:#33ff00; height: 30px;">
+		      <th>글번호</th>
+		      <th>제목</th>
+		      <th>작성자</th>
+		      <th>작성일</th>
+		      <th>조회수</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <!-- groupNO 단위로 순회 -->
+		    <tr th:each="entry, istat : ${articlesMap}" 
+		        th:with="counter=${((pageNum != null ? pageNum : 1) - 1) * 10 + istat.index}">
+		      
+		      <!-- 글번호 -->
+		      <td>
+		        <div th:each="article, iterStat : ${entry.value}" 
+		             th:with="articleOrder=${counter + iterStat.index + 1}"
+		             class="cell-item"
+		             th:text="${articleOrder}">
+		        </div>
+		      </td>
+
+		      <!-- 제목 -->
+		      <td>
+		        <div th:each="article, iterStat : ${entry.value}" class="cell-item">
+		          <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+		             th:text="${article.title}">제목</a>
+		        </div>
+		      </td>
+
+		      <!-- 작성자 -->
+		      <td>
+		        <div th:each="article : ${entry.value}" class="cell-item"
+		             th:text="${article.memId}">
+		        </div>
+		      </td>
+
+		      <!-- 작성일 -->
+		      <td>
+		        <div th:each="article : ${entry.value}" class="cell-item"
+		             th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">
+		        </div>
+		      </td>
+
+		      <!-- 조회수 -->
+		      <td>
+		        <div th:each="article : ${entry.value}" class="cell-item"
+		             th:text="${article.viewCnt}">
+		        </div>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+
+
+		
 	    <!--<p>총 글 수: <span th:text="${articlesMap.totArticles}">0</span> 개</p>-->
 		<!--<span th:text="${articlesMap}">0</span> 개-->
-	    <table border="1" width="100%">
+	   <!-- <table border="1" width="100%">
 	        <thead>
 	            <tr  style="background:#33ff00; height: 30px;">
 	                <th>글번호</th>
@@ -22,51 +97,26 @@
 	            </tr>
 	        </thead>
 	        <tbody>
-				<!-- groupNO 단위로 순회 -->
-		       <tr th:each="entry : ${articlesMap}">
-		            <!--entry.value 가 실제 List<ArticleVO> -->
+				
+				 groupNO 단위로 순회 
+		       <tr th:each="entry, istat : ${articlesMap}" th:with="counter=${((pageNum != null ? pageNum : 1) - 1) * 10 + istat.index}">
+		            entry.value 가 실제 List<ArticleVO> 
 				  <td colspan="5">
-		          <th:block th:each="article, iterStat : ${entry.value}">
-				  <!--<td>
-                       <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
-                          th:text="${article.title}">제목</a>
-                   </td>-->
-		           <!-- <tr>-->
-						  <!--<td th:text="${iterStat.index + 1}">1</td>-->
-					
-						
-					<span th:text="${((pageNum != null ? pageNum : 1) - 1) * 10 + iterStat.index + 1}"></span>
-	               <!-- 글번호 (페이징 적용된 번호) 
-	               <td th:text="${((pageNum != null ? pageNum : 1) - 1) * 10 + iterStat.index + 1}">1</td>
-				   <td th:text="${stat.index + 1}">1</td>
-	                제목 -->
-	                   <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
-	                      th:text="${article.title}">제목</a>
-	               <span th:text="${article.memId}">작성자</span>
-	               <span th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">2025-09-05</span>
-	               <span th:text="${article.viewCnt}">0</span>
-						
-						<br>
-					<!--	  	  <td th:text="${article.groupNO}">1</td>
-		                    글번호 (페이징 적용된 번호) 
-		                   <td th:text="${((pageNum != null ? pageNum : 1) - 1) * 10 + iterStat.index + 1}">1</td>
-						   <td th:text="${stat.index + 1}">1</td>
-		                    제목 
-		                   <td>
-		                       <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
-		                          th:text="${article.title}">제목</a>
-		                   </td>
-		                   <td th:text="${article.memId}">작성자</td>
-		                   <td th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">2025-09-05</td>
-		                   <td th:text="${article.viewCnt}">0</td>-->
-					
-						   <!--</tr>-->
-		           </th:block>
+			          <th:block th:each="article, iterStat : ${entry.value}"  th:with="articleOrder=${counter + iterStat.index + 1}">
+							<span th:text="${articleOrder}"></span>
+			                  <span> <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+			                      th:text="${article.title}">제목</a>
+							 </span>
+				             <span th:text="${article.memId}">작성자</span>
+				             <span th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">2025-09-05</span>
+				             <span th:text="${article.viewCnt}">0</span>
+							<br>
+			           </th:block>
 				   </td>
 		       </tr>
 	        </tbody>
 	    </table>
-		
+		-->
 		
 		<div style="margin-top:20px; text-align:center;">
 		        <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
