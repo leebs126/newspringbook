@@ -20,8 +20,8 @@ public class MemberServiceImpl implements MemberService {
 	private MemberRepository memberRepository;
 
 	@Override
-	public List listMembers() throws DataAccessException {
-		List membersList = null;
+	public List<MemberVO> listMembers() throws DataAccessException {
+		List<MemberVO> membersList = null;
 		membersList = memberRepository.selectAllMemberList();
 		return membersList;
 	}
@@ -32,8 +32,8 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public int removeMember(String id) throws DataAccessException {
-		return memberRepository.deleteMember(id);
+	public int removeMember(String memId) throws DataAccessException {
+		return memberRepository.deleteMember(memId);
 	}
 	
 	@Override

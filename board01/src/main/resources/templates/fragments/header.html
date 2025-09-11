@@ -18,11 +18,11 @@
 		
 		<div th:if="${session.isLogOn}">
           <h3 th:text="'환영합니다. ' + ${session.member.name} + '님!'"></h3>
-          <a th:href="@{/member/logout}">로그아웃></a>&nbsp &nbsp
+          <a th:href="@{/member/logout.do}">로그아웃</a>&nbsp &nbsp
 		  <a th:href="@{/member/memberForm.do}">회원가입</a>
 		 </div>
 		 <div th:unless="${session.isLogOn}">
-          	<a th:href="@{/member/logout}">로그인</a>&nbsp &nbsp
+          	<a th:href="@{/member/loginForm.do}">로그인</a>&nbsp &nbsp
 			<a th:href="@{/member/memberForm.do}">회원가입</a>
  		 </div>
 		

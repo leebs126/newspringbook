@@ -77,7 +77,8 @@ public class ArticleServiceImpl  implements ArticleService{
 		articleMap.put("imageFileList", imageFileList);
 		
 		//해당 글의 댓글 조회
-		List<CommentVO> commentsList = commentRepository.selectAllCommentsList(articleNO);
+		List<CommentVO> commentsList = null;
+//		List<CommentVO> commentsList = commentRepository.selectAllCommentsList(articleNO);
 		articleMap.put("commentsList", commentsList);
 		return articleMap;
 	}
@@ -89,20 +90,37 @@ public class ArticleServiceImpl  implements ArticleService{
 		articleRepository.updateArticle(articleMap);
 		
 		List<ImageVO> imageFileList = (List<ImageVO>)articleMap.get("imageFileList");
-		List<ImageVO> modAddimageFileList = (List<ImageVO>)articleMap.get("modAddimageFileList");
+		List<ImageVO> modAddImageFileList = (List<ImageVO>)articleMap.get("modAddImageFileList");
+		
+		List<String> oldFileNamesList = (List<String>) articleMap.get("oldFileNames");
+	    List<String> newFileNamesList = (List<String>) articleMap.get("newFileNames");
+	    
+	    
 
 		if(imageFileList != null && imageFileList.size() != 0) {
-			int added_img_num = Integer.parseInt((String)articleMap.get("added_img_num"));
-			int pre_img_num = Integer.parseInt((String)articleMap.get("pre_img_num"));
+			int added_img_counts = newFileNamesList.size();
+			int pre_img_counts = oldFileNamesList.size();
 
-			if(pre_img_num < added_img_num) {  
+			if(pre_img_counts < added_img_counts) {  
 				articleRepository.updateImageFile(articleMap);     //기존 이미지도 수정하고 새 이미지도 추가한 경우  
-				articleRepository.insertModNewImage(articleMap);
+				for(ImageVO imageVO : modAddImageFileList) {
+					int imageFileNO = articleRepository.selectNewImageFileNO();
+					imageVO.setImageFileNO(imageFileNO);
+					articleRepository.insertModNewImage(imageVO);
+				}
 			}else {
+//				articleRepository.updateImageFile(imageFileList);  //기존의 이미지를 수정만 한 경우
 				articleRepository.updateImageFile(articleMap);  //기존의 이미지를 수정만 한 경우
 			}
-		}else if(modAddimageFileList != null && modAddimageFileList.size() != 0) {  //새 이미지를 추가한 경우
-			articleRepository.insertModNewImage(articleMap);
+		}else if(modAddImageFileList != null && modAddImageFileList.size() != 0) {  //새 이미지를 추가한 경우
+			
+			for(ImageVO imageVO : modAddImageFileList) {
+				int imageFileNO = articleRepository.selectNewImageFileNO();
+				imageVO.setImageFileNO(imageFileNO);
+				articleRepository.insertModNewImage(imageVO);
+			}
+//			articleMap.put("modAddImageFileList", modAddImageFileList);
+			
 		}
 	}
 	

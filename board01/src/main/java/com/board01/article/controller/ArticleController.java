@@ -1,11 +1,15 @@
 package com.board01.article.controller;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest; 
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface ArticleController {
@@ -26,7 +30,10 @@ public interface ArticleController {
                               			HttpServletRequest request, 
                               			HttpServletResponse response) throws Exception;
 	
-	public void removeModImage(HttpServletRequest request, HttpServletResponse response) throws Exception;
+	public ResponseEntity<Map<String, Object>> removeModImage(@RequestBody Map<String, Object> imageMap,
+															  HttpServletRequest request, 
+															  HttpServletResponse response) throws Exception;
+
 	
 	
 	

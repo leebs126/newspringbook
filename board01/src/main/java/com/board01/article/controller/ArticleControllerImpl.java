@@ -22,7 +22,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,6 +38,8 @@ import com.board01.article.service.ArticleService;
 import com.board01.article.vo.ArticleVO;
 import com.board01.article.vo.ImageVO;
 import com.board01.member.vo.MemberVO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,7 +48,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @Primary
 public class ArticleControllerImpl implements ArticleController {
-	private static final String ARTICLE_IMAGE_REPO = "C:\\board\\article_image";
+	private static final String ARTICLE_IMAGE_REPO = "C:\\board\\article_image1";
 	private static final int ARTICLES_PER_PAGE = 10;
 	@Autowired
 	private ArticleService articleService;
@@ -353,53 +362,115 @@ public class ArticleControllerImpl implements ArticleController {
 	
 
 	// 다중 이미지 수정 기능
-	@RequestMapping(value = "/article/modArticle.do", method = RequestMethod.POST)
+	@PostMapping("/article/modArticleJson.do")
 	@ResponseBody
-	public ResponseEntity modArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)
-			throws Exception {
-		multipartRequest.setCharacterEncoding("utf-8");
-		Map<String, Object> articleMap = new HashMap<String, Object>();
-		Enumeration enu = multipartRequest.getParameterNames();
-		while (enu.hasMoreElements()) {
-			String name = (String) enu.nextElement();
+//	public ResponseEntity<Map<String, Object>> modArticleJson(
+//			@RequestParam("article") String articleJson,
+//			MultipartHttpServletRequest multipartRequest,
+//	        HttpServletResponse response) throws Exception {
+//	        @RequestPart(value = "imageFileName0", required = false) List<MultipartFile> files,
+//	        @RequestPart(value = "files", required = false) List<MultipartFile> extraFiles
+	public ResponseEntity<Map<String, Object>> modArticleJson(
+									        @RequestPart("article") String articleJson,
+//									        @RequestPart(value = "imageFileName0", required = false) List<MultipartFile> files,
+									        @RequestPart(value = "files", required = false) List<MultipartFile> extraFiles
+									) throws Exception {
+		
+		
+		 // JSON → Map 변환
+	    ObjectMapper mapper = new ObjectMapper();
+	    Map<String, Object> articleMap = mapper.readValue(articleJson, new TypeReference<Map<String, Object>>() {});
 
-			if (name.equals("imageFileNO")) {
-				String[] values = multipartRequest.getParameterValues(name);
-				articleMap.put(name, values);
-			} else if (name.equals("oldFileName")) {
-				String[] values = multipartRequest.getParameterValues(name);
-				articleMap.put(name, values);
-			} else {
-				String value = multipartRequest.getParameter(name);
-				articleMap.put(name, value);
-			}
-
-		}
-
-		List<String> fileList = uploadModImageFile(multipartRequest); //수정한 이미지 파일을 업로드한다.
-
-		int added_img_num = Integer.parseInt((String) articleMap.get("added_img_num"));
-		int pre_img_num = Integer.parseInt((String) articleMap.get("pre_img_num"));
+	 // oldFileName 배열 처리
+		List<String> oldFileNamesList = (List<String>) articleMap.get("oldFileNames");
+	    System.out.println("기존 파일들: " + oldFileNamesList);
+	    
+	    List<String> newFileNamesList = (List<String>) articleMap.get("newFileNames");
+	    System.out.println("새 파일들: " + newFileNamesList.size());
+	    
+	    if(extraFiles!= null) {
+	    	uploadModImageFile(extraFiles); //수정한 이미지 파일을 업로드한다.
+	    }
+		
+		// 이미지 파일 업로드 (변경된 메서드 사용)
+//		List<String> fileList = null;
+//	    if (files != null && !files.isEmpty()) {
+//	        fileList = uploadModImageFile(files);
+//	    }
+		
+		int added_img_counts = newFileNamesList.size();  //새로 추가된 이미지 파일 수 
+		int pre_img_counts = oldFileNamesList.size();    //기존 이미지 파일 수 
 		List<ImageVO> imageFileList = new ArrayList<ImageVO>();
-		List<ImageVO> modAddimageFileList = new ArrayList<ImageVO>();
+		List<ImageVO> modAddImageFileList = new ArrayList<ImageVO>();
 
-		if (fileList != null && fileList.size() != 0) {
-			String[] imageFileNO = (String[]) articleMap.get("imageFileNO");
-			for (int i = 0; i < added_img_num; i++) {
-				String fileName = fileList.get(i);
-				ImageVO imageVO = new ImageVO();
-				if (i < pre_img_num) {
-					imageVO.setImageFileName(fileName);
-					imageVO.setImageFileNO(Integer.parseInt(imageFileNO[i]));
-					imageFileList.add(imageVO);
-					articleMap.put("imageFileList", imageFileList);
-				} else {
-					imageVO.setImageFileName(fileName);
-					modAddimageFileList.add(imageVO);
-					articleMap.put("modAddimageFileList", modAddimageFileList);
+		//기존이 이미지만 수정한 경우
+		if(pre_img_counts == added_img_counts && newFileNamesList != null && newFileNamesList.size() != 0) {
+			List<String> imageFileNOList = (List<String>) articleMap.get("imageFileNO");
+			for (int i = 0; i < newFileNamesList.size(); i++) {
+				String newFileName = newFileNamesList.get(i);
+				if(newFileName!= null && newFileName.length()!= 0) {
+					ImageVO imageVO = new ImageVO();
+					if (i < pre_img_counts) {
+						imageVO.setImageFileName(newFileName);
+						imageVO.setImageFileNO(Integer.parseInt(imageFileNOList.get(i)));
+						imageVO.setArticleNO(Integer.parseInt((String)articleMap.get("articleNO")));
+						imageFileList.add(imageVO);
+						articleMap.put("imageFileList", imageFileList);
+					} else {
+						imageVO.setImageFileName(newFileName);
+						imageVO.setArticleNO(Integer.parseInt((String)articleMap.get("articleNO")));
+						modAddImageFileList.add(imageVO);
+						articleMap.put("modAddImageFileList", modAddImageFileList);
+					}
 				}
 			}
+		}else if(pre_img_counts < added_img_counts && newFileNamesList != null && newFileNamesList.size() != 0) {  //새로 이미지를 추가한 경우
+			if (newFileNamesList != null && newFileNamesList.size() != 0) {
+				List<String> imageFileNOList = (List<String>) articleMap.get("imageFileNO");
+				for (int i = 0; i < added_img_counts; i++) {
+					String newFileName = newFileNamesList.get(i);
+					if(newFileName!= null && newFileName.length()!= 0) {
+						ImageVO imageVO = new ImageVO();
+						if (i < pre_img_counts) {
+							imageVO.setImageFileName(newFileName);
+							imageVO.setImageFileNO(Integer.parseInt(imageFileNOList.get(i)));
+							imageVO.setArticleNO(Integer.parseInt((String)articleMap.get("articleNO")));
+							imageFileList.add(imageVO);
+							articleMap.put("imageFileList", imageFileList);
+						} else {
+							imageVO.setImageFileName(newFileName);
+							imageVO.setArticleNO(Integer.parseInt((String)articleMap.get("articleNO")));
+							modAddImageFileList.add(imageVO);
+							articleMap.put("modAddImageFileList", modAddImageFileList);
+						}
+					}
+				}
+			}
+		
+		}else {
+//			if (newFileNamesList != null && newFileNamesList.size() != 0) {
+//				List<String> imageFileNOList = (List<String>) articleMap.get("imageFileNO");
+//				for (int i = 0; i < added_img_counts; i++) {
+//					String newFileName = newFileNamesList.get(i);
+//					if(newFileName!= null && newFileName.length()!= 0) {
+//						ImageVO imageVO = new ImageVO();
+//						if (i < pre_img_counts) {
+//							imageVO.setImageFileName(newFileName);
+//							imageVO.setImageFileNO(Integer.parseInt(imageFileNOList.get(i)));
+//							imageVO.setArticleNO(Integer.parseInt((String)articleMap.get("articleNO")));
+//							imageFileList.add(imageVO);
+//							articleMap.put("imageFileList", imageFileList);
+//						} else {
+//							imageVO.setImageFileName(newFileName);
+//							imageVO.setArticleNO(Integer.parseInt((String)articleMap.get("articleNO")));
+//							modAddImageFileList.add(imageVO);
+//							articleMap.put("modAddImageFileList", modAddImageFileList);
+//						}
+//					}
+//				}
+//			}	
 		}
+		
 
 
 		String articleNO = (String) articleMap.get("articleNO");
@@ -409,24 +480,24 @@ public class ArticleControllerImpl implements ArticleController {
 		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
 		try {
 			articleService.modArticle(articleMap);
-			if (fileList != null && fileList.size() != 0) { // 수정한 파일들을 차례대로 업로드한다.
-				for (int i = 0; i < fileList.size(); i++) {
-					String fileName = fileList.get(i);
-					if (i  < pre_img_num ) {
-						if (fileName != null) {
-							File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + fileName);
+			if (newFileNamesList != null && newFileNamesList.size() != 0) { // 수정한 파일들을 차례대로 업로드한다.
+				for (int i = 0; i < newFileNamesList.size(); i++) {
+					String newFileName = newFileNamesList.get(i);
+					if (i  < pre_img_counts) {  //기존 이미지를 수정한 경우
+						if (newFileName != null && newFileName.length()!= 0) {
+							File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + newFileName);
 							File destDir = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO);
 							FileUtils.moveFileToDirectory(srcFile, destDir, true);
 
-							String[] oldName = (String[]) articleMap.get("oldFileName");
-							String oldFileName = oldName[i];
+							String oldFileName = oldFileNamesList.get(i);
+//							String oldFileName = oldFileNames[i];
 
 							File oldFile = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO + "\\" + oldFileName);
 							oldFile.delete();
 						}
-					}else {
-						if (fileName != null) {
-							File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + fileName);
+					}else {  //새로운 이미지를 추가한 경우
+						if (newFileName != null && newFileName.length()!= 0) {
+							File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + newFileName);
 							File destDir = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO);
 							FileUtils.moveFileToDirectory(srcFile, destDir, true);
 						}
@@ -434,46 +505,50 @@ public class ArticleControllerImpl implements ArticleController {
 				}
 			}
 
-			message = "<script>";
-			message += " alert('글을 수정했습니다.');";
-			message += " location.href='" + multipartRequest.getContextPath() + "/article/viewArticle.do?articleNO="
-					+ articleNO + "';";
-			message += " </script>";
-			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
+			Map<String, Object> result = new HashMap<>();
+		    result.put("status", "ok");
+		    result.put("message", "글을 수정했습니다.");
+		    result.put("redirectUrl", "/article/viewArticle.do?articleNO=" + articleMap.get("articleNO"));
+
+		    return ResponseEntity.ok(result);
 		} catch (Exception e) {
 
-			if (fileList != null && fileList.size() != 0) { // 오류 발생 시 temp 폴더에 업로드된 이미지 파일들을 삭제한다.
-				for (int i = 0; i < fileList.size(); i++) {
-					File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + fileList.get(i));
+			if (newFileNamesList != null && newFileNamesList.size() != 0) { // 오류 발생 시 temp 폴더에 업로드된 이미지 파일들을 삭제한다.
+				for (int i = 0; i < newFileNamesList.size(); i++) {
+					File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + newFileNamesList.get(i));
 					srcFile.delete();
 				}
 
 				e.printStackTrace();
 			}
 
-			message = "<script>";
-			message += " alert('오류가 발생했습니다.다시 수정해주세요');";
-			message += " location.href='" + multipartRequest.getContextPath() + "/article/viewArticle.do?articleNO="
-					+ articleNO + "';";
-			message += " </script>";
-			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
+			
+			Map<String, Object> result = new HashMap<>();
+		    result.put("status", "ERROR");
+		    result.put("message", "오류 발생. 다시 수정해 주세요.");
+		    result.put("redirectUrl", "/article/viewArticle.do?articleNO=" + articleMap.get("articleNO"));
+		    
+			resEnt = new ResponseEntity(result, responseHeaders, HttpStatus.CREATED);
 		}
 		return resEnt;
 	}
 
 	// 수정하기에서 이미지 삭제 기능
-	@RequestMapping(value = "/article/removeModImage.do", method = RequestMethod.POST)
+	@PostMapping("/article/removeModImage.do")
 	@ResponseBody
-	public void removeModImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ResponseEntity<Map<String, Object>> removeModImage(@RequestBody Map<String, Object> imageMap,
+															HttpServletRequest request, 
+															HttpServletResponse response) throws Exception {
 
-		request.setCharacterEncoding("utf-8");
-		response.setContentType("text/html; charset=utf-8");
-		PrintWriter writer = response.getWriter();
-
+	    ResponseEntity<Map<String, Object>> resEnt = null;
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
+		Map<String, Object> res = new HashMap<>();
 		try {
-			String imageFileNO = (String) request.getParameter("imageFileNO");
-			String imageFileName = (String) request.getParameter("imageFileName");
-			String articleNO = (String) request.getParameter("articleNO");
+		    
+			String imageFileNO = (String) imageMap.get("imageFileNO");
+			String imageFileName = (String) imageMap.get("imageFileName");
+			String articleNO = (String)imageMap.get("articleNO");;
 			
 			System.out.println("imageFileNO = " + imageFileNO);
 			System.out.println("articleNO = " + articleNO);
@@ -486,10 +561,21 @@ public class ArticleControllerImpl implements ArticleController {
 			File oldFile = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO + "\\" + imageFileName);
 			oldFile.delete();
 			
-			writer.print("success");
+
+		 
+			
+			Map<String, Object> result = new HashMap<>();
+		    result.put("status", "FILE_REMOVE_SUCCESS");
+		    result.put("message", "이미지를 삭제했습니다.");
+//			writer.print("FILE_REMOVE_SUCCESSED");
+		    return ResponseEntity.ok(result);
 		} catch (Exception e) {
-			writer.print("failed");
+			Map<String, Object> result = new HashMap<>();
+		    result.put("status", "ERROR");
+		    result.put("message", "이미지 삭제 중 오류가 발생했습니다.");
+		    resEnt = new ResponseEntity(result, responseHeaders, HttpStatus.CREATED);
 		}
+		return resEnt;
 
 	}
 
@@ -511,7 +597,6 @@ public class ArticleControllerImpl implements ArticleController {
 	private ModelAndView articleForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewName = (String) request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView();
-
 		mav.setViewName(viewName);
 		return mav;
 	}
@@ -566,30 +651,55 @@ public class ArticleControllerImpl implements ArticleController {
 		return fileList;
 	}
 
+	
 	// 수정 시 다중 이미지 업로드하기
-	private List<String> uploadModImageFile(MultipartHttpServletRequest multipartRequest) throws Exception {
-		List<String> fileList = new ArrayList<String>();
-		Iterator<String> fileNames = multipartRequest.getFileNames();
-		while (fileNames.hasNext()) {
-			String fileName = fileNames.next();
-			MultipartFile mFile = multipartRequest.getFile(fileName);
-			String originalFileName = mFile.getOriginalFilename();
-			if (originalFileName != "" && originalFileName != null) {
-				fileList.add(originalFileName);
-				File file = new File(ARTICLE_IMAGE_REPO + "\\" + fileName);
-				if (mFile.getSize() != 0) { // File Null Check
-					if (!file.exists()) { // 경로상에 파일이 존재하지 않을 경우
-						file.getParentFile().mkdirs(); // 경로에 해당하는 디렉토리들을 생성
-						mFile.transferTo(new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + originalFileName)); // 임시로
-					}
-				}
-			} else {
-				fileList.add(null);
-			}
+	private void uploadModImageFile(List<MultipartFile> multipartFiles) throws Exception {
 
-		}
-		return fileList;
+	    for (MultipartFile mFile : multipartFiles) {
+	        if (mFile == null || mFile.isEmpty()) {
+	            continue;
+	        }
+
+	        String originalFileName = mFile.getOriginalFilename();
+
+	        // 저장 경로
+	        File file = new File(ARTICLE_IMAGE_REPO + File.separator + "temp" + File.separator + originalFileName);
+
+	        // 디렉토리 없으면 생성
+	        if (!file.getParentFile().exists()) {
+	            file.getParentFile().mkdirs();
+	        }
+
+	        // 파일 저장
+	        mFile.transferTo(file);
+	    }
+
 	}
+	
+//	// 수정 시 다중 이미지 업로드하기
+//	private List<String> uploadModImageFile(MultipartHttpServletRequest multipartRequest) throws Exception {
+//		List<String> fileList = new ArrayList<String>();
+//		Iterator<String> fileNames = multipartRequest.getFileNames();
+//		while (fileNames.hasNext()) {
+//			String fileName = fileNames.next();
+//			MultipartFile mFile = multipartRequest.getFile(fileName);
+//			String originalFileName = mFile.getOriginalFilename();
+//			if (originalFileName != "" && originalFileName != null) {
+//				fileList.add(originalFileName);
+//				File file = new File(ARTICLE_IMAGE_REPO + "\\" + fileName);
+//				if (mFile.getSize() != 0) { // File Null Check
+//					if (!file.exists()) { // 경로상에 파일이 존재하지 않을 경우
+//						file.getParentFile().mkdirs(); // 경로에 해당하는 디렉토리들을 생성
+//						mFile.transferTo(new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + originalFileName)); // 임시로
+//					}
+//				}
+//			} else {
+//				fileList.add(null);
+//			}
+//
+//		}
+//		return fileList;
+//	}
 
 
 

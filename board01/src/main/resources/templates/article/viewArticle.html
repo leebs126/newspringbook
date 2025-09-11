@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  th:replace="layout :: layout(~{::title}, ~{::body})">
+
+<head>
+     <meta charset="UTF-8">
+     <title th:fragment="title">글상세</title>
+
+  </head>
+  <body>
+	<div th:fragment="body">
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<style>
+		  #tr_btn_modify {
+		    display:none;
+		  }
+		  .tr_modEnable {
+		    visibility:hidden;
+		  }
+		</style>
+
+		<script type="text/javascript">
+		  function backToList(obj){
+		    location.href="/article/listArticles.do";
+		  }
+
+		  function fn_enable(){
+		      document.getElementById("i_title").disabled=false;
+		      document.getElementById("i_content").disabled=false;
+		      document.getElementById("tr_btn_modify").style.display="block";
+		      document.getElementById("tr_btn").style.display="none";
+		      $(".tr_modEnable").css('visibility', 'visible');
+		  }
+		  
+		  function submitArticle() {
+		    const form = document.forms["frmArticle"];
+		    //const formData = new FormData(form);
+			const formData = new FormData();
+			
+			const oldFileNames = [];
+			document.querySelectorAll("input[name='oldFileName']").forEach(el => {
+			  oldFileNames.push(el.value);
+			});
+			
+			const newFileNames = [];
+			document.querySelectorAll("input[name='newFileName']").forEach(el => newFileNames.push(el.value));
+			
+			const imageFileNO = [];
+			document.querySelectorAll("input[name='imageFileNO']").forEach(el => {
+			  imageFileNO.push(el.value);
+			});
+
+
+		    // JSON 데이터를 Blob으로 추가
+		    const articleData = {
+		      articleNO : $("#i_articleNO").val(), 
+			  title: $("#i_title").val(),
+		      content: $("#i_content").val(),
+			  pre_img_counts: $("#pre_img_counts").val(),
+			  added_img_counts: $("#added_img_counts").val(),
+			  oldFileNames : oldFileNames, // 배열로 전달
+			  newFileNames: newFileNames,
+			  imageFileNO : imageFileNO
+		    };
+		    formData.append(
+		      "article",
+		      new Blob([JSON.stringify(articleData)], { type: "application/json" })
+		    );
+		    // 파일 input 수집 (폼 안의 모든 file input)
+			 document.querySelectorAll("input[type='file']").forEach(fileInput => {
+		      if (fileInput.files.length > 0) {
+		        for (let i = 0; i < fileInput.files.length; i++) {
+		          formData.append("files", fileInput.files[i]);
+		        }
+		      }
+		    });
+			 
+		    // JSON + 파일을 동시에 전송
+			fetch("/article/modArticleJson.do", {
+		      method: "POST",
+		      body: formData  // multipart/form-data 자동 설정됨
+		    })
+		      .then(res => res.json())
+		      .then(data => {
+		        if (data.status === "ok") {
+		          alert(data.message);
+		          location.href = data.redirectUrl; // 서버에서 내려준 redirect URL
+		        } else {
+		          alert("글 수정 실패. 다시 시도해주세요.");
+		        }
+		      })
+		      .catch(err => console.error("Error:", err));
+		  }
+
+		  /*
+		  function fn_modify_article(obj){
+		      obj.action="/article/modArticle.do";
+		      obj.submit();
+		  }
+		  */
+		  
+
+		  function fn_remove_article(url, articleNO){
+		      var form = document.createElement("form");
+		      form.setAttribute("method", "post");
+		      form.setAttribute("action", url);
+		      var articleNOInput = document.createElement("input");
+		      articleNOInput.setAttribute("type","hidden");
+		      articleNOInput.setAttribute("name","articleNO");
+		      articleNOInput.setAttribute("value", articleNO);
+		      form.appendChild(articleNOInput);
+		      document.body.appendChild(form);
+		      form.submit();
+		  }
+
+		  function fn_reply_form(isLogOn, url, parentNO, groupNO){
+		     if(isLogOn && isLogOn !== 'false'){
+		          var form = document.createElement("form");
+		          form.setAttribute("method", "post");
+		          form.setAttribute("action", url);
+
+		          var parentNOInput = document.createElement("input");
+		          parentNOInput.type="hidden";
+		          parentNOInput.name="parentNO";
+		          parentNOInput.value=parentNO;
+
+		          var groupNOInput = document.createElement("input");
+		          groupNOInput.type="hidden";
+		          groupNOInput.name="groupNO";
+		          groupNOInput.value=groupNO;
+
+		          form.appendChild(parentNOInput);
+		          form.appendChild(groupNOInput);
+		          document.body.appendChild(form);
+		          form.submit();
+		     }else{
+		         alert("로그인 후 글쓰기가 가능합니다.");
+		         location.href="/member/loginForm.do?action=/article/replyForm.do&groupNO=" + groupNO + "&parentNO=" + parentNO;
+		     }
+		  }
+		  
+		  function handleFileSelect(input, index) {
+		    if (input.files && input.files.length > 0) {
+		      const fileName = input.files[0].name;
+		      document.getElementById("newFileName" + index).value = fileName;
+		      
+		      // 미리보기 이미지 변경
+		      const reader = new FileReader();
+		      reader.onload = function(e) {
+		        document.getElementById("preview" + index).src = e.target.result;
+		      };
+		      reader.readAsDataURL(input.files[0]);
+		    }
+		  }
+
+		  /*
+		  function readURL(input, index) {
+		      if (input.files && input.files[0]) {
+		          var reader = new FileReader();
+		          reader.onload = function (e) {
+		              $('#preview'+index).attr('src', e.target.result);
+		          }
+		          reader.readAsDataURL(input.files[0]);
+		      }
+		  }
+		  */
+		  var pre_img_counts = 0;  // 수정 이전의 이미지 수
+		  var img_counts = 0;      // 수정 후 이미지 수
+		  var isFirstAddImage = true;
+		  const newFileNames = []; // 새 이미지 파일명 배열
+
+		  function fn_addModImage() {
+		    var _img_counts = $("#img_counts").val() || 0;
+		    pre_img_counts = _img_counts;
+
+		    if (isFirstAddImage) {
+		      img_counts = ++_img_counts;
+		      isFirstAddImage = false;
+		    } else {
+		      ++img_counts;
+		    }
+
+		    var innerHtml = "";
+		    innerHtml += '<tr width="200px" align="center">';
+		    innerHtml += '<td colspan="2">';
+		    innerHtml +=
+		      "<img id='preview" + img_counts + "' height='500' width='500' /><br/>";
+		    innerHtml +=
+		      "<input type='file' name='imageFileName" +
+		      img_counts +
+		      "' onchange='handleNewFileName(this," +
+		      img_counts +
+		      ")' />";
+		    innerHtml +=
+		      "<input type='hidden' name='newFileName' id='newFileName" +
+		      img_counts +
+		      "'/>" +
+		      "<input type='hidden' name='imageFileNO' value='0'/>"; // 신규이미지는 imageFileNO=0
+		    innerHtml += "<input type='button' value='이미지 삭제하기' />";
+		    innerHtml += "</td>";
+		    innerHtml += "</tr>";
+
+		    $("#tb_addImage").append(innerHtml);
+
+		    $("#added_img_counts").val(img_counts); // 추가된 이미지 수 갱신
+		  }
+		  
+		  function handleNewFileName(input, index) {
+		    if (input.files && input.files[0]) {
+		      const fileName = input.files[0].name;
+
+		      // hidden input에 파일명 저장
+		      $("#newFileName" + index).val(fileName);
+
+		      // 미리보기 이미지 표시
+		      const reader = new FileReader();
+		      reader.onload = function (e) {
+		        $("#preview" + index).attr("src", e.target.result);
+		      };
+		      reader.readAsDataURL(input.files[0]);
+
+		      // newFileNames 배열에 push
+		      newFileNames.push(fileName);
+
+		      console.log("추가된 파일명:", fileName);
+		      console.log("현재 newFileNames 배열:", newFileNames);
+		    }
+		  }
+		  		  
+		  // 이벤트 위임 방식으로 버튼 클릭 처리
+		  document.addEventListener("click", function(e) {
+		    if (e.target.classList.contains("btn-remove-image")) {
+		      const imageFileNO = e.target.dataset.imagefileno;
+		      const articleNO = e.target.dataset.articleno;
+		      const imageFileName = e.target.dataset.imagefilename;
+		      const count = e.target.dataset.count;
+
+		      fn_removeModImage(imageFileNO, articleNO, imageFileName, count);
+		    }
+		  });
+
+
+		  function fn_removeModImage(_imageFileNO, _articleNO, _imageFileName, rowNum) {
+		    img_counts = $("#img_counts").val();
+
+		    const imageData = {
+		      articleNO: _articleNO,
+		      imageFileNO: _imageFileNO,
+		      imageFileName: _imageFileName,
+		    };
+
+		    fetch("/article/removeModImage.do", {
+		      method: "POST",
+		      headers: {
+		        "Content-Type": "application/json"
+		      },
+		      body: JSON.stringify(imageData)
+		    })
+		      .then(res => res.json())
+		      .then(data => {
+		        if (data.status === "FILE_REMOVE_SUCCESS") {
+		          alert(data.message);
+		          // ✅ 해당 tr 삭제
+		          document.getElementById("tr_" + rowNum).remove();
+		        } else {
+		          alert("이미지 삭제 실패. 다시 시도해주세요.");
+		        }
+		      })
+		      .catch(err => console.error("Error:", err));
+		  }
+
+			 
+			 
+/*			 
+
+		  	 alert("img_counts: " + img_counts);
+		  		 $.ajax({
+		  	       type:"post",
+		  	       async:false,  
+		  	       url:"/article/removeModImage.do",
+		  	       dataType:"text",
+		  	       data: {imageFileNO : _imageFileNO,  articleNO : _articleNO, imageFileName : _imageFileName},
+		  	       success:function (result, textStatus){
+		  	          if(result == 'FILE_REMOVE_SUCCESS'){
+		  	       	    alert("이미지를 삭제했습니다.");
+		  //	     	 	location.href="${contextPath}/board/viewArticle.do?removeCompleted=true&articleNO=" + _articleNO;
+		  	  
+		  	  			$('#tr_'+rowNum).remove();
+		  	 			$('#tr_sub'+rowNum).remove();
+		  	 			
+		  	 			alert("img_counts: " + img_counts);
+		  	 			//pre_img_num = img_index;
+		  	 			img_index--;
+		  	 			alert("img_counts: " + img_counts);
+		  	 			$("#pre_img_num").val(img_counts);  //삭제 후 기존 이미지 수를 한 개 감소 시켜서 저장합니다.
+		  	 			$("#img_counts").val(img_counts);
+		  	 			//$("#added_img_num").val(img_index);
+		  			  			
+		  	          }else{
+		  	        	  alert("다시 시도해 주세요");
+		  	          }
+		  	       },
+		         error:function(data,textStatus){
+		            alert("에러가 발생했습니다.");ㅣ
+		       },
+		         complete:function(data,textStatus){
+		         }
+		      });  //end ajax	
+
+		  }
+	*/  
+	  	</script>		
+		
+    <form name="frmArticle" method="post" enctype="multipart/form-data">
+    <table border="0" align="center">
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">글번호</td>
+        <td>
+          <input type="text" th:value="${articleMap.article.articleNO}" disabled />
+          <input type="hidden" name="articleNO" id="i_articleNO"  th:value="${articleMap.article.articleNO}" />
+        </td>
+      </tr>
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">조회수</td>
+        <td>
+          <input type="text" th:value="${articleMap.article.viewCnt}" name="viewCnt" disabled />
+        </td>
+      </tr>
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">작성자 아이디</td>
+        <td>
+          <input type="text" th:value="${articleMap.article.memId}" name="writer" disabled />
+        </td>
+      </tr>
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">제목</td>
+        <td>
+          <input type="text" th:value="${articleMap.article.title}" name="title" id="i_title" disabled />
+        </td>
+      </tr>
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">내용</td>
+        <td>
+          <textarea rows="20" cols="60" name="content" id="i_content" disabled
+            th:text="${articleMap.article.content}"></textarea>
+        </td>
+      </tr>
+
+	  <!-- 이미지 목록 + 수정/삭제 버튼 -->
+	  <tr th:each="item, stat : ${articleMap.imageFileList}" th:id="'tr_' + ${stat.count}">
+	    <td width="150" align="center" bgcolor="#FF9933"
+	        th:text="'이미지' + ${stat.count}">이미지</td>
+	    <td>
+	      <!-- 기존 이미지 표시 -->
+	      <input type="hidden" th:name="oldFileName"  th:value="${item.imageFileName}" />
+	      <input type="hidden" th:name="imageFileNO" th:value="${item.imageFileNO}" />
+	      <img th:src="@{/download.do(articleNO=${articleMap.article.articleNO}, imageFileName=${item.imageFileName})}"
+	           th:id="'preview' + ${stat.index}" name="'preview'" height="500" width="500" /><br/>
+
+	      <!-- 새로 선택한 파일명 저장용 hidden -->
+	      <input type="hidden" name="newFileName" th:id="'newFileName' + ${stat.index}" />   
+	      
+		  
+		  <!-- 수정 input + 삭제 버튼 (같은 td 안에 배치) -->
+	      <div class="tr_modEnable">
+	        <!--<input type="file" th:name="'imageFileName' + ${stat.index}"
+	               th:id="'i_imageFileName' + ${stat.index}"
+	               th:onchange="'readURL(this,' + ${stat.index} + ');'" />-->
+	        
+		   <!-- 수정 input -->
+		   <input type="file" th:id="'fileInput' + ${stat.index}" 
+		          th:onchange="'handleFileSelect(this,' + ${stat.index} + ');'" /> 	   
+		    
+				  <input type="button" value="이미지 삭제하기"
+	               class="btn-remove-image"
+	               th:data-imagefileno="${item.imageFileNO}"
+	               th:data-articleno="${item.articleNO}"
+	               th:data-imagefilename="${item.imageFileName}"
+	               th:data-count="${stat.count}" />
+	      </div>
+	    </td>
+
+	    <!-- 마지막 이미지 처리용 hidden 값 -->
+	    <th:block th:if="${stat.last}">
+	      <input type="hidden" id="img_counts" th:value="${stat.count}" />
+	      <input type="hidden" id="pre_img_counts" th:name="pre_img_counts" th:value="${stat.count}" />
+	      <input type="hidden" id="added_img_counts" th:name="added_img_counts" th:value="${stat.count}" />
+	    </th:block>
+	  </tr>
+	  
+
+      <tr>
+        <td colspan="2">
+          <table id="tb_addImage" align="center"></table>
+        </td>
+      </tr>
+	  
+	  <tr class ="tr_modEnable">
+	     <td colspan="2">
+	        <input type="button"   value="이미지 추가"  onclick="fn_addModImage()"/>
+	     </td>
+	  </tr>
+
+      <tr id="tr_btn_modify" align="right">
+        <td colspan="2">
+          <!--<input type="button" value="수정반영하기" th:onclick="fn_modify_article(frmArticle)" />-->
+		  <input type="button" value="수정반영하기" th:onclick="submitArticle()" />
+          <input type="button" value="취소" th:onclick="backToList()" />
+        </td>
+      </tr>
+
+      <tr id="tr_btn">
+        <td colspan="2" align="center">
+          <th:block th:if="${session.member != null and session.member.memId == articleMap.article.memId}">
+            <input type="button" value="수정하기" onclick="fn_enable()" />
+            <input type="button" value="삭제하기"
+                   th:onclick="|fn_remove_article('/article/removeArticle.do', ${articleMap.article.articleNO})|" />
+          </th:block>
+          <input type="button" value="리스트로 돌아가기" onclick="backToList(this.form)" />
+          <input type="button" value="답글쓰기"
+                 th:onclick="|fn_reply_form('${session.isLogOn}', '/article/replyForm.do', ${articleMap.article.articleNO}, ${articleMap.article.groupNO})|" />
+        </td>
+      </tr>
+    </table>
+    </form>
+
+<!--     댓글 작성 
+    <br><br><br>
+    <table border="0" align="center">
+      <tr>
+        <td>
+          <textarea th:id="'textarea_comment' + ${articleMap.article.articleNO}" rows="4" cols="100"
+                    placeholder="댓글은 200까지 가능합니다."></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button th:onclick="|fn_addNewComment('${session.isLogOn}','/member/loginForm.do','${articleMap.article.articleNO}')|">
+            댓글등록
+          </button>
+        </td>
+      </tr>
+    </table>
+-->
+  <!--   댓글 목록 
+    <br><br><br>
+    <div style="border: 1px solid red; display: inline-block;">
+      <table id="table_comment" style="border: 0px solid blue; margin-left: auto; margin-right: auto;">
+        <thead>
+          <tr style="background-color: lightgray;">
+            <td>댓글</td>
+          </tr>
+        </thead>
+        <tbody>
+           댓글 리스트 반복 
+          <tr th:each="comment : ${articleMap.commentsList}">
+            <td th:text="${comment.content}">댓글 내용</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>-->
+</div>	
+  </body>
+  </html>

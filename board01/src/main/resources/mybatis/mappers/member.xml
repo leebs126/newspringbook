@@ -54,7 +54,7 @@
   <select id="loginById"  resultType="memberVO"   parameterType="memberVO" >
 	<![CDATA[
 		SELECT * FROM t_member1	
-		WHERE memId=#{memIdd} 
+		WHERE memId=#{memId} 
 		AND pwd=#{pwd}		
 	]]>
   </select>

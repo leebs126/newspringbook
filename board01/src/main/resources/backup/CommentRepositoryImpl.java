@@ -11,7 +11,7 @@ import com.board01.comment.repository.CommentRepository;
 import com.board01.comment.vo.CommentVO;
 
 @Repository("commentDAO")
-public class CommentRepositoryImpl implements CommentRepository {
+public class CommentRepositoryImpl  {
 	@Autowired
 	private SqlSession sqlSession;
 

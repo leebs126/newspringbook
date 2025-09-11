@@ -17,8 +17,8 @@ import com.board01.article.vo.ImageVO;
 
 
 
-@Repository("articleRepository")
-public class ArticleRepositoryImpl implements ArticleRepository {
+//@Repository("articleRepository")
+public class ArticleRepositoryImpl  {
 	@Autowired
 	private SqlSession sqlSession;
 
@@ -83,7 +83,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 	}
 	
 	@Override
-	public void updateImageFile(Map articleMap) throws DataAccessException {
+	public void updateImageFile(List imageFileList) throws DataAccessException {
 		
 		List<ImageVO> imageFileList = (ArrayList)articleMap.get("imageFileList");
 		int articleNO = Integer.parseInt((String)articleMap.get("articleNO"));

@@ -25,15 +25,18 @@
 	<select id="selectAllArticlesList" parameterType="java.util.Map" resultMap="articlesResult">
 	<![CDATA[
 	SELECT * FROM (
-				select groupNO,
+				SELECT groupNO,
                         LVL,
                         articleNO,
                         parentNO,
-                        title,
+                       CASE 
+			           WHEN LENGTH(title) > 20 THEN SUBSTR(title, 1, 20) || '...'
+			           ELSE title
+			      	   END AS title,
                         memId,
                         writeDate
-                            from (
-                                select 
+                            FROM (
+                                SELECT 
                                     groupNO, 
                                     LEVEL as LVL,
                                     articleNO,
@@ -41,21 +44,21 @@
                                     title,
                                     memId,
                                     writeDate
-                                    from (
-			                                select * from t_board1
-											where groupNO in(
-											 	                     select groupNO
-											 	                     from (
-																	            select  recNum, 
+                                    FROM (
+			                                SELECT * FROM t_article1
+											WHERE groupNO IN (
+											 	                     SELECT groupNO
+											 	                     FROM (
+																	            SELECT  recNum, 
 																			              groupNO
-																	            from(   
-																	                    select rowNum  as recNum, groupNO
-																	                    from (
-																		                        select distinct groupNO from t_board1
-																		                        order by groupNO desc
+																	            FROM (   
+																	                    SELECT rowNum  AS recNum, groupNO
+																	                    FROM (
+																		                        SELECT distinct groupNO FROM t_article1
+																		                        ORDER BY groupNO DESC
 																	                          )
 																            	 )
-																	             where recNum between(#{section}-1)*100+(#{pageNum}-1)*10+1 and (#{section}-1)*100+#{pageNum}*10           
+																	             WHERE recNum BETWEEN(#{section}-1)*100+(#{pageNum}-1)*10+1 AND (#{section}-1)*100+#{pageNum}*10           
 																	       )     	 
 																	)
                                                                
@@ -66,7 +69,6 @@
                                )
                                
 	]]>
-	<!--				where recNum between(#{section}-1)*100+(#{pageNum}-1)*10+1 and (#{section}-1)*100+#{pageNum}*10  -->	
 	</select>
 
 
@@ -101,7 +103,7 @@
 																	            from(   
 																	                    select rowNum  as recNum, groupNO
 																	                    from (
-																		                        select distinct groupNO from t_board1
+																		                        select distinct groupNO from t_article1
 																		                        order by groupNO desc
 																	                          )
 																            	 )
@@ -120,21 +122,27 @@
 	</select>-->
 	<select id="selectNewGroupNO" resultType="int"> 
 	   <![CDATA[  
-			select nvl(max(groupNO), 0)+1 as maxGroupNO from t_board1
+			SELECT NVL(MAX(groupNO), 0)+1 AS maxGroupNO FROM t_article1
 		 ]]>
 	</select>
 
 	<select id="selectTotalArticles" resultType="int">
 		<![CDATA[  
-			SELECT COUNT(DISTINCT groupNO) FROM t_board1
+			SELECT COUNT(DISTINCT groupNO) FROM t_article1
 		 ]]>
 	</select>
 
 	<!--다중 이미지 새글 추가 SQL문 -->
 	<insert id="insertNewArticle" parameterType="java.util.Map">
     <![CDATA[
-      insert into t_board1(groupNO, articleNO, parentNO, memId, title, content, imageFileName)
-      values(#{groupNO},
+      INSERT INTO t_article1(groupNO, 
+      						 articleNO, 
+      						 parentNO, 
+      						 memId, 
+      						 title, 
+      						 content, 
+      						 imageFileName)
+      VALUES (#{groupNO},
                #{articleNO},
       		   #{parentNO}, 
       		   #{memId}, 
@@ -147,8 +155,14 @@
 		<!--다중 이미지 답글 추가 SQL문 -->
 	<insert id="insertReplyArticle" parameterType="java.util.Map">
     <![CDATA[
-      insert into t_board1(groupNO, articleNO, parentNO, memId, title, content, imageFileName)
-      values(#{groupNO},
+      INSERT INTO t_article1(groupNO, 
+                             articleNO, 
+                             parentNO, 
+                             memId, 
+                             title, 
+                             content, 
+                             imageFileName)
+      VALUES (#{groupNO},
                #{articleNO},
       		   #{parentNO}, 
       		   #{memId}, 
@@ -161,11 +175,14 @@
 
 	<insert id="insertNewImage" parameterType="java.util.Map">
 		<foreach item="item" collection="list" open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
-			INTO t_imageFile1(imageFileNO, imageFileName, articleNO, regDate)
+			INTO t_imageFile1(imageFileNO, 
+							  imageFileName, 
+							  articleNO, 
+							  regDate)
 			VALUES (#{item.imageFileNO},
-						#{item.imageFileName},
-						#{item.articleNO},
-							sysdate)
+					#{item.imageFileName},
+					#{item.articleNO},
+					sysdate)
 		</foreach>
 	</insert>
 
@@ -174,36 +191,43 @@
 
 	<select id="selectNewArticleNO" resultType="int">
 		<![CDATA[
-			SELECT  nvl(max(articleNO), 0) + 1 from t_board1		
+			SELECT  NVL(MAX(articleNO), 0) + 1 FROM t_article1		
 		]]>
 	</select>
 
 	<select id="selectArticle" resultType="articleVO" parameterType="int">
     <![CDATA[
-      SELECT * from t_board1
-      where articleNO = #{articleNO}		
+      SELECT * FROM t_article1
+      WHERE articleNO = #{articleNO}		
     ]]>
 	</select>
 
 	<!-- 다중 파일 수정하기 -->
 	<update id="updateArticle" parameterType="java.util.Map">
-		update t_board1
-		set title=#{title}
+		UPDATE t_article1
+		SET title=#{title}
 		,content=#{content}
-		where articleNO=#{articleNO}
+		WHERE articleNO=#{articleNO}
 	</update>
 
 
+	<!--<update id="updateImageFile" parameterType="com.board01.article.vo.ImageVO">
+		UPDATE t_imageFile1
+		SET imageFileName = #{imageFileName}
+		WHERE
+		articleNO=#{articleNO}
+		AND imageFileNO = #{imageFileNO}
+	</update>-->
 
-	<update id="updateImageFile" parameterType="java.util.List">
-		<foreach collection="list" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
+	<update id="updateImageFile" parameterType="java.util.Map">
+		<foreach collection="imageFileList" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
 			<choose>
-				<when test="item.imageFileName != null ">
-					update t_imageFile1
-					set imageFileName = #{item.imageFileName}
-					where
+				<when test="imageFileList != null  and item.imageFileName != null">
+					UPDATE t_imageFile1
+					SET imageFileName = #{item.imageFileName}
+					WHERE
 					articleNO=#{item.articleNO}
-					and imageFileNO = #{item.imageFileNO}
+					AND imageFileNO = #{item.imageFileNO}
 				</when>
 				<otherwise>
 
@@ -214,9 +238,9 @@
 
 	<delete id="deleteArticle" parameterType="int">
     <![CDATA[
-      delete from t_board1
-      where articleNO in (
-         SELECT articleNO FROM  t_board1
+      DELETE FROM t_article1
+      WHERE articleNO IN (
+         SELECT articleNO FROM  t_article1
          START WITH articleNO = #{articleNO}
          CONNECT BY PRIOR  articleNO = parentNO )
     ]]>
@@ -225,7 +249,7 @@
 
 	<select id="selectNewImageFileNO" resultType="int">
     <![CDATA[
-      SELECT  NVL(MAX(imageFileNO),0) FROM t_imageFile1		
+      SELECT  NVL(MAX(imageFileNO),0)+1 FROM t_imageFile1		
     ]]>
 	</select>
 
@@ -241,25 +265,60 @@
 
 	<delete id="deleteModImage" parameterType="imageVO">
 	    <![CDATA[
-	      delete from t_imageFile1
-	      where articleNO = #{articleNO}
-	      and imageFileNO = #{imageFileNO}
+	      DELETE FROM t_imageFile1
+	      WHERE articleNO = #{articleNO}
+	      AND imageFileNO = #{imageFileNO}
 	    ]]>
 	</delete>
 
-	<insert id="insertModNewImage" parameterType="java.util.Map">
-		<foreach item="item" collection="list" open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
-			INTO t_imageFile1(imageFileNO, imageFileName, articleNO, regDate)
-			VALUES (#{item.imageFileNO},
-			#{item.imageFileName},
-			#{item.articleNO},
-			sysdate)
+<insert id="insertModNewImage" parameterType="imageVO">
+	    INSERT INTO t_imageFile1 (
+	        imageFileNO,
+	        imageFileName,
+	        articleNO,
+	        regDate
+	    )
+	    VALUES (
+	        #{imageFileNO},
+	        #{imageFileName},
+	        #{articleNO},
+	        SYSDATE
+	    )
+</insert>
+
+	<!--<insert id="insertModNewImage" parameterType="java.util.Map">
+	  <foreach collection="modAddImageFileList" item="item" separator=";">
+	    INSERT INTO t_imageFile1 (
+	        imageFileNO,
+	        imageFileName,
+	        articleNO,
+	        regDate
+	    )
+	    VALUES (
+	        #{item.imageFileNO},
+	        #{item.imageFileName},
+	        #{item.articleNO},
+	        sysdate
+	    )
+	  </foreach>
+	</insert>-->
+
+	<!--<insert id="insertModNewImage" parameterType="java.util.Map">
+		<foreach item="list" collection="modAddImageFileList" open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
+			INTO t_imageFile1(imageFileNO, 
+							  imageFileName, 
+							  articleNO, 
+							  regDate)
+			VALUES (#{list.imageFileNO},
+					#{list.imageFileName},
+					#{list.articleNO},
+					sysdate)
 		</foreach>
-	</insert>
+	</insert>-->
 	<!--
 	<update id="updateViewCounts" parameterType="int">
 	    <![CDATA[
-	      update t_board1
+	      update t_article1
 		  set viewCounts = viewCounts+1
 		  where
 		     articleNO=#{articleNO}

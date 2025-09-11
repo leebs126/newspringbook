@@ -11,7 +11,7 @@ import com.board01.member.repository.MemberRepository;
 import com.board01.member.vo.MemberVO;
 
 @Repository("memberDAO")
-public class MemberRepositoryImpl implements MemberRepository {
+public class MemberRepositoryImpl {
 	@Autowired
 	private SqlSession sqlSession;
 

@@ -51,10 +51,17 @@
 		      </td>
 
 		      <!-- 제목 -->
-		      <td>
+		      <td style="padding-left:30px; text-align:left ;">
 		        <div th:each="article, iterStat : ${entry.value}" class="cell-item">
-		          <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
-		             th:text="${article.title}">제목</a>
+				  <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+				     th:style="'margin-left:' + (${article.level} * 20) + 'px;'">
+				     
+					 <!-- level 이 2 이상일 때만 [답글] 표시 -->
+					 <span th:if="${article.level > 1}">[답글] </span>
+					 <span th:text="${article.title}">제목</span>
+				  </a>
+				  
+				  
 		        </div>
 		      </td>
 

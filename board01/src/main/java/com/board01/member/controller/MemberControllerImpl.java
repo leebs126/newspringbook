@@ -44,7 +44,7 @@ public class MemberControllerImpl   implements MemberController {
 		request.setCharacterEncoding("utf-8");
 		response.setContentType("html/text;charset=utf-8");
 		String viewName = (String)request.getAttribute("viewName");
-		List membersList = memberService.listMembers();
+		List<MemberVO> membersList = memberService.listMembers();
 		ModelAndView mav = new ModelAndView(viewName);
 		mav.addObject("membersList", membersList);
 		return mav;
@@ -56,18 +56,17 @@ public class MemberControllerImpl   implements MemberController {
 			                  HttpServletRequest request, HttpServletResponse response) throws Exception {
 		request.setCharacterEncoding("utf-8");
 		response.setContentType("html/text;charset=utf-8");
-		int result = 0;
-		result = memberService.addMember(member);
+		int result = memberService.addMember(member);
 		ModelAndView mav = new ModelAndView("redirect:/member/listMembers.do");
 		return mav;
 	}
 	
 	@Override
 	@GetMapping("/member/removeMember.do")
-	public ModelAndView removeMember(@RequestParam("id") String id, 
+	public ModelAndView removeMember(@RequestParam("memId") String memId, 
 			           HttpServletRequest request, HttpServletResponse response) throws Exception{
 		request.setCharacterEncoding("utf-8");
-		memberService.removeMember(id);
+		memberService.removeMember(memId);
 		ModelAndView mav = new ModelAndView("redirect:/member/listMembers.do");
 		return mav;
 	}
@@ -75,8 +74,9 @@ public class MemberControllerImpl   implements MemberController {
 	@Override
 	@PostMapping("/member/login.do")
 	public ModelAndView login(@ModelAttribute("member") MemberVO member,
-							              RedirectAttributes rAttr,
-					                       HttpServletRequest request, HttpServletResponse response) throws Exception {
+				              RedirectAttributes rAttr,
+	                          HttpServletRequest request, 
+	                          HttpServletResponse response) throws Exception {
 	ModelAndView mav = new ModelAndView();
 	memberVO = memberService.login(member);
 	if(memberVO != null) {

@@ -21,16 +21,19 @@ public interface ArticleRepository {
 	
 	public ArticleVO selectArticle(int articleNO) throws DataAccessException;
 	public void updateArticle(Map articleMap) throws DataAccessException;
+//	public void updateImageFile(ImageVO imageVO) throws DataAccessException;
 	public void updateImageFile(Map articleMap) throws DataAccessException;
-	
 	public void deleteArticle(int articleNO) throws DataAccessException;
 	public List selectImageFileList(int articleNO) throws DataAccessException;
 	
 	public void deleteModImage(ImageVO imageVO) throws DataAccessException;
 	
-	public void insertModNewImage(Map articleMap) throws DataAccessException;
+	public void insertModNewImage(ImageVO imageVO) throws DataAccessException;
 
 	public int selectNewGroupNO() throws DataAccessException;
 	
 	public void updateViewCounts(int articleNO) throws DataAccessException;
+	
+	public int selectNewImageFileNO() throws DataAccessException;
+	
 }
