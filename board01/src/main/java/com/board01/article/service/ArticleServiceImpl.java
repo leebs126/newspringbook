@@ -92,6 +92,7 @@ public class ArticleServiceImpl  implements ArticleService{
 		List<ImageVO> imageFileList = (List<ImageVO>)articleMap.get("imageFileList");
 		List<ImageVO> modAddImageFileList = (List<ImageVO>)articleMap.get("modAddImageFileList");
 		
+		@SuppressWarnings("unchecked")
 		List<String> oldFileNamesList = (List<String>) articleMap.get("oldFileNames");
 	    List<String> newFileNamesList = (List<String>) articleMap.get("newFileNames");
 	    
