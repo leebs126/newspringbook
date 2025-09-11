@@ -242,7 +242,8 @@
 
 		  function fn_removeModImage(_imageFileNO, _articleNO, _imageFileName, rowNum) {
 		    img_counts = $("#img_counts").val();
-
+			alert("img_counts: "  +img_counts);
+			
 		    const imageData = {
 		      articleNO: _articleNO,
 		      imageFileNO: _imageFileNO,
@@ -256,6 +257,67 @@
 		      },
 		      body: JSON.stringify(imageData)
 		    })
+			  .then(res => res.json())
+			  .then(data => {
+			    if (data.status === "FILE_REMOVE_SUCCESS") {
+			      alert(data.message);
+
+				  // ✅ 삭제된 이미지 tr 제거
+			       const deletedRow = document.getElementById("tr_" + rowNum);
+			       if (deletedRow) {
+			         deletedRow.remove();
+			       }
+		   
+		   // ✅ 삭제 후 이미지 개수 갱신
+		         let img_counts = parseInt($("#img_counts").val(), 10) || 0;
+		         img_counts = img_counts - 1; // 삭제했으니 -1
+				 newIndex = 1;
+		         $("#img_counts").val(img_counts); // hidden 값 업데이트
+				 
+				 // ✅ 남아있는 tr 들만 다시 정렬
+				 const imageRows = document.querySelectorAll("tr[id^='tr_']");
+					   
+				 imageRows.forEach(row => {
+						alert("newIndex : " + newIndex);
+					
+				         if (newIndex > img_counts) return; // 남은 개수까지만
+
+				         // id 재설정
+				        row.id = "tr_" + newIndex;
+
+				         // 왼쪽 td 텍스트 수정
+				         const tdLabel = row.querySelector("td:first-child");
+				         if (tdLabel) {
+				           tdLabel.textContent = "이미지" + newIndex;
+				         }
+
+			 		// preview 이미지 태그 id 수정
+			          const img = row.querySelector("img[id^='preview']");
+			          if (img) {
+			            img.id = "preview" + (newIndex - 1);
+			          }
+
+			        // hidden input (newFileName 등) id 갱신
+			        const hidden = row.querySelector("input[name='newFileName']");
+			        if (hidden) {
+			          hidden.id = "newFileName" + (newIndex - 1);
+			        }
+					
+					// 삭제 버튼 data-count 수정
+			        const btn = row.querySelector(".btn-remove-image");
+			        if (btn) {
+			          btn.dataset.count = newIndex;
+			        }
+
+			        newIndex++;
+							
+			      });
+			    } else {
+			      alert("이미지 삭제 실패. 다시 시도해주세요.");
+			    }
+			  })
+			  .catch(err => console.error("Error:", err));
+			/*
 		      .then(res => res.json())
 		      .then(data => {
 		        if (data.status === "FILE_REMOVE_SUCCESS") {
@@ -267,49 +329,13 @@
 		        }
 		      })
 		      .catch(err => console.error("Error:", err));
+			  */
+			  
 		  }
 
 			 
 			 
-/*			 
-
-		  	 alert("img_counts: " + img_counts);
-		  		 $.ajax({
-		  	       type:"post",
-		  	       async:false,  
-		  	       url:"/article/removeModImage.do",
-		  	       dataType:"text",
-		  	       data: {imageFileNO : _imageFileNO,  articleNO : _articleNO, imageFileName : _imageFileName},
-		  	       success:function (result, textStatus){
-		  	          if(result == 'FILE_REMOVE_SUCCESS'){
-		  	       	    alert("이미지를 삭제했습니다.");
-		  //	     	 	location.href="${contextPath}/board/viewArticle.do?removeCompleted=true&articleNO=" + _articleNO;
-		  	  
-		  	  			$('#tr_'+rowNum).remove();
-		  	 			$('#tr_sub'+rowNum).remove();
-		  	 			
-		  	 			alert("img_counts: " + img_counts);
-		  	 			//pre_img_num = img_index;
-		  	 			img_index--;
-		  	 			alert("img_counts: " + img_counts);
-		  	 			$("#pre_img_num").val(img_counts);  //삭제 후 기존 이미지 수를 한 개 감소 시켜서 저장합니다.
-		  	 			$("#img_counts").val(img_counts);
-		  	 			//$("#added_img_num").val(img_index);
-		  			  			
-		  	          }else{
-		  	        	  alert("다시 시도해 주세요");
-		  	          }
-		  	       },
-		         error:function(data,textStatus){
-		            alert("에러가 발생했습니다.");ㅣ
-		       },
-		         complete:function(data,textStatus){
-		         }
-		      });  //end ajax	
-
-		  }
-	*/  
-	  	</script>		
+	 </script>		
 		
     <form name="frmArticle" method="post" enctype="multipart/form-data">
     <table border="0" align="center">
@@ -349,7 +375,7 @@
 	  <!-- 이미지 목록 + 수정/삭제 버튼 -->
 	  <tr th:each="item, stat : ${articleMap.imageFileList}" th:id="'tr_' + ${stat.count}">
 	    <td width="150" align="center" bgcolor="#FF9933"
-	        th:text="'이미지' + ${stat.count}">이미지</td>
+	        th:text="'이미지' + ${stat.count}"  >이미지</td>
 	    <td>
 	      <!-- 기존 이미지 표시 -->
 	      <input type="hidden" th:name="oldFileName"  th:value="${item.imageFileName}" />
@@ -359,14 +385,9 @@
 
 	      <!-- 새로 선택한 파일명 저장용 hidden -->
 	      <input type="hidden" name="newFileName" th:id="'newFileName' + ${stat.index}" />   
-	      
-		  
-		  <!-- 수정 input + 삭제 버튼 (같은 td 안에 배치) -->
+
+		  		  <!-- 수정 input + 삭제 버튼 (같은 td 안에 배치) -->
 	      <div class="tr_modEnable">
-	        <!--<input type="file" th:name="'imageFileName' + ${stat.index}"
-	               th:id="'i_imageFileName' + ${stat.index}"
-	               th:onchange="'readURL(this,' + ${stat.index} + ');'" />-->
-	        
 		   <!-- 수정 input -->
 		   <input type="file" th:id="'fileInput' + ${stat.index}" 
 		          th:onchange="'handleFileSelect(this,' + ${stat.index} + ');'" /> 	   
@@ -403,7 +424,6 @@
 
       <tr id="tr_btn_modify" align="right">
         <td colspan="2">
-          <!--<input type="button" value="수정반영하기" th:onclick="fn_modify_article(frmArticle)" />-->
 		  <input type="button" value="수정반영하기" th:onclick="submitArticle()" />
           <input type="button" value="취소" th:onclick="backToList()" />
         </td>
