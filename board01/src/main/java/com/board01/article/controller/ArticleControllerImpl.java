@@ -100,33 +100,6 @@ public class ArticleControllerImpl implements ArticleController {
 		mav.addObject("totalPages", totalPages);
 		return mav;
 		
-		
-//		Map<String, Object> _myOrdersMap = myPageService.listMyOrderGoods(condMap);
-//		List<OrderVO> _myOrdersList = (List<OrderVO>)_myOrdersMap.get("myOrdersList");
-//		Set<Integer> orderIdSet = new HashSet<>();
-//		for (OrderVO orderVO : _myOrdersList) {
-//		    orderIdSet.add(orderVO.getOrderId());
-//		}		
-//		
-//		List<Integer> orderIdList = new ArrayList<>(orderIdSet);
-//		Map<Integer, List<OrderVO>> myOrdersMap = new TreeMap<>(Comparator.reverseOrder());
-//		
-//		for (int orderId : orderIdList) {
-//			List<OrderVO> myOrderList = new ArrayList<>();
-//		    for (OrderVO orderVO : _myOrdersList) {
-//		        if (orderId == orderVO.getOrderId()) {
-//		            myOrderList.add(orderVO);
-//		        }
-//		    }
-//		    myOrdersMap.put(orderId, myOrderList);
-//		}	
-//		 
-//		mav.addObject("message", message);
-//		mav.addObject("myOrdersMap", myOrdersMap);
-//		
-		
-		
-
 	}
 
 
@@ -195,8 +168,8 @@ public class ArticleControllerImpl implements ArticleController {
 	@Override
 	@PostMapping("/article/addNewArticle.do")
 	@ResponseBody
-	public ResponseEntity addNewArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)
-			throws Exception {
+	public ResponseEntity addNewArticle(MultipartHttpServletRequest multipartRequest, 
+										HttpServletResponse response) throws Exception {
 		multipartRequest.setCharacterEncoding("utf-8");
 		String imageFileName = null;
 
@@ -212,16 +185,16 @@ public class ArticleControllerImpl implements ArticleController {
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("member");
 		String memId = memberVO.getMemId();
-		articleMap.put("imemId", memId);
+		articleMap.put("memId", memId);
 		String parentNO = (String)session.getAttribute("parentNO")  ;
 		articleMap.put("parentNO" , (parentNO == null ? 0 : parentNO));
 		session.removeAttribute("parentNO");
 		
-//		String groupNO = (String)session.getAttribute("groupNO")  ;
-//		articleMap.put("groupNO" ,  groupNO);
-//		session.removeAttribute("groupNO");
+		String groupNO = (String)session.getAttribute("groupNO")  ;
+		articleMap.put("groupNO" ,  groupNO);
+		session.removeAttribute("groupNO");
 
-		List<String> fileList = upload(multipartRequest);
+		List<String> fileList = uploadImageFile(multipartRequest);
 		List<ImageVO> imageFileList = new ArrayList<ImageVO>();
 		if (fileList != null && fileList.size() != 0) {
 			for (String fileName : fileList) {
@@ -247,13 +220,12 @@ public class ArticleControllerImpl implements ArticleController {
 					FileUtils.moveFileToDirectory(srcFile, destDir, true);
 				}
 			}
-
+			
 			message = "<script>";
-			message += " alert('새글을 추가했습니다.');";
-			message += " location.href='" + multipartRequest.getContextPath() + "/article/viewArticle.do?articleNO=" + articleMap.get("articleNO") + "';" ;
+			message += " alert('글을 추가했습니다.');";
+			message += " location.href='" + multipartRequest.getContextPath() + "/article/viewArticle.do?articleNO="+ articleMap.get("articleNO") +"';";
 			message += " </script>";
 			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
-
 		} catch (Exception e) {
 			if (imageFileList != null && imageFileList.size() != 0) {
 				for (ImageVO imageVO : imageFileList) {
@@ -263,11 +235,18 @@ public class ArticleControllerImpl implements ArticleController {
 				}
 			}
 
-			message = " <script>";
-			message += " alert('오류가 발생했습니다. 다시 시도해 주세요');');";
-			message += " location.href='" + multipartRequest.getContextPath() + "/article/articleForm.do'; ";
+			message = "<script>";
+			message += " alert('오류가 발생했습니다. 다시 작성해 주세요.');";
+			message += " location.href='" + multipartRequest.getContextPath() + "/article/articleForm.do'";
 			message += " </script>";
 			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
+
+			
+//			Map<String, Object> result = new HashMap<>();
+//		    result.put("status", "ok");
+//		    result.put("message", "오류가 발생했습니다. 다시 시도해 주세요");
+//		    result.put("redirectUrl", "/article/articleForm.do");
+//			resEnt = new ResponseEntity(result, responseHeaders, HttpStatus.CREATED);
 			e.printStackTrace();
 		}
 		return resEnt;
@@ -307,7 +286,7 @@ public class ArticleControllerImpl implements ArticleController {
 		session.removeAttribute("groupNO");
 		
 
-		List<String> fileList = upload(multipartRequest);
+		List<String> fileList = uploadImageFile(multipartRequest);
 		List<ImageVO> imageFileList = new ArrayList<ImageVO>();
 		if (fileList != null && fileList.size() != 0) {
 			for (String fileName : fileList) {
@@ -340,6 +319,7 @@ public class ArticleControllerImpl implements ArticleController {
 			message += " </script>";
 			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
 
+
 		} catch (Exception e) {
 			if (imageFileList != null && imageFileList.size() != 0) {
 				for (ImageVO imageVO : imageFileList) {
@@ -349,9 +329,9 @@ public class ArticleControllerImpl implements ArticleController {
 				}
 			}
 
-			message = " <script>";
-			message += " alert('오류가 발생했습니다. 다시 시도해 주세요');');";
-			message += " location.href='" + multipartRequest.getContextPath() + "/article/articleForm.do'; ";
+			message = "<script>";
+			message += " alert('오류발생했습니다. 다시 작성해 주세요.');";
+			message += " location.href='" + multipartRequest.getContextPath() + "/article/articleForm.do'";
 			message += " </script>";
 			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
 			e.printStackTrace();
@@ -364,15 +344,8 @@ public class ArticleControllerImpl implements ArticleController {
 	// 다중 이미지 수정 기능
 	@PostMapping("/article/modArticleJson.do")
 	@ResponseBody
-//	public ResponseEntity<Map<String, Object>> modArticleJson(
-//			@RequestParam("article") String articleJson,
-//			MultipartHttpServletRequest multipartRequest,
-//	        HttpServletResponse response) throws Exception {
-//	        @RequestPart(value = "imageFileName0", required = false) List<MultipartFile> files,
-//	        @RequestPart(value = "files", required = false) List<MultipartFile> extraFiles
 	public ResponseEntity<Map<String, Object>> modArticleJson(
 									        @RequestPart("article") String articleJson,
-//									        @RequestPart(value = "imageFileName0", required = false) List<MultipartFile> files,
 									        @RequestPart(value = "files", required = false) List<MultipartFile> extraFiles
 									) throws Exception {
 		
@@ -392,11 +365,6 @@ public class ArticleControllerImpl implements ArticleController {
 	    	uploadModImageFile(extraFiles); //수정한 이미지 파일을 업로드한다.
 	    }
 		
-		// 이미지 파일 업로드 (변경된 메서드 사용)
-//		List<String> fileList = null;
-//	    if (files != null && !files.isEmpty()) {
-//	        fileList = uploadModImageFile(files);
-//	    }
 		
 		int added_img_counts = newFileNamesList.size();  //새로 추가된 이미지 파일 수 
 		int pre_img_counts = oldFileNamesList.size();    //기존 이미지 파일 수 
@@ -527,7 +495,6 @@ public class ArticleControllerImpl implements ArticleController {
 		    result.put("status", "ERROR");
 		    result.put("message", "오류 발생. 다시 수정해 주세요.");
 		    result.put("redirectUrl", "/article/viewArticle.do?articleNO=" + articleMap.get("articleNO"));
-		    
 			resEnt = new ResponseEntity(result, responseHeaders, HttpStatus.CREATED);
 		}
 		return resEnt;
@@ -561,9 +528,6 @@ public class ArticleControllerImpl implements ArticleController {
 			File oldFile = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO + "\\" + imageFileName);
 			oldFile.delete();
 			
-
-		 
-			
 			Map<String, Object> result = new HashMap<>();
 		    result.put("status", "FILE_REMOVE_SUCCESS");
 		    result.put("message", "이미지를 삭제했습니다.");
@@ -579,19 +543,6 @@ public class ArticleControllerImpl implements ArticleController {
 
 	}
 
-	
-//	@RequestMapping(value = "/board/*Form.do", method = {RequestMethod.GET , RequestMethod.POST})
-//	private ModelAndView form(@RequestParam(value="parentNO", required=false) String parentNO,
-//			                            HttpServletRequest request, HttpServletResponse response) throws Exception {
-//		String viewName = (String) request.getAttribute("viewName");
-//		
-//		if(viewName.equals("/board/replyForm")) {
-//			HttpSession session = request.getSession();
-//			if(parentNO != null) {
-//				session.setAttribute("parentNO", parentNO);  //미리 로그인 후, 답글 쓰기 클릭 시 부모글번호를 세션에 저장
-//			}
-//		}
-	
 	
 	@RequestMapping(value = "/article/articleForm.do", method = {RequestMethod.GET , RequestMethod.POST})
 	private ModelAndView articleForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -624,7 +575,7 @@ public class ArticleControllerImpl implements ArticleController {
 
 
 	// 새 글 쓰기 시 다중 이미지 업로드하기
-	private List<String> upload(MultipartHttpServletRequest multipartRequest) throws Exception {
+	private List<String> uploadImageFile(MultipartHttpServletRequest multipartRequest) throws Exception {
 		List<String> fileList = new ArrayList<String>();
 		Iterator<String> fileNames = multipartRequest.getFileNames();
 		while (fileNames.hasNext()) {

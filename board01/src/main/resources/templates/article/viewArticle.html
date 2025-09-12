@@ -33,8 +33,6 @@
 		  }
 		  
 		  function submitArticle() {
-		    const form = document.forms["frmArticle"];
-		    //const formData = new FormData(form);
 			const formData = new FormData();
 			
 			const oldFileNames = [];
@@ -56,8 +54,6 @@
 		      articleNO : $("#i_articleNO").val(), 
 			  title: $("#i_title").val(),
 		      content: $("#i_content").val(),
-			  pre_img_counts: $("#pre_img_counts").val(),
-			  added_img_counts: $("#added_img_counts").val(),
 			  oldFileNames : oldFileNames, // 배열로 전달
 			  newFileNames: newFileNames,
 			  imageFileNO : imageFileNO
@@ -153,17 +149,6 @@
 		    }
 		  }
 
-		  /*
-		  function readURL(input, index) {
-		      if (input.files && input.files[0]) {
-		          var reader = new FileReader();
-		          reader.onload = function (e) {
-		              $('#preview'+index).attr('src', e.target.result);
-		          }
-		          reader.readAsDataURL(input.files[0]);
-		      }
-		  }
-		  */
 		  var pre_img_counts = 0;  // 수정 이전의 이미지 수
 		  var img_counts = 0;      // 수정 후 이미지 수
 		  var isFirstAddImage = true;
@@ -242,7 +227,7 @@
 
 		  function fn_removeModImage(_imageFileNO, _articleNO, _imageFileName, rowNum) {
 		    img_counts = $("#img_counts").val();
-			alert("img_counts: "  +img_counts);
+			//alert("img_counts: "  +img_counts);
 			
 		    const imageData = {
 		      articleNO: _articleNO,
@@ -278,8 +263,7 @@
 				 const imageRows = document.querySelectorAll("tr[id^='tr_']");
 					   
 				 imageRows.forEach(row => {
-						alert("newIndex : " + newIndex);
-					
+					//	alert("newIndex : " + newIndex);
 				         if (newIndex > img_counts) return; // 남은 개수까지만
 
 				         // id 재설정
@@ -317,19 +301,6 @@
 			    }
 			  })
 			  .catch(err => console.error("Error:", err));
-			/*
-		      .then(res => res.json())
-		      .then(data => {
-		        if (data.status === "FILE_REMOVE_SUCCESS") {
-		          alert(data.message);
-		          // ✅ 해당 tr 삭제
-		          document.getElementById("tr_" + rowNum).remove();
-		        } else {
-		          alert("이미지 삭제 실패. 다시 시도해주세요.");
-		        }
-		      })
-		      .catch(err => console.error("Error:", err));
-			  */
 			  
 		  }
 

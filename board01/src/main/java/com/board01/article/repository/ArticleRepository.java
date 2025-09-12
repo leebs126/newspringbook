@@ -15,9 +15,9 @@ public interface ArticleRepository {
 	public int selectTotalArticles() throws DataAccessException;
 	
 	public int insertNewArticle(Map articleMap) throws DataAccessException;
-	public void insertNewImage(Map articleMap) throws DataAccessException;
+	public void insertNewImage(ImageVO imageVO) throws DataAccessException;
 	
-	public int insertReplyArticle(Map articleMap) throws DataAccessException;
+	public void insertReplyArticle(Map articleMap) throws DataAccessException;
 	
 	public ArticleVO selectArticle(int articleNO) throws DataAccessException;
 	public void updateArticle(Map articleMap) throws DataAccessException;
@@ -30,6 +30,7 @@ public interface ArticleRepository {
 	
 	public void insertModNewImage(ImageVO imageVO) throws DataAccessException;
 
+	public int selectNewArticleNO() throws DataAccessException;
 	public int selectNewGroupNO() throws DataAccessException;
 	
 	public void updateViewCounts(int articleNO) throws DataAccessException;

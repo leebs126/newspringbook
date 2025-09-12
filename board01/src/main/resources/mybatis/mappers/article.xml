@@ -173,17 +173,17 @@
 	</insert>
 	
 
-	<insert id="insertNewImage" parameterType="java.util.Map">
-		<foreach item="item" collection="list" open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
-			INTO t_imageFile1(imageFileNO, 
+	<insert id="insertNewImage" parameterType="imageVO">
+	<![CDATA[
+	 INSERT INTO t_imageFile1(imageFileNO, 
 							  imageFileName, 
 							  articleNO, 
 							  regDate)
-			VALUES (#{item.imageFileNO},
-					#{item.imageFileName},
-					#{item.articleNO},
-					sysdate)
-		</foreach>
+					VALUES (#{imageFileNO},
+							#{imageFileName},
+							#{articleNO},
+							  SYSDATE)
+	]]>
 	</insert>
 
 
@@ -211,13 +211,6 @@
 	</update>
 
 
-	<!--<update id="updateImageFile" parameterType="com.board01.article.vo.ImageVO">
-		UPDATE t_imageFile1
-		SET imageFileName = #{imageFileName}
-		WHERE
-		articleNO=#{articleNO}
-		AND imageFileNO = #{imageFileNO}
-	</update>-->
 
 	<update id="updateImageFile" parameterType="java.util.Map">
 		<foreach collection="imageFileList" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
@@ -249,7 +242,7 @@
 
 	<select id="selectNewImageFileNO" resultType="int">
     <![CDATA[
-      SELECT  NVL(MAX(imageFileNO),0)+1 FROM t_imageFile1		
+      SELECT  NVL(MAX(imageFileNO), 0)+1 FROM t_imageFile1		
     ]]>
 	</select>
 
@@ -273,17 +266,17 @@
 
 <insert id="insertModNewImage" parameterType="imageVO">
 	    INSERT INTO t_imageFile1 (
-	        imageFileNO,
-	        imageFileName,
-	        articleNO,
-	        regDate
-	    )
-	    VALUES (
-	        #{imageFileNO},
-	        #{imageFileName},
-	        #{articleNO},
-	        SYSDATE
-	    )
+						        imageFileNO,
+						        imageFileName,
+						        articleNO,
+						        regDate
+						    )
+						    VALUES (
+						        #{imageFileNO},
+						        #{imageFileName},
+						        #{articleNO},
+						        SYSDATE
+						    )
 </insert>
 
 	<!--<insert id="insertModNewImage" parameterType="java.util.Map">

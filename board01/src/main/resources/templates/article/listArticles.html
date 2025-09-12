@@ -3,27 +3,41 @@
 	  th:replace="layout :: layout(~{::title}, ~{::body})">
 
 <head>
-    <title th:fragment="title">게시판 목록</title>
-	<!-- CSS -->
-	<style>
-	  .cell-item {
-	    padding: 4px 0;
-	    text-align: center;   /* 가운데 정렬 */
-	    border-bottom: 1px solid #ccc;
-	  }
-
-	  table {
-	    border-collapse: collapse;
-	  }
-
-	  th, td {
-	    padding: 8px;
-	  }
-	</style>	
+    <title th:fragment="title">글목록</title>
 </head>
 
 <body>
 	<div th:fragment="body">
+	<style>
+		  .cell-item {
+		    padding: 4px 0;
+		    text-align: center;   /* 가운데 정렬 */
+		    border-bottom: 1px solid #ccc;
+		  }
+
+		  table {
+		    border-collapse: collapse;
+		  }
+
+		  th, td {
+		    padding: 8px;
+		  }
+		   .no-uline {text-decoration:none;}
+		  .sel-page{text-decoration:none;color:red;}
+		  .cls1 {text-decoration:none;}
+		  .cls2{text-align:center; font-size:30px;}
+		</style>
+		<script>
+			function fn_articleForm(isLogOn,articleForm,loginForm){
+			  if(isLogOn!= null && isLogOn =='true'){
+			    location.href=articleForm;
+			  }else{
+			    alert("로그인 후 글쓰기가 가능합니다.")
+			    location.href=loginForm+'?action=/article/articleForm.do';
+			  }
+			}
+		</script>
+		
 	    <h2>게시판 목록</h2>
 		
 		<table border="1" width="100%">
@@ -45,15 +59,14 @@
 		      <td>
 		        <div th:each="article, iterStat : ${entry.value}" 
 		             th:with="articleOrder=${counter + iterStat.index + 1}"
-		             class="cell-item"
 		             th:text="${articleOrder}">
 		        </div>
 		      </td>
 
 		      <!-- 제목 -->
 		      <td style="padding-left:30px; text-align:left ;">
-		        <div th:each="article, iterStat : ${entry.value}" class="cell-item">
-				  <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+		        <div th:each="article, iterStat : ${entry.value}">
+				  <a class="no-uline" th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
 				     th:style="'margin-left:' + (${article.level} * 20) + 'px;'">
 				     
 					 <!-- level 이 2 이상일 때만 [답글] 표시 -->
@@ -67,63 +80,26 @@
 
 		      <!-- 작성자 -->
 		      <td>
-		        <div th:each="article : ${entry.value}" class="cell-item"
-		             th:text="${article.memId}">
+		        <div th:each="article : ${entry.value}" th:text="${article.memId}">
 		        </div>
 		      </td>
 
 		      <!-- 작성일 -->
 		      <td>
-		        <div th:each="article : ${entry.value}" class="cell-item"
+		        <div th:each="article : ${entry.value}" 
 		             th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">
 		        </div>
 		      </td>
 
 		      <!-- 조회수 -->
 		      <td>
-		        <div th:each="article : ${entry.value}" class="cell-item"
-		             th:text="${article.viewCnt}">
+		        <div th:each="article : ${entry.value}" th:text="${article.viewCnt}">
 		        </div>
 		      </td>
 		    </tr>
 		  </tbody>
 		</table>
 
-
-		
-	    <!--<p>총 글 수: <span th:text="${articlesMap.totArticles}">0</span> 개</p>-->
-		<!--<span th:text="${articlesMap}">0</span> 개-->
-	   <!-- <table border="1" width="100%">
-	        <thead>
-	            <tr  style="background:#33ff00; height: 30px;">
-	                <th>글번호</th>
-	                <th>제목</th>
-	                <th>작성자</th>
-	                <th>작성일</th>
-	                <th>조회수</th>
-	            </tr>
-	        </thead>
-	        <tbody>
-				
-				 groupNO 단위로 순회 
-		       <tr th:each="entry, istat : ${articlesMap}" th:with="counter=${((pageNum != null ? pageNum : 1) - 1) * 10 + istat.index}">
-		            entry.value 가 실제 List<ArticleVO> 
-				  <td colspan="5">
-			          <th:block th:each="article, iterStat : ${entry.value}"  th:with="articleOrder=${counter + iterStat.index + 1}">
-							<span th:text="${articleOrder}"></span>
-			                  <span> <a th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
-			                      th:text="${article.title}">제목</a>
-							 </span>
-				             <span th:text="${article.memId}">작성자</span>
-				             <span th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">2025-09-05</span>
-				             <span th:text="${article.viewCnt}">0</span>
-							<br>
-			           </th:block>
-				   </td>
-		       </tr>
-	        </tbody>
-	    </table>
-		-->
 		
 		<div style="margin-top:20px; text-align:center;">
 		        <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
@@ -135,20 +111,12 @@
 		  </div>
 	</div>
 
+	<a class="cls1"
+	   th:href="|javascript:fn_articleForm('${session.isLogOn}', '/article/articleForm.do', '/member/loginForm.do')|">
+	  <p class="cls2">새글쓰기</p>
+	</a>
+
+	
 </body>
 </html>
 
-
-<!--<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="layout :: layout(~{::body}, ~{::title})">
-<head>
-  <title>게시판 목록</title>
-</head>
-<body>
-  <h2>게시판 목록</h2>
-   실제 게시판 내용 
-  <p>실제 게시판 내용</p>
-</body>
-</html>
--->

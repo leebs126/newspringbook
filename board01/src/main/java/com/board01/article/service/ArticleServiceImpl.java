@@ -39,24 +39,42 @@ public class ArticleServiceImpl  implements ArticleService{
 	 //다중 이미지 글 추가하기
 	@Override
 	public int addNewArticle(Map articleMap) throws Exception{
-		int articleNO = articleRepository.insertNewArticle(articleMap);
-		articleMap.put("articleNO", articleNO);
-		articleRepository.insertNewImage(articleMap);
-		return articleNO;
+		int _articleNO = articleRepository.selectNewArticleNO();
+		int _groupNO = articleRepository.selectNewGroupNO();
+		articleMap.put("articleNO", _articleNO);
+		articleMap.put("groupNO", _groupNO);
+		
+		articleRepository.insertNewArticle(articleMap);
+		List<ImageVO> imageFileList = (List<ImageVO>)articleMap.get("imageFileList");
+		for(ImageVO imageVO : imageFileList) {
+			int imageFileNO = articleRepository.selectNewImageFileNO();
+			imageVO.setImageFileNO(imageFileNO);
+			imageVO.setArticleNO(_articleNO);
+			articleRepository.insertNewImage(imageVO);
+		}
+		return _articleNO;
 	}
 	
 	//다중 이미지 답글추가하기
 		@Override
 		public int addReplyArticle(Map articleMap) throws Exception{
-			int articleNO = articleRepository.insertReplyArticle(articleMap);
-			articleMap.put("articleNO", articleNO);
-			articleRepository.insertNewImage(articleMap);
-			return articleNO;
+			
+			int _articleNO = articleRepository.selectNewArticleNO();
+			articleMap.put("articleNO", _articleNO);
+			articleRepository.insertReplyArticle(articleMap);
+			
+			List<ImageVO> imageFileList = (List<ImageVO>)articleMap.get("imageFileList");
+			for(ImageVO imageVO : imageFileList) {
+				int imageFileNO = articleRepository.selectNewImageFileNO();
+				imageVO.setImageFileNO(imageFileNO);
+				imageVO.setArticleNO(_articleNO);
+				articleRepository.insertNewImage(imageVO);
+			}
+			return _articleNO;
 		}
 	
 		//다중 파일 보이기
 	@Override
-//	public Map viewArticle(int articleNO) throws Exception {
 	public Map viewArticle(Map viewMap) throws Exception {
 		Map articleMap = new HashMap();
 		
