@@ -46,11 +46,13 @@ public class ArticleServiceImpl  implements ArticleService{
 		
 		articleRepository.insertNewArticle(articleMap);
 		List<ImageVO> imageFileList = (List<ImageVO>)articleMap.get("imageFileList");
-		for(ImageVO imageVO : imageFileList) {
-			int imageFileNO = articleRepository.selectNewImageFileNO();
-			imageVO.setImageFileNO(imageFileNO);
-			imageVO.setArticleNO(_articleNO);
-			articleRepository.insertNewImage(imageVO);
+		if(imageFileList!= null) {
+			for(ImageVO imageVO : imageFileList) {
+				int imageFileNO = articleRepository.selectNewImageFileNO();
+				imageVO.setImageFileNO(imageFileNO);
+				imageVO.setArticleNO(_articleNO);
+				articleRepository.insertNewImage(imageVO);
+			}	
 		}
 		return _articleNO;
 	}
@@ -64,12 +66,15 @@ public class ArticleServiceImpl  implements ArticleService{
 			articleRepository.insertReplyArticle(articleMap);
 			
 			List<ImageVO> imageFileList = (List<ImageVO>)articleMap.get("imageFileList");
-			for(ImageVO imageVO : imageFileList) {
-				int imageFileNO = articleRepository.selectNewImageFileNO();
-				imageVO.setImageFileNO(imageFileNO);
-				imageVO.setArticleNO(_articleNO);
-				articleRepository.insertNewImage(imageVO);
+			if(imageFileList!= null) {
+				for(ImageVO imageVO : imageFileList) {
+					int imageFileNO = articleRepository.selectNewImageFileNO();
+					imageVO.setImageFileNO(imageFileNO);
+					imageVO.setArticleNO(_articleNO);
+					articleRepository.insertNewImage(imageVO);
+				}	
 			}
+			
 			return _articleNO;
 		}
 	

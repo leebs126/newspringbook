@@ -223,7 +223,6 @@
 					AND imageFileNO = #{item.imageFileNO}
 				</when>
 				<otherwise>
-
 				</otherwise>
 			</choose>
 		</foreach>

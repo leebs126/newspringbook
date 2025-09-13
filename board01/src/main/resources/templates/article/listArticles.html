@@ -53,14 +53,13 @@
 		  <tbody>
 		    <!-- groupNO 단위로 순회 -->
 		    <tr th:each="entry, istat : ${articlesMap}" 
-		        th:with="counter=${((pageNum != null ? pageNum : 1) - 1) * 10 + istat.index}">
+		        th:with="counter=${((pageNum != null ? pageNum : 1) - 1) * 10 + istat.index + 1}">
 		      
 		      <!-- 글번호 -->
 		      <td>
-		        <div th:each="article, iterStat : ${entry.value}" 
-		             th:with="articleOrder=${counter + iterStat.index + 1}"
-		             th:text="${articleOrder}">
-		        </div>
+		        <div th:each="article, iterStat : ${entry.value}" >
+					<span th:if="${iterStat.first}" th:text="${counter}"></span>
+			    </div>
 		      </td>
 
 		      <!-- 제목 -->
@@ -70,7 +69,7 @@
 				     th:style="'margin-left:' + (${article.level} * 20) + 'px;'">
 				     
 					 <!-- level 이 2 이상일 때만 [답글] 표시 -->
-					 <span th:if="${article.level > 1}">[답글] </span>
+					 <span th:if="${article.level > 1}">[답글]</span>
 					 <span th:text="${article.title}">제목</span>
 				  </a>
 				  

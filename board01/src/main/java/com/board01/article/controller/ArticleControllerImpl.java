@@ -168,7 +168,7 @@ public class ArticleControllerImpl implements ArticleController {
 	@Override
 	@PostMapping("/article/addNewArticle.do")
 	@ResponseBody
-	public ResponseEntity addNewArticle(MultipartHttpServletRequest multipartRequest, 
+	public ResponseEntity<Map<String, Object>> addNewArticle(MultipartHttpServletRequest multipartRequest, 
 										HttpServletResponse response) throws Exception {
 		multipartRequest.setCharacterEncoding("utf-8");
 		String imageFileName = null;
@@ -257,8 +257,7 @@ public class ArticleControllerImpl implements ArticleController {
 	@Override
 	@RequestMapping(value = "/article/addReplyArticle.do", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity addReplyArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)
-			throws Exception {
+	public ResponseEntity<Map<String, Object>> addReplyArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response) throws Exception {
 		multipartRequest.setCharacterEncoding("utf-8");
 		String imageFileName = null;
 
@@ -276,14 +275,9 @@ public class ArticleControllerImpl implements ArticleController {
 		String memId = memberVO.getMemId();
 		articleMap.put("memId", memId);
 		
-		//세션에 저장한 부모글과 글그룹번호를 가지고 온다.
-		String parentNO = (String)session.getAttribute("parentNO")  ;
-		articleMap.put("parentNO" , (parentNO == null ? 0 : parentNO));
-		session.removeAttribute("parentNO");
-		
-		String groupNO = (String)session.getAttribute("groupNO")  ;
-		articleMap.put("groupNO" ,  groupNO);
-		session.removeAttribute("groupNO");
+		//부모글번호와 글그룹번호를 articleMap에 저장한다.
+//		articleMap.put("parentNO", parentNO);
+//		articleMap.put("groupNO", groupNO);
 		
 
 		List<String> fileList = uploadImageFile(multipartRequest);
@@ -298,7 +292,7 @@ public class ArticleControllerImpl implements ArticleController {
 		}
 
 		String message;
-		ResponseEntity resEnt = null;
+		ResponseEntity<Map<String, Object>> resEnt = null;
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
 		try {
@@ -443,7 +437,7 @@ public class ArticleControllerImpl implements ArticleController {
 
 		String articleNO = (String) articleMap.get("articleNO");
 		String message;
-		ResponseEntity resEnt = null;
+		ResponseEntity<Map<String, Object>> resEnt = null;
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
 		try {
@@ -531,7 +525,6 @@ public class ArticleControllerImpl implements ArticleController {
 			Map<String, Object> result = new HashMap<>();
 		    result.put("status", "FILE_REMOVE_SUCCESS");
 		    result.put("message", "이미지를 삭제했습니다.");
-//			writer.print("FILE_REMOVE_SUCCESSED");
 		    return ResponseEntity.ok(result);
 		} catch (Exception e) {
 			Map<String, Object> result = new HashMap<>();
@@ -554,19 +547,19 @@ public class ArticleControllerImpl implements ArticleController {
 	
 	
 	@RequestMapping(value = "/article/replyForm.do", method = {RequestMethod.GET , RequestMethod.POST})
-	private ModelAndView replyForm(@RequestParam(value="parentNO", required=false) String parentNO,
-												@RequestParam(value="groupNO", required=false) String groupNO,
+	private ModelAndView replyForm(@RequestParam(value="parentNO") String parentNO,
+												@RequestParam(value="groupNO") String groupNO,
 												HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewName = (String) request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView();
 		HttpSession session = request.getSession();
 		
 		if(parentNO != null) {  
-			session.setAttribute("parentNO", parentNO);
+			mav.addObject("parentNO", parentNO);
 		}
 		
 		if(groupNO != null) {
-			session.setAttribute("groupNO", groupNO);
+			mav.addObject("groupNO", groupNO);
 		}
 		mav.setViewName(viewName);
 		return mav;
@@ -589,10 +582,6 @@ public class ArticleControllerImpl implements ArticleController {
 					if (!file.exists()) { // 경로상에 파일이 존재하지 않을 경우
 						file.getParentFile().mkdirs(); // 경로에 해당하는 디렉토리들을 생성
 						mFile.transferTo(new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + originalFileName)); // 임시로
-																													// 저장된
-																													// multipartFile을
-																													// 실제
-																													// 파일로
 																													// 전송
 					}
 				}
@@ -612,7 +601,6 @@ public class ArticleControllerImpl implements ArticleController {
 	        }
 
 	        String originalFileName = mFile.getOriginalFilename();
-
 	        // 저장 경로
 	        File file = new File(ARTICLE_IMAGE_REPO + File.separator + "temp" + File.separator + originalFileName);
 

@@ -17,16 +17,16 @@ public interface ArticleController {
 									@RequestParam(value="pageNum", required=false) String _pageNum, 
 									HttpServletRequest request, HttpServletResponse response) throws Exception; 
 	
-	public ResponseEntity addNewArticle(MultipartHttpServletRequest multipartRequest,HttpServletResponse response) throws Exception;
+	public ResponseEntity<Map<String, Object>> addNewArticle(MultipartHttpServletRequest multipartRequest,HttpServletResponse response) throws Exception;
 	
-	public ResponseEntity addReplyArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response) throws Exception; 
+	public ResponseEntity<Map<String, Object>> addReplyArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response) throws Exception; 
 	
 	public ModelAndView viewArticle(@RequestParam("articleNO") int articleNO,
-												@RequestParam(value="removeCompleted", required=false) String removeCompleted,
-												HttpServletRequest request, 
-												HttpServletResponse response) throws Exception;
+									@RequestParam(value="removeCompleted", required=false) String removeCompleted,
+									HttpServletRequest request, 
+									HttpServletResponse response) throws Exception;
 	
-	public ResponseEntity  removeArticle(@RequestParam("articleNO") int articleNO,
+	public ResponseEntity<Map<String, Object>>  removeArticle(@RequestParam("articleNO") int articleNO,
                               			HttpServletRequest request, 
                               			HttpServletResponse response) throws Exception;
 	
