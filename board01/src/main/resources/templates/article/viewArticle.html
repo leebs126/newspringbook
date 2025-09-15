@@ -110,7 +110,7 @@
 		  }
 
 		  function fn_reply_form(isLogOn, url, parentNO, groupNO){
-		     if(isLogOn && isLogOn !== 'false'){
+		     if(isLogOn!= null && isLogOn == 'true'){
 		          var form = document.createElement("form");
 		          form.setAttribute("method", "post");
 		          form.setAttribute("action", url);

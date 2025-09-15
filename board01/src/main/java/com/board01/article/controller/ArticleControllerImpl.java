@@ -547,12 +547,17 @@ public class ArticleControllerImpl implements ArticleController {
 	
 	
 	@RequestMapping(value = "/article/replyForm.do", method = {RequestMethod.GET , RequestMethod.POST})
-	private ModelAndView replyForm(@RequestParam(value="parentNO") String parentNO,
-												@RequestParam(value="groupNO") String groupNO,
+	private ModelAndView replyForm(@RequestParam(value="parentNO",  required=false) String parentNO,
+												@RequestParam(value="groupNO",  required=false) String groupNO,
 												HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewName = (String) request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView();
 		HttpSession session = request.getSession();
+		String _parentNO = (String)session.getAttribute("parentNO");
+		String _groupNO = (String)session.getAttribute("groupNO");
+		
+		parentNO = (parentNO!= null)? parentNO : _parentNO;
+		groupNO = (groupNO != null) ? parentNO : _groupNO;
 		
 		if(parentNO != null) {  
 			mav.addObject("parentNO", parentNO);

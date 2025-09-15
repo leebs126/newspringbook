@@ -87,7 +87,7 @@ public class MemberControllerImpl   implements MemberController {
 	    String action = (String)session.getAttribute("action");
 	    session.removeAttribute("action");
 	    if(action!= null) {
-	    	if(action.equals("/board/replyForm.do")) {
+	    	if(action.equals("/article/replyForm.do")) {
 	    		mav.setViewName("redirect:"+action);
 	    	}else if(action.equals("/article/articleForm.do")) {
 	    		mav.setViewName("redirect:"+action);
