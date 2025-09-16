@@ -14,7 +14,7 @@ public interface CommentRepository {
 
 	public void insertNewComment(CommentVO commentVO) throws DataAccessException;
 
-	public CommentVO selectComment(int commentNO) throws DataAccessException;
+	public CommentVO selectCommentById(int commentNO) throws DataAccessException;
 
 	public int selectNewCommentNO() throws DataAccessException;
 
@@ -22,4 +22,7 @@ public interface CommentRepository {
 	public void updateComment(CommentVO commentVO) throws DataAccessException;
 
 	public void deleteComment(CommentVO commentVO) throws DataAccessException;
+
+	//댓글 그룹번호
+	public int selectNewCGroupNO() throws DataAccessException;
 }

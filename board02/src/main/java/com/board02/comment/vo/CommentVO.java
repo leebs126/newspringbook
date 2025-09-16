@@ -1,17 +1,22 @@
 package com.board02.comment.vo;
 
 import java.sql.Date;
+
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 
 @Data
 @Component("commentVO")
 public class CommentVO {
-//	private int cGroupNO;
-	
+	private int cGroupNO;
 	private int commentNO; //댓글번호
 	private String contents;  //댓글 내용
 	private String replyId;  //댓글 작성자 아이디
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
 	private Date creDate;  //댓글 생성 일자
 	private int articleNO;  // 부모글번호
 	private int level;    //레벨

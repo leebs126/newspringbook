@@ -16,9 +16,10 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public CommentVO addNewComment(CommentVO commentVO) throws Exception {
 		int commentNO = commentRepository.selectNewCommentNO();
+		int cGroupNO = commentRepository.selectNewCGroupNO();
 		commentVO.setCommentNO(commentNO);
 		commentRepository.insertNewComment(commentVO);
-		CommentVO newCommentVO =commentRepository.selectComment(commentNO);
+		CommentVO newCommentVO =commentRepository.selectCommentById(commentNO);
 		return newCommentVO;
 	}
 
@@ -26,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
 	public CommentVO modComment(CommentVO commentVO) throws Exception {
 		commentRepository.updateComment(commentVO);
 		int commentNO = commentVO.getCommentNO();
-		CommentVO modCommentVO =commentRepository.selectComment(commentNO);
+		CommentVO modCommentVO =commentRepository.selectCommentById(commentNO);
 		return modCommentVO;
 	}
 
@@ -41,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
 		int commentNO = commentRepository.selectNewCommentNO();
 		commentVO.setCommentNO(commentNO);
 		commentRepository.insertNewComment(commentVO);
-		CommentVO newCommentVO =commentRepository.selectComment(commentNO);
+		CommentVO newCommentVO =commentRepository.selectCommentById(commentNO);
 		return newCommentVO;
 
 	}

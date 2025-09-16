@@ -67,12 +67,12 @@
 	    <![CDATA[
 	      INSERT INTO t_comments1(commentNO, 
 	                               contents, 
-	                               replyID, 
+	                               replyId, 
 	                               articleNO,
 	                               pCommentNO)
 	      VALUES(#{commentNO},
 	              #{contents},
-	      		  #{replyID}, 
+	      		  #{replyId}, 
 	      		  #{articleNO},
 	      		  #{pCommentNO})
 	    ]]>
@@ -85,23 +85,23 @@
 		]]>
 	</select>
 	
-	<select id="selectComment" parameterType="int" resultType="commentVO">
+	<select id="selectCommentById" parameterType="int" resultType="commentVO">
 		<![CDATA[
 			SELECT  commentNO,
-			        comments,
-			        replyID,
+			        contents,
+			        replyId,
 			        articleNO,
 			        creDate
 			FROM  t_comments1
 			WHERE
-			  commentNO = #{commentNO}		
+			  commentNO = #{commentNO}
 		]]>
 	</select>
 	
 	<update id="updateComment" parameterType="commentVO">
 	    <![CDATA[
 		      UPDATE t_comments1 
-		      	SET comments = #{comments}
+		      	SET contents = #{contents}
 		      WHERE
 		     	commentNO = #{commentNO}
 	    ]]>
@@ -114,6 +114,12 @@
 		      commentNO = #{commentNO}
 	    ]]>
 	</delete>
+	
+	<select id="selectNewCGroupNO" resultType="int">
+		<![CDATA[
+			SELECT  NVL(MAX(cGroupNO), 0) + 1 FROM t_comments1		
+		]]>
+	</select>	
 	
 </mapper>
 
