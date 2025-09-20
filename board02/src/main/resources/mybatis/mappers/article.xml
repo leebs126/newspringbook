@@ -195,7 +195,7 @@
 		]]>
 	</select>
 
-	<select id="selectArticle" resultType="articleVO" parameterType="int">
+	<select id="selectArticleById" resultType="articleVO" parameterType="int">
     <![CDATA[
       SELECT * FROM t_article1
       WHERE articleNO = #{articleNO}		
@@ -206,7 +206,7 @@
 	<update id="updateArticle" parameterType="java.util.Map">
 		UPDATE t_article1
 		SET title=#{title}
-		,content=#{content}
+		    ,content=#{content}
 		WHERE articleNO=#{articleNO}
 	</update>
 

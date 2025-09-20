@@ -1,6 +1,7 @@
 package com.board02.comment.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.dao.DataAccessException;
@@ -10,7 +11,8 @@ import com.board02.comment.vo.CommentVO;
 @Mapper
 public interface CommentRepository {
 	// 댓글 기능
-	public List<CommentVO> selectAllCommentsList(int articleNO) throws DataAccessException;
+//	public List<CommentVO> selectAllCommentsList(int articleNO) throws DataAccessException;
+	public List<CommentVO> selectAllCommentsList(Map<String, Integer> pagingMap) throws DataAccessException;
 
 	public void insertNewComment(CommentVO commentVO) throws DataAccessException;
 

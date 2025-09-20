@@ -19,7 +19,7 @@ public interface ArticleRepository {
 	
 	public void insertReplyArticle(Map articleMap) throws DataAccessException;
 	
-	public ArticleVO selectArticle(int articleNO) throws DataAccessException;
+	public ArticleVO selectArticleById(int articleNO) throws DataAccessException;
 	public void updateArticle(Map articleMap) throws DataAccessException;
 //	public void updateImageFile(ImageVO imageVO) throws DataAccessException;
 	public void updateImageFile(Map articleMap) throws DataAccessException;

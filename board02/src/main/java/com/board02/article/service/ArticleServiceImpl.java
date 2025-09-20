@@ -1,8 +1,11 @@
 package com.board02.article.service;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -86,7 +89,7 @@ public class ArticleServiceImpl  implements ArticleService{
 		String memId = (String) viewMap.get("memId");
 		
 		//조회수를 갱신하기 전 먼저 글번호에 해당되는 글정보를 조회한 후, 로그인 아이디와 글쓴이 아이디를 비교한다.
-		ArticleVO articleVO = articleRepository.selectArticle(articleNO); 
+		ArticleVO articleVO = articleRepository.selectArticleById(articleNO); 
 		String writerId = articleVO.getMemId();
 		
 //		if(id == null || !(id.equals(writerId))) {  //로그인 아이디와 글쓴이 아이디가 같지 않으면 조회수를 1증가 시킴
@@ -99,8 +102,21 @@ public class ArticleServiceImpl  implements ArticleService{
 		articleMap.put("imageFileList", imageFileList);
 		
 		//해당 글의 댓글 조회
-		List<CommentVO> commentsList = commentRepository.selectAllCommentsList(articleNO);
-		articleMap.put("commentsList", commentsList);
+//		List<CommentVO> commentsList = commentRepository.selectAllCommentsList(articleNO);
+//		articleMap.put("commentsList", commentsList);
+		Map<String, Integer> pagingMap = new  HashMap<String, Integer>();
+		pagingMap.put("articleNO", articleNO);
+		pagingMap.put("pageNum", 1);  
+		pagingMap.put("section", 1);
+		List<CommentVO> commentsList = commentRepository.selectAllCommentsList(pagingMap); 
+		Map<Integer, List<CommentVO>> grouped = commentsList.stream()
+			    .collect(Collectors.groupingBy(
+			        CommentVO::getCGroupNO,
+			        () -> new TreeMap<>(Comparator.reverseOrder()), // 키 내림차순 정렬된 TreeMap 사용
+			        Collectors.toList()
+			    ));
+
+		articleMap.put("commentsGroupMap", grouped);
 		return articleMap;
 	}
 	

@@ -75,6 +75,8 @@
   
 
   function fn_remove_article(url, articleNO){
+	if (!confirm("정말 이 글을 삭제하시겠습니까?")) return;	
+	
       var form = document.createElement("form");
       form.setAttribute("method", "post");
       form.setAttribute("action", url);

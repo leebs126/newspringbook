@@ -18,6 +18,7 @@ public class CommentServiceImpl implements CommentService {
 		int commentNO = commentRepository.selectNewCommentNO();
 		int cGroupNO = commentRepository.selectNewCGroupNO();
 		commentVO.setCommentNO(commentNO);
+		commentVO.setCGroupNO(cGroupNO);
 		commentRepository.insertNewComment(commentVO);
 		CommentVO newCommentVO =commentRepository.selectCommentById(commentNO);
 		return newCommentVO;

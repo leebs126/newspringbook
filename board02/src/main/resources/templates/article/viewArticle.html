@@ -158,66 +158,68 @@
         </thead>
         <tbody>
            <!--댓글 리스트 반복-->
-		   <tr th:each="item, stat : ${articleMap.commentsList}" th:id="'comment_tr' + ${item.commentNO}">
+		   <tr th:each="entry: ${articleMap.commentsGroupMap}" th:id="'comment_tr' + ${entry.value[0].cGroupNO}">
 		     <td width="800" height="50" align="left">
-		       
-		       <!-- 들여쓰기 (level 만큼 padding-left) -->
-		       <span th:each="i : ${#numbers.sequence(1, item.level)}" style="padding-left:10px"></span>
+				
+				<div th:each="comment : ${entry.value}"
+				     th:id="'div_comment_' + ${comment.commentNO}"
+				     th:attr="data-parent=${comment.pCommentNO}"
+				     style="margin-bottom:5px;">
 
-		       <span th:id="'span_comment_' + ${item.commentNO}">
-		         <span th:class="'cls_commentInfo' + ${item.commentNO}">
-		           <span th:text="${item.replyId}"></span>&nbsp;
-		           <span th:text="${item.contents}"></span>&nbsp;
-		           <span th:text="${#dates.format(item.creDate, 'yyyy-MM-dd HH:mm')}"></span>
-		         </span>
+				  <!-- 부모 댓글 본문 -->
+				  <div class="comment-body">
+				    <!-- 들여쓰기 (level 만큼 padding-left) -->
+				    <span th:each="i : ${#numbers.sequence(1, comment.level)}" style="padding-left:10px"></span>
+				    <span th:id="'span_comment_' + ${comment.commentNO}"></span>
+				    <span th:text="${comment.replyId}"></span>&nbsp;
+				    <span th:text="${comment.contents}"></span>&nbsp;
+				    <span th:text="${#dates.format(comment.creDate, 'yyyy-MM-dd HH:mm')}"></span>
 
-		         <!-- 답글작성 -->
-		         <a href="javascript:void(0)"
-		            th:onclick="|showTextarea(${item.commentNO})|"
-		            style="text-decoration: none;">답글작성</a>
+				    <!-- 답글작성 -->
+				    <a href="javascript:void(0)"
+				       th:onclick="|showTextarea(${comment.commentNO})|"
+				       style="text-decoration: none;">답글작성</a>
 
-		         <!-- 로그인 회원과 댓글 작성자가 같은 경우 수정/삭제 버튼 표시-->
-		         <th:block th:if="${session.member != null  and item.replyId == session.member.memId}">
-		           <a href="javascript:void(0)" 
-		              th:onclick="|showModtextarea(${item.commentNO})|"
-		              style="text-decoration: none;">수정</a>
-		           <a href="javascript:void(0)" 
-		              th:onclick="|fn_removeComment(${item.commentNO}, ${item.level})|"
-		              style="text-decoration: none;">삭제</a>
-		         </th:block>
+				    <!-- 로그인 회원과 댓글 작성자가 같은 경우 수정/삭제 버튼 표시 -->
+				    <th:block th:if="${session.member != null and comment.replyId == session.member.memId}">
+				      <a href="javascript:void(0)"
+				         th:onclick="|showModtextarea(${comment.commentNO})|"
+				         style="text-decoration: none;">수정</a>
+				      <a href="javascript:void(0)"
+				         th:onclick="|fn_removeComment(${comment.commentNO}, ${comment.pCommentNO}, ${comment.cGroupNO})|"
+				         style="text-decoration: none;">삭제</a>
+				    </th:block>
 
-		         <!-- 답글 작성 textarea -->
-		         <div th:id="'div_replytextarea' + ${item.commentNO}" style="display:none">
-		           <textarea th:id="'replytextarea_comment' + ${item.commentNO}"
-		                     rows="4" cols="50"
-		                     placeholder="답글은 200자까지 가능합니다."></textarea>
-		           <br>
-		           <button th:onclick="|fn_addReplyComment('${session.isLogOn}', '/member/loginForm.do', ${item.commentNO}, ${item.level}, ${item.cGroupNO}, ${item.articleNO})|">
-		             댓글반영하기
-		           </button>
-		           <button th:onclick="|hideTextarea(${item.commentNO})|">취소</button>
-		         </div>
+				    <!-- 댓글 수정 textarea -->
+				    <div th:id="'div_modtextarea' + ${comment.commentNO}" style="display:none">
+				      <textarea th:id="'modtextarea_comment' + ${comment.commentNO}"
+				                rows="4" cols="50"
+				                placeholder="수정글은 200자까지 가능합니다."
+				                th:text="${#strings.trim(comment.contents)}"></textarea>
+				      <br>
+				      <button th:onclick="|fn_modComment(${comment.commentNO}, ${comment.level})|">수정반영하기</button>
+				      <button th:onclick="|hideModtextarea(${comment.commentNO})|">취소</button>
+				    </div>
 
-		         <!-- 댓글 수정 textarea -->
-		         <div th:id="'div_modtextarea' + ${item.commentNO}" style="display:none">
-		           <textarea th:id="'modtextarea_comment' + ${item.commentNO}"
-		                     rows="4" cols="50"
-		                     placeholder="수정글은 200자까지 가능합니다."
-		                     th:text="${#strings.trim(item.contents)}"></textarea>
-		           <br>
-		           <button th:onclick="|fn_modComment(${item.commentNO}, ${item.level})|">수정반영하기</button>
-		           <button th:onclick="|hideModtextarea(${item.commentNO})|">취소</button>
-		         </div>
-		       </span>
+				    <!-- 답글 작성 textarea -->
+				    <div th:id="'div_replytextarea' + ${comment.commentNO}" style="display:none">
+				      <textarea th:id="'replytextarea_comment' + ${comment.commentNO}"
+				                rows="4" cols="50"
+				                placeholder="답글은 200자까지 가능합니다."></textarea>
+				      <br>
+				      <button th:onclick="|fn_addReplyComment('${session.isLogOn}', '/member/loginForm.do', ${comment.commentNO}, ${comment.level}, ${comment.cGroupNO}, ${comment.articleNO})|">
+				        댓글반영하기
+				      </button>
+				      <button th:onclick="|hideTextarea(${comment.commentNO})|">취소</button>
+				    </div>
+				  </div> <!-- 부모 댓글 본문 -->
+
+				  <!-- 자식 댓글들이 들어갈 영역 -->
+				  <div class="replies" th:id="'replies_' + ${comment.commentNO}"></div>
+				</div>
+
 		     </td>
 		   </tr>
-
-		   		    
-         <!-- <tr th:each="comment : ${articleMap.commentsList}">
-			<td th:text="${comment.replyId}">아이디</td>
-			<td th:text="${comment.contents}">댓글 내용</td>
-			<td th:text="${comment.creDate}">댓글 내용</td>
-          </tr>-->
         </tbody>
       </table>
     </div>

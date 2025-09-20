@@ -81,7 +81,6 @@ public class CommentControllerImpl implements CommentController {
 	public ResponseEntity<String> addReplyComment(@RequestBody CommentVO commentVO, 
 			                                      HttpServletRequest request,
                                                   HttpServletResponse response) throws Exception {
-		System.out.println(commentVO.getArticleNO());
 		
 		HttpSession session = request.getSession();
 		MemberVO member = (MemberVO)session.getAttribute("member");
