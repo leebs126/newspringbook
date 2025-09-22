@@ -49,7 +49,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @Primary
 public class ArticleControllerImpl implements ArticleController {
-	private static final String ARTICLE_IMAGE_REPO = "C:\\board\\article_image2";
+	private static final String ARTICLE_IMAGE_REPO = "C:\\board\\ck_upload";
 	private static final int ARTICLES_PER_PAGE = 10;
 	@Autowired
 	private ArticleService articleService;
