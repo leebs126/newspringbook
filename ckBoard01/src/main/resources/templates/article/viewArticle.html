@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  th:replace="layout :: layout(~{::title}, ~{::body})">
+
+<head>
+     <meta charset="UTF-8">
+     <title th:fragment="title">글상세</title>
+
+  </head>
+  <body>
+	<div th:fragment="body">
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script th:src="@{/js/article.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
+		<script th:src="@{/js/comment.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
+		<style>
+		  #tr_btn_modify {
+		    display:none;
+		  }
+		  .tr_modEnable {
+		    visibility:hidden;
+		  }
+		</style>
+
+	
+		
+    <form name="frmArticle" method="post" enctype="multipart/form-data">
+    <table border="0" align="center">
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">글번호</td>
+        <td>
+          <input type="text" th:value="${articleMap.article.articleNO}" disabled />
+          <input type="hidden" name="articleNO" id="i_articleNO"  th:value="${articleMap.article.articleNO}" />
+        </td>
+      </tr>
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">조회수</td>
+        <td>
+          <input type="text" th:value="${articleMap.article.viewCnt}" name="viewCnt" disabled />
+        </td>
+      </tr>
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">작성자 아이디</td>
+        <td>
+          <input type="text" th:value="${articleMap.article.memId}" name="writer" disabled />
+        </td>
+      </tr>
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">제목</td>
+        <td>
+          <input type="text" th:value="${articleMap.article.title}" name="title" id="i_title" disabled />
+        </td>
+      </tr>
+      <tr>
+        <td width="150" align="center" bgcolor="#FF9933">내용</td>
+        <td>
+			<!-- CKEditor로 작성한 글 내용 + 이미지 표시 -->
+			<div th:utext="${articleMap.article.content}"></div>
+
+         <!-- <textarea rows="20" cols="60" name="content" id="i_content" disabled
+            th:text="${articleMap.article.content}"></textarea>-->
+        </td>
+      </tr>
+
+	  <!-- 이미지 목록 + 수정/삭제 버튼 -->
+	  <tr th:each="item, stat : ${articleMap.imageFileList}" th:id="'tr_' + ${stat.count}">
+	    <td width="150" align="center" bgcolor="#FF9933"
+	        th:text="'이미지' + ${stat.count}"  >이미지</td>
+	    <td>
+	      <!-- 기존 이미지 표시 -->
+	      <input type="hidden" th:name="oldFileName"  th:value="${item.imageFileName}" />
+	      <input type="hidden" th:name="imageFileNO" th:value="${item.imageFileNO}" />
+	      <img th:src="@{/download.do(articleNO=${articleMap.article.articleNO}, imageFileName=${item.imageFileName})}"
+	           th:id="'preview' + ${stat.index}" name="'preview'" height="500" width="500" /><br/>
+
+	      <!-- 새로 선택한 파일명 저장용 hidden -->
+	      <input type="hidden" name="newFileName" th:id="'newFileName' + ${stat.index}" />   
+
+		  		  <!-- 수정 input + 삭제 버튼 (같은 td 안에 배치) -->
+	      <div class="tr_modEnable">
+		   <!-- 수정 input -->
+		   <input type="file" th:id="'fileInput' + ${stat.index}" 
+		          th:onchange="'handleFileSelect(this,' + ${stat.index} + ');'" /> 	   
+		    
+				  <input type="button" value="이미지 삭제하기"
+	               class="btn-remove-image"
+	               th:data-imagefileno="${item.imageFileNO}"
+	               th:data-articleno="${item.articleNO}"
+	               th:data-imagefilename="${item.imageFileName}"
+	               th:data-count="${stat.count}" />
+	      </div>
+	    </td>
+
+	    <!-- 마지막 이미지 처리용 hidden 값 -->
+	    <th:block th:if="${stat.last}">
+	      <input type="hidden" id="img_counts" th:value="${stat.count}" />
+	      <input type="hidden" id="pre_img_counts" th:name="pre_img_counts" th:value="${stat.count}" />
+	      <input type="hidden" id="added_img_counts" th:name="added_img_counts" th:value="${stat.count}" />
+	    </th:block>
+	  </tr>
+	  
+
+      <tr>
+        <td colspan="2">
+          <table id="tb_addImage" align="center"></table>
+        </td>
+      </tr>
+	  
+	  <tr class ="tr_modEnable">
+	     <td colspan="2">
+	        <input type="button"   value="이미지 추가"  onclick="fn_addModImage()"/>
+	     </td>
+	  </tr>
+
+      <tr id="tr_btn_modify" align="right">
+        <td colspan="2">
+		  <input type="button" value="수정반영하기" th:onclick="submitArticle()" />
+          <input type="button" value="취소" th:onclick="backToList()" />
+        </td>
+      </tr>
+
+      <tr id="tr_btn">
+        <td colspan="2" align="center">
+          <th:block th:if="${session.member != null and session.member.memId == articleMap.article.memId}">
+            <input type="button" value="수정하기" onclick="fn_enable()" />
+            <input type="button" value="삭제하기"
+                   th:onclick="|fn_remove_article('/article/removeArticle.do', ${articleMap.article.articleNO})|" />
+          </th:block>
+          <input type="button" value="리스트로 돌아가기" onclick="backToList(this.form)" />
+          <input type="button" value="답글쓰기"
+                 th:onclick="|fn_reply_form('${session.isLogOn}', '/article/replyForm.do', ${articleMap.article.articleNO}, ${articleMap.article.groupNO})|" />
+        </td>
+      </tr>
+    </table>
+    </form>
+
+<!--     댓글 작성  -->
+    <br><br><br>
+    <table border="0" align="center">
+      <tr>
+        <td>
+          <textarea th:id="'textarea_comment' + ${articleMap.article.articleNO}" rows="4" cols="100"
+                    placeholder="댓글은 200까지 가능합니다."></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button th:onclick="|fn_addNewComment('${session.isLogOn}','/member/loginForm.do','${articleMap.article.articleNO}')|">
+            댓글등록
+          </button>
+        </td>
+      </tr>
+    </table>
+  <!--   댓글 목록  -->
+    <br><br><br>
+    <div style="border: 1px solid red; display: inline-block;">
+      <table id="table_comment" style="border: 0px solid blue; margin-left: auto; margin-right: auto;">
+        <thead>
+          <tr style="background-color: lightgray;">
+            <td>댓글</td>
+          </tr>
+        </thead>
+        <tbody>
+           <!--댓글 리스트 반복-->
+		   <tr th:each="entry: ${articleMap.commentsGroupMap}" th:id="'comment_tr' + ${entry.value[0].cGroupNO}">
+		     <td width="800" height="50" align="left">
+				
+				<div th:each="comment : ${entry.value}"
+				     th:id="'div_comment_' + ${comment.commentNO}"
+				     th:attr="data-parent=${comment.pCommentNO}"
+				     style="margin-bottom:5px;">
+
+				  <!-- 부모 댓글 본문 -->
+				  <div class="comment-body">
+				    <!-- 들여쓰기 (level 만큼 padding-left) -->
+				    <span th:each="i : ${#numbers.sequence(1, comment.level)}" style="padding-left:10px"></span>
+				    <span th:id="'span_comment_' + ${comment.commentNO}"></span>
+				    <span th:text="${comment.replyId}"></span>&nbsp;
+				    <span th:text="${comment.contents}"></span>&nbsp;
+				    <span th:text="${#dates.format(comment.creDate, 'yyyy-MM-dd HH:mm')}"></span>
+
+				    <!-- 답글작성 -->
+				    <a href="javascript:void(0)"
+				       th:onclick="|showTextarea(${comment.commentNO})|"
+				       style="text-decoration: none;">답글작성</a>
+
+				    <!-- 로그인 회원과 댓글 작성자가 같은 경우 수정/삭제 버튼 표시 -->
+				    <th:block th:if="${session.member != null and comment.replyId == session.member.memId}">
+				      <a href="javascript:void(0)"
+				         th:onclick="|showModtextarea(${comment.commentNO})|"
+				         style="text-decoration: none;">수정</a>
+				      <a href="javascript:void(0)"
+				         th:onclick="|fn_removeComment(${comment.commentNO}, ${comment.pCommentNO}, ${comment.cGroupNO})|"
+				         style="text-decoration: none;">삭제</a>
+				    </th:block>
+
+				    <!-- 댓글 수정 textarea -->
+				    <div th:id="'div_modtextarea' + ${comment.commentNO}" style="display:none">
+				      <textarea th:id="'modtextarea_comment' + ${comment.commentNO}"
+				                rows="4" cols="50"
+				                placeholder="수정글은 200자까지 가능합니다."
+				                th:text="${#strings.trim(comment.contents)}"></textarea>
+				      <br>
+				      <button th:onclick="|fn_modComment(${comment.commentNO}, ${comment.level})|">수정반영하기</button>
+				      <button th:onclick="|hideModtextarea(${comment.commentNO})|">취소</button>
+				    </div>
+
+				    <!-- 답글 작성 textarea -->
+				    <div th:id="'div_replytextarea' + ${comment.commentNO}" style="display:none">
+				      <textarea th:id="'replytextarea_comment' + ${comment.commentNO}"
+				                rows="4" cols="50"
+				                placeholder="답글은 200자까지 가능합니다."></textarea>
+				      <br>
+				      <button th:onclick="|fn_addReplyComment('${session.isLogOn}', '/member/loginForm.do', ${comment.commentNO}, ${comment.level}, ${comment.cGroupNO}, ${comment.articleNO})|">
+				        댓글반영하기
+				      </button>
+				      <button th:onclick="|hideTextarea(${comment.commentNO})|">취소</button>
+				    </div>
+				  </div> <!-- 부모 댓글 본문 -->
+
+				  <!-- 자식 댓글들이 들어갈 영역 -->
+				  <div class="replies" th:id="'replies_' + ${comment.commentNO}"></div>
+				</div>
+
+		     </td>
+		   </tr>
+        </tbody>
+      </table>
+    </div>
+</div>	
+  </body>
+  </html>

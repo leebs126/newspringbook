@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ckboard01.article.repository.ArticleRepository">
+	<resultMap id="articlesResult" type="articleVO">
+		<result property="level" column="lvl" />
+		<result property="articleNO" column="articleNO" />
+		<result property="parentNO" column="parentNO" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="writeDate" column="writeDate" />
+		<result property="imageFileName" column="imageFileName" />
+		<result property="viewCounts" column="viewCounts" />
+	</resultMap>
+
+	<resultMap id="imgResult" type="imageVO">
+		<result property="imageFileNO" column="imageFileNO" />
+		<result property="articleNO" column="articleNO" />
+		<result property="imageFileName" column="imageFileName" />
+	</resultMap>
+	
+
+	<select id="selectAllArticlesList" parameterType="java.util.Map" resultMap="articlesResult">
+	<![CDATA[
+	SELECT * FROM (
+				SELECT groupNO,
+                        LVL,
+                        articleNO,
+                        parentNO,
+                       CASE 
+			           WHEN LENGTH(title) > 20 THEN SUBSTR(title, 1, 20) || '...'
+			           ELSE title
+			      	   END AS title,
+                        memId,
+                        writeDate
+                            FROM (
+                                SELECT 
+                                    groupNO, 
+                                    LEVEL as LVL,
+                                    articleNO,
+                                    parentNO,
+                                    title,
+                                    memId,
+                                    writeDate
+                                    FROM (
+			                                SELECT * FROM t_article2
+											WHERE groupNO IN (
+											 	                     SELECT groupNO
+											 	                     FROM (
+																	            SELECT  recNum, 
+																			              groupNO
+																	            FROM (   
+																	                    SELECT rowNum  AS recNum, groupNO
+																	                    FROM (
+																		                        SELECT distinct groupNO FROM t_article2
+																		                        ORDER BY groupNO DESC
+																	                          )
+																            	 )
+																	             WHERE recNum BETWEEN(#{section}-1)*100+(#{pageNum}-1)*10+1 AND (#{section}-1)*100+#{pageNum}*10           
+																	       )     	 
+																	)
+                                                               
+                                    )
+                                   START WITH  parentNO=0
+                                   CONNECT BY PRIOR articleNO = parentNO
+                                   ORDER SIBLINGS BY articleNO DESC)
+                               )
+                               
+	]]>
+	</select>
+
+
+<!--	<select id="selectAllArticlesList" parameterType="java.util.Map" resultMap="articlesResult">
+	<![CDATA[
+	SELECT * FROM (
+				select groupNO,
+                        LVL,
+                        articleNO,
+                        parentNO,
+                        title,
+                        id,
+                        writeDate,
+                        viewCounts
+                            from (
+                                select 
+                                    groupNO, 
+                                    LEVEL as LVL,
+                                    articleNO,
+                                    parentNO,
+                                    title,
+                                    id,
+                                    writeDate,
+                                    viewCounts                                    
+                                    from (
+			                                select * from t_board1
+											where groupNO in(
+											 	                     select groupNO
+											 	                     from (
+																	            select  recNum, 
+																			              groupNO
+																	            from(   
+																	                    select rowNum  as recNum, groupNO
+																	                    from (
+																		                        select distinct groupNO from t_article1
+																		                        order by groupNO desc
+																	                          )
+																            	 )
+																	             where recNum between(#{section}-1)*100+(#{pageNum}-1)*10+1 and (#{section}-1)*100+#{pageNum}*10           
+																	       )     	 
+																	)
+                                                               
+                                    )
+                                   START WITH  parentNO=0
+                                   CONNECT BY PRIOR articleNO = parentNO
+                                   ORDER SIBLINGS BY articleNO DESC)
+                               )
+                               
+	]]>
+					where recNum between(#{section}-1)*100+(#{pageNum}-1)*10+1 and (#{section}-1)*100+#{pageNum}*10  	
+	</select>-->
+	<select id="selectNewGroupNO" resultType="int"> 
+	   <![CDATA[  
+			SELECT NVL(MAX(groupNO), 0)+1 AS maxGroupNO FROM t_article2
+		 ]]>
+	</select>
+
+	<select id="selectTotalArticles" resultType="int">
+		<![CDATA[  
+			SELECT COUNT(DISTINCT groupNO) FROM t_article2
+		 ]]>
+	</select>
+
+	<!--다중 이미지 새글 추가 SQL문 -->
+	<insert id="insertNewArticle" parameterType="java.util.Map">
+    <![CDATA[
+      INSERT INTO t_article2(groupNO, 
+      						 articleNO, 
+      						 parentNO, 
+      						 memId, 
+      						 title, 
+      						 content, 
+      						 writeDate,
+      						 imageFileName)
+      VALUES (#{groupNO},
+               #{articleNO},
+      		   #{parentNO}, 
+      		   #{memId}, 
+      		   #{title}, 
+      		   #{content}, 
+      		   SYSDATE,
+      		   null)
+    ]]>
+	</insert>
+	
+		<!--다중 이미지 답글 추가 SQL문 -->
+	<insert id="insertReplyArticle" parameterType="java.util.Map">
+    <![CDATA[
+      INSERT INTO t_article2(groupNO, 
+                             articleNO, 
+                             parentNO, 
+                             memId, 
+                             title, 
+                             content, 
+                             imageFileName)
+      VALUES (#{groupNO},
+               #{articleNO},
+      		   #{parentNO}, 
+      		   #{memId}, 
+      		   #{title}, 
+      		   #{content}, 
+      		   null)
+    ]]>
+	</insert>
+	
+
+	<insert id="insertNewImage" parameterType="imageVO">
+	<![CDATA[
+	 INSERT INTO t_imageFile2(imageFileNO, 
+							  imageFileName, 
+							  articleNO, 
+							  regDate)
+					VALUES (#{imageFileNO},
+							#{imageFileName},
+							#{articleNO},
+							  SYSDATE)
+	]]>
+	</insert>
+
+
+
+
+	<select id="selectNewArticleNO" resultType="int">
+		<![CDATA[
+			SELECT  NVL(MAX(articleNO), 0) + 1 FROM t_article2		
+		]]>
+	</select>
+
+	<select id="selectArticleById" resultType="articleVO" parameterType="int">
+    <![CDATA[
+      SELECT * FROM t_article2
+      WHERE articleNO = #{articleNO}		
+    ]]>
+	</select>
+
+	<!-- 다중 파일 수정하기 -->
+	<update id="updateArticle" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE t_article2
+		SET title=#{title}
+		    ,content=#{content}
+		WHERE articleNO=#{articleNO}
+	]]>
+	</update>
+
+
+
+	<update id="updateImageFile" parameterType="java.util.Map">
+		<foreach collection="imageFileList" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
+			<choose>
+				<when test="imageFileList != null  and item.imageFileName != null">
+					UPDATE t_imageFile2
+					SET imageFileName = #{item.imageFileName}
+					WHERE
+					articleNO=#{item.articleNO}
+					AND imageFileNO = #{item.imageFileNO}
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
+		</foreach>
+	</update>
+
+	<delete id="deleteArticle" parameterType="int">
+    <![CDATA[
+      DELETE FROM t_article2
+      WHERE articleNO IN (
+         SELECT articleNO FROM  t_article2
+         START WITH articleNO = #{articleNO}
+         CONNECT BY PRIOR  articleNO = parentNO )
+    ]]>
+	</delete>
+
+
+	<select id="selectNewImageFileNO" resultType="int">
+    <![CDATA[
+      SELECT  NVL(MAX(imageFileNO), 0)+1 FROM t_imageFile2		
+    ]]>
+	</select>
+
+
+	<select id="selectImageFileList" resultMap="imgResult" parameterType="int">
+    <![CDATA[
+      SELECT * FROM t_imageFile2
+      WHERE articleNO=#{articleNO}
+      ORDER BY imageFileNO	
+    ]]>
+	</select>
+
+
+	<delete id="deleteModImage" parameterType="imageVO">
+	    <![CDATA[
+	      DELETE FROM t_imageFile2
+	      WHERE articleNO = #{articleNO}
+	      AND imageFileNO = #{imageFileNO}
+	    ]]>
+	</delete>
+
+<insert id="insertModNewImage" parameterType="imageVO">
+	    INSERT INTO t_imageFile2 (
+						        imageFileNO,
+						        imageFileName,
+						        articleNO,
+						        regDate
+						    )
+						    VALUES (
+						        #{imageFileNO},
+						        #{imageFileName},
+						        #{articleNO},
+						        SYSDATE
+						    )
+</insert>
+
+	<!--<insert id="insertModNewImage" parameterType="java.util.Map">
+	  <foreach collection="modAddImageFileList" item="item" separator=";">
+	    INSERT INTO t_imageFile1 (
+	        imageFileNO,
+	        imageFileName,
+	        articleNO,
+	        regDate
+	    )
+	    VALUES (
+	        #{item.imageFileNO},
+	        #{item.imageFileName},
+	        #{item.articleNO},
+	        sysdate
+	    )
+	  </foreach>
+	</insert>-->
+
+	<!--<insert id="insertModNewImage" parameterType="java.util.Map">
+		<foreach item="list" collection="modAddImageFileList" open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
+			INTO t_imageFile1(imageFileNO, 
+							  imageFileName, 
+							  articleNO, 
+							  regDate)
+			VALUES (#{list.imageFileNO},
+					#{list.imageFileName},
+					#{list.articleNO},
+					sysdate)
+		</foreach>
+	</insert>-->
+	<!--
+	<update id="updateViewCounts" parameterType="int">
+	    <![CDATA[
+	      update t_article1
+		  set viewCounts = viewCounts+1
+		  where
+		     articleNO=#{articleNO}
+	    ]]>
+	</update>-->
+
+	
+
+</mapper>

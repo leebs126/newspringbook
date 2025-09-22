@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8">
+</head>
+<body>
+<div id="header" th:fragment="header">
+  <table border="0" width="100%">
+    <tr>
+      <td>
+        <a th:href="@{/main.do}">
+          <img th:src="@{/images/duke_swing.gif}" alt="Logo"/>
+        </a>
+      </td>
+      <td>
+        <h1><span style="font-size:30px;">WIZWIG 스프링실습 홈페이지!!</span></h1>
+      </td>
+	  <td>
+		
+		<div th:if="${session.isLogOn}">
+          <h3 th:text="'환영합니다. ' + ${session.member.name} + '님!'"></h3>
+          <a th:href="@{/member/logout.do}">로그아웃</a>&nbsp &nbsp
+		  <a th:href="@{/member/memberForm.do}">회원가입</a>
+		 </div>
+		 <div th:unless="${session.isLogOn}">
+          	<a th:href="@{/member/loginForm.do}">로그인</a>&nbsp &nbsp
+			<a th:href="@{/member/memberForm.do}">회원가입</a>
+ 		 </div>
+		
+	    <!--<ul>
+	       로그인 상태일 때 
+	      <li th:if="${session.isLogOn}">
+	        <h3 th:text="'환영합니다. ' + ${session.member.name} + '님!'"></h3>
+	      </li>
+
+	       비로그인 상태일 때 
+	      <li th:unless="${session.isLogOn}">
+	        <a th:href="@{/member/loginForm.do}">로그인</a>
+	      </li>
+	      <li th:unless="${session.isLogOn}">
+	        <a th:href="@{/member/memberForm.do}">회원가입</a>
+	      </li>
+	    </ul>-->
+	  </td>
+
+	  
+	  
+      <!--<td>
+        <div th:if="${session.isLogOn ==true} and ${session.member != null}">
+          <h3 th:text="'환영합니다. ' + ${member.name} + '님!'"></h3>
+          <a th:href="@{/member/logout}"><h3>로그아웃</h3></a>
+        </div>
+        <div th:if="${!session.isLogOn== null or session.member == null}">
+          <a th:href="@{/member/loginForm}"><h3>로그인</h3></a>
+        </div>
+      </td>-->
+    </tr>
+  </table>
+</div>
+</body>
+</html>

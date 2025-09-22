@@ -1,0 +1,31 @@
+package com.ckboard01.comment.repository;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.dao.DataAccessException;
+
+import com.ckboard01.comment.vo.CommentVO;
+
+
+@Mapper
+public interface CommentRepository {
+	// 댓글 기능
+//	public List<CommentVO> selectAllCommentsList(int articleNO) throws DataAccessException;
+	public List<CommentVO> selectAllCommentsList(Map<String, Integer> pagingMap) throws DataAccessException;
+
+	public void insertNewComment(CommentVO commentVO) throws DataAccessException;
+
+	public CommentVO selectCommentById(int commentNO) throws DataAccessException;
+
+	public int selectNewCommentNO() throws DataAccessException;
+
+	// 댓글 수정
+	public void updateComment(CommentVO commentVO) throws DataAccessException;
+
+	public void deleteComment(CommentVO commentVO) throws DataAccessException;
+
+	//댓글 그룹번호
+	public int selectNewCGroupNO() throws DataAccessException;
+}
