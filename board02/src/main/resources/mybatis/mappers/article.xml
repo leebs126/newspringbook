@@ -205,7 +205,7 @@
 	<!-- 다중 파일 수정하기 -->
 	<update id="updateArticle" parameterType="java.util.Map">
 	<![CDATA[
-		UPDATE t_article2
+		UPDATE t_article1
 		SET title=#{title}
 		    ,content=#{content}
 		WHERE articleNO=#{articleNO}
