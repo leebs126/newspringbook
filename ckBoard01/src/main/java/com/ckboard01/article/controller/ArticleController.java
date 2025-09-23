@@ -1,11 +1,15 @@
 package com.ckboard01.article.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,7 +38,10 @@ public interface ArticleController {
 															  HttpServletRequest request, 
 															  HttpServletResponse response) throws Exception;
 
-	
+	@PostMapping("/article/modArticleJsonCE.do")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> modArticleJsonCE(@RequestPart("article") String articleJson) throws Exception;
+		
 	
 	
 

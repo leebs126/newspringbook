@@ -2,14 +2,14 @@
     location.href="/article/listArticles.do";
   }
 
-  function fn_enable(){
+ /* function fn_enable(){
       document.getElementById("i_title").disabled=false;
       document.getElementById("i_content").disabled=false;
       document.getElementById("tr_btn_modify").style.display="block";
       document.getElementById("tr_btn").style.display="none";
       $(".tr_modEnable").css('visibility', 'visible');
   }
-  
+  */
   function submitArticle() {
 	const formData = new FormData();
 	
@@ -282,5 +282,57 @@
 	  })
 	  .catch(err => console.error("Error:", err));
 	  
+  }
+  
+  function fn_modify_enable(){
+   
+   var div_viewArticle = document.getElementById("div_viewArticle");
+   div_viewArticle.style.display = "none";
+
+   var div_mod_article = document.getElementById("div_mod_article");
+   div_mod_article.style.display = "block";
+  }
+
+  function submitModArticle(button) {
+	//  표준 getAttribute 사용
+	    var articleNO = button.getAttribute("data-article-no");
+	    console.log("getAttribute:", articleNO);
+      // CKEditor 본문 HTML 가져오기
+      var content = CKEDITOR.instances.ckeditor.getData();
+
+      // 제목 가져오기
+      var title = document.querySelector("input[name='title']").value;
+
+      // 글번호(articleNO)는 hidden input이나 data 속성에서 가져오세요.
+      //var articleNO =  /*[[${articleMap.article.articleNO}]]*/ '0';
+
+      // 서버에 보낼 데이터 구성
+      var articleData = {
+          articleNO: articleNO,
+          title: title,
+          content: content
+      };
+
+      // FormData 객체 생성
+      var formData = new FormData();
+      formData.append("article", new Blob([JSON.stringify(articleData)], {type: "application/json"}));
+
+      // AJAX 요청
+      $.ajax({
+          url: "/article/modArticleJsonCK.do",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+              alert("수정이 완료되었습니다!");
+              // 필요시 목록 페이지로 이동
+              window.location.href = "/article/viewArticle.do?articleNO=" + articleNO;
+          },
+          error: function(xhr, status, error) {
+              console.error("수정 실패:", error);
+              alert("수정 중 오류가 발생했습니다.");
+          }
+      });
   }
 	 

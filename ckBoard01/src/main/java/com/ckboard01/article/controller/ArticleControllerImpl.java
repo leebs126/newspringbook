@@ -437,7 +437,6 @@ public class ArticleControllerImpl implements ArticleController {
 
 
 		String articleNO = (String) articleMap.get("articleNO");
-		String message;
 		ResponseEntity<Map<String, Object>> resEnt = null;
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
@@ -492,6 +491,39 @@ public class ArticleControllerImpl implements ArticleController {
 		    result.put("redirectUrl", "/article/viewArticle.do?articleNO=" + articleMap.get("articleNO"));
 			resEnt = new ResponseEntity(result, responseHeaders, HttpStatus.CREATED);
 		}
+		return resEnt;
+	}
+	
+	
+	@PostMapping("/article/modArticleJsonCK.do")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> modArticleJsonCE(@RequestPart("article") String articleJson) throws Exception{
+		 // JSON → Map 변환
+	    ObjectMapper mapper = new ObjectMapper();
+	    Map<String, Object> articleMap = mapper.readValue(articleJson, new TypeReference<Map<String, Object>>() {});
+
+		String articleNO = (String) articleMap.get("articleNO");
+		ResponseEntity<Map<String, Object>> resEnt = null;
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
+		try {
+			articleService.modArticle(articleMap);
+
+			Map<String, Object> result = new HashMap<>();
+		    result.put("status", "ok");
+		    result.put("message", "글을 수정했습니다.");
+		    result.put("redirectUrl", "/article/viewArticle.do?articleNO=" + articleMap.get("articleNO"));
+
+		    return ResponseEntity.ok(result);
+		} catch (Exception e) {
+				e.printStackTrace();
+				Map<String, Object> result = new HashMap<>();
+			    result.put("status", "ERROR");
+			    result.put("message", "오류 발생. 다시 수정해 주세요.");
+			    result.put("redirectUrl", "/article/viewArticle.do?articleNO=" + articleMap.get("articleNO"));
+				resEnt = new ResponseEntity(result, responseHeaders, HttpStatus.CREATED);
+		}
+			
 		return resEnt;
 	}
 
