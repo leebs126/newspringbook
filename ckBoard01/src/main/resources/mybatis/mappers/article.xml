@@ -141,7 +141,6 @@
       						 memId, 
       						 title, 
       						 content, 
-      						 writeDate,
       						 imageFileName)
       VALUES (#{groupNO},
                #{articleNO},
@@ -149,7 +148,6 @@
       		   #{memId}, 
       		   #{title}, 
       		   #{content}, 
-      		   SYSDATE,
       		   null)
     ]]>
 	</insert>

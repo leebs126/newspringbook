@@ -34,9 +34,6 @@ public interface ArticleController {
                               			HttpServletRequest request, 
                               			HttpServletResponse response) throws Exception;
 	
-	public ResponseEntity<Map<String, Object>> removeModImage(@RequestBody Map<String, Object> imageMap,
-															  HttpServletRequest request, 
-															  HttpServletResponse response) throws Exception;
 
 	@PostMapping("/article/modArticleJsonCE.do")
 	@ResponseBody

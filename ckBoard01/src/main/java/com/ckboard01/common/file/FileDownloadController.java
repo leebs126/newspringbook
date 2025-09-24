@@ -17,14 +17,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class FileDownloadController {
-	private static final String ARTICLE_IMAGE_REPO = "C:\\board\\ck_upload";
+	private static final String ARTICLE_CK_IMAGE_REPO = "C:\\board\\ck_upload";
 	
 	@GetMapping("/download.do")
 	protected void download(@RequestParam("imageFileName") String imageFileName,
 							@RequestParam("articleNO") String articleNO,
 						     HttpServletResponse response)throws Exception {
 //		OutputStream out = response.getOutputStream();
-		String filePath= ARTICLE_IMAGE_REPO + "\\" +articleNO+"\\"+ imageFileName;
+		String filePath= ARTICLE_CK_IMAGE_REPO + "\\" +articleNO+"\\"+ imageFileName;
 		File imageFile=new File(filePath);
 
 		 if (imageFile.exists()) {
@@ -48,7 +48,7 @@ public class FileDownloadController {
 	                            HttpServletResponse response) throws Exception {
 	    // 업로드 경로 (업로드 시와 동일해야 함)
 //	    String uploadDir = request.getServletContext().getRealPath("/ckupload/");
-	    File uploadDir = new File(ARTICLE_IMAGE_REPO + "\\" + "temp");
+	    File uploadDir = new File(ARTICLE_CK_IMAGE_REPO + "\\" + "temp");
 	    if(!uploadDir.exists()) {
 	    	uploadDir.mkdirs();	
 	    }
