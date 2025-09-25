@@ -42,7 +42,6 @@
  				CKEDITOR.replace('ckeditor', { //해당 이름으로 된 textarea에 에디터를 적용
  					width : '100%',
  					height : '600px',
- 					//filebrowserUploadUrl : '/article/imageUpload.do'
  					filebrowserUploadUrl : '/article/imageUpload.do?upload=1',
  					on: {
  					        instanceReady: function (evt) {
@@ -55,13 +54,6 @@
  					                xhr = event.data.fileLoader.xhr;
  					                var response = JSON.parse( xhr.responseText);  //서버에서 전송한 json 데이터를 얻습니다.
  					                var uuidAddedFileName = response.uuidAddedFileName;  //uuid를 추가한 파일명을 얻습니다.
- 					               // alert(uuidAddedFileName);
- 					                /*
- 					                for ( var i in response ) {
- 					                	var data = response[i];
- 										alert(data);
- 									}
- 					                */
  					                
  					             // CKEditor에 업로드한 이미지 img 태그에 다운로드받아서 표시
  					                var imageUrl = 'http://localhost:8090/ckImageDownload.do?imageFileName='+ uuidAddedFileName;
@@ -85,67 +77,6 @@
 	  <input type="hidden" id="groupNO" th:name="groupNO" th:value="${groupNO}" />
 	  <input type="hidden" id="parentNO" th:name="parentNO" th:value="${parentNO}" />
     </form>
- 
- <!-- 
-  <form name="replyArticleForm" method="post"
-        th:action="@{/article/addReplyArticle.do}"
-        enctype="multipart/form-data">
-    <table border="0" align="center">
-      <tr>
-        <td align="right">작성자</td>
-        <td colspan="2" align="center" th:text="${session.member.name}">작성자이름</td>
-      </tr>
-      <tr>
-        <td align="right">글제목</td>
-        <td colspan="2">
-          <input type="text" size="67" maxlength="500" name="title" placeholder="글제목"/>
-        </td>
-      </tr>
-      <tr>
-        <td align="right" valign="top"><br>글내용</td>
-        <td colspan="2">
-          <textarea name="content" rows="20" cols="100" maxlength="4000"
-                    placeholder="이곳에 글을 쓰세요."></textarea>
-        </td>
-      </tr>
-      <tr>
-        <td align="right">이미지파일 첨부</td>
-        <td>
-          <input type="file" name="imageFileName" onchange="readURL(this, 0);" />
-        </td>
-        <td>
-          <img id="preview0" src="#" width="640" height="480"/>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3">
-          <table width="100%" border="0" id="tb_newImage"></table>
-        </td>
-      </tr>
-      <tr height="200px">
-        <td colspan="3"></td>
-      </tr>
-      <tr>
-        <td align="right">이미지파일 첨부</td>
-        <td align="left" colspan="2">
-          <input type="button" value="새 이미지 파일 추가하기" onclick="fn_addFile()"/>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="4"><div id="d_file"></div></td>
-      </tr>
-      <tr>
-        <td align="right"></td>
-        <td colspan="2">
-          <input type="submit" value="답글쓰기" />
-          <input type="button" value="목록보기" onclick="backToList(this.form)" />
-        </td>
-      </tr>
-    </table>
-	
-	<input type="hidden" id="groupNO" th:name="groupNO" th:value="${groupNO}" />
-    <input type="hidden" id="parentNO" th:name="parentNO" th:value="${parentNO}" />
-  </form>-->
 </div>
  </body>
 </html>

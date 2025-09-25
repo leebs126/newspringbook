@@ -25,34 +25,7 @@
           	<a th:href="@{/member/loginForm.do}">로그인</a>&nbsp &nbsp
 			<a th:href="@{/member/memberForm.do}">회원가입</a>
  		 </div>
-		
-	    <!--<ul>
-	       로그인 상태일 때 
-	      <li th:if="${session.isLogOn}">
-	        <h3 th:text="'환영합니다. ' + ${session.member.name} + '님!'"></h3>
-	      </li>
-
-	       비로그인 상태일 때 
-	      <li th:unless="${session.isLogOn}">
-	        <a th:href="@{/member/loginForm.do}">로그인</a>
-	      </li>
-	      <li th:unless="${session.isLogOn}">
-	        <a th:href="@{/member/memberForm.do}">회원가입</a>
-	      </li>
-	    </ul>-->
 	  </td>
-
-	  
-	  
-      <!--<td>
-        <div th:if="${session.isLogOn ==true} and ${session.member != null}">
-          <h3 th:text="'환영합니다. ' + ${member.name} + '님!'"></h3>
-          <a th:href="@{/member/logout}"><h3>로그아웃</h3></a>
-        </div>
-        <div th:if="${!session.isLogOn== null or session.member == null}">
-          <a th:href="@{/member/loginForm}"><h3>로그인</h3></a>
-        </div>
-      </td>-->
     </tr>
   </table>
 </div>
