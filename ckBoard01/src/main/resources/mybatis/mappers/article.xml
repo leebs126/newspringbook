@@ -9,18 +9,10 @@
 		<result property="articleNO" column="articleNO" />
 		<result property="parentNO" column="parentNO" />
 		<result property="title" column="title" />
-		<result property="content" column="content" />
+		<result property="content" column="content" jdbcType="CLOB"/>
 		<result property="writeDate" column="writeDate" />
-		<result property="imageFileName" column="imageFileName" />
 		<result property="viewCounts" column="viewCounts" />
 	</resultMap>
-
-	<resultMap id="imgResult" type="imageVO">
-		<result property="imageFileNO" column="imageFileNO" />
-		<result property="articleNO" column="articleNO" />
-		<result property="imageFileName" column="imageFileName" />
-	</resultMap>
-	
 
 	<select id="selectAllArticlesList" parameterType="java.util.Map" resultMap="articlesResult">
 	<![CDATA[
@@ -85,58 +77,44 @@
 
 	<!--다중 이미지 새글 추가 SQL문 -->
 	<insert id="insertNewArticle" parameterType="java.util.Map">
-    <![CDATA[
-      INSERT INTO t_article2(groupNO, 
-      						 articleNO, 
-      						 parentNO, 
-      						 memId, 
-      						 title, 
-      						 content, 
-      						 imageFileName)
-      VALUES (#{groupNO},
-               #{articleNO},
-      		   #{parentNO}, 
-      		   #{memId}, 
-      		   #{title}, 
-      		   #{content}, 
-      		   null)
-    ]]>
+	    <![CDATA[
+	      INSERT INTO t_article2(groupNO, 
+	      						 articleNO, 
+	      						 parentNO, 
+	      						 memId, 
+	      						 title, 
+	      						 content
+	      						)
+	      VALUES (#{groupNO},
+	               #{articleNO},
+	      		   #{parentNO}, 
+	      		   #{memId}, 
+	      		   #{title}, 
+	      		   #{content}
+	      		   )
+	    ]]>
 	</insert>
 	
 		<!--다중 이미지 답글 추가 SQL문 -->
 	<insert id="insertReplyArticle" parameterType="java.util.Map">
-    <![CDATA[
-      INSERT INTO t_article2(groupNO, 
-                             articleNO, 
-                             parentNO, 
-                             memId, 
-                             title, 
-                             content, 
-                             imageFileName)
-      VALUES (#{groupNO},
-               #{articleNO},
-      		   #{parentNO}, 
-      		   #{memId}, 
-      		   #{title}, 
-      		   #{content}, 
-      		   null)
-    ]]>
+	    <![CDATA[
+	      INSERT INTO t_article2(groupNO, 
+	                             articleNO, 
+	                             parentNO, 
+	                             memId, 
+	                             title, 
+	                             content
+	                             )
+	      VALUES (#{groupNO},
+	               #{articleNO},
+	      		   #{parentNO}, 
+	      		   #{memId}, 
+	      		   #{title}, 
+	      		   #{content}
+	      		   )
+	    ]]>
 	</insert>
 	
-
-	<insert id="insertNewImage" parameterType="imageVO">
-	<![CDATA[
-	 INSERT INTO t_imageFile2(imageFileNO, 
-							  imageFileName, 
-							  articleNO, 
-							  regDate)
-					VALUES (#{imageFileNO},
-							#{imageFileName},
-							#{articleNO},
-							  SYSDATE)
-	]]>
-	</insert>
-
 
 
 
@@ -147,87 +125,32 @@
 	</select>
 
 	<select id="selectArticleById" resultType="articleVO" parameterType="int">
-    <![CDATA[
-      SELECT * FROM t_article2
-      WHERE articleNO = #{articleNO}		
-    ]]>
+	    <![CDATA[
+	      SELECT * FROM t_article2
+	      WHERE articleNO = #{articleNO}		
+	    ]]>
 	</select>
 
 	<!-- 다중 파일 수정하기 -->
 	<update id="updateArticle" parameterType="java.util.Map">
-	<![CDATA[
-		UPDATE t_article2
-		SET title=#{title}
-		    ,content=#{content}
-		WHERE articleNO=#{articleNO}
-	]]>
+		<![CDATA[
+			UPDATE t_article2
+			SET title=#{title}
+			    ,content=#{content}
+			WHERE 
+			articleNO=#{articleNO}
+		]]>
 	</update>
 
-
-
-	<update id="updateImageFile" parameterType="java.util.Map">
-		<foreach collection="imageFileList" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
-			<choose>
-				<when test="imageFileList != null  and item.imageFileName != null">
-					UPDATE t_imageFile2
-					SET imageFileName = #{item.imageFileName}
-					WHERE
-					articleNO=#{item.articleNO}
-					AND imageFileNO = #{item.imageFileNO}
-				</when>
-				<otherwise>
-				</otherwise>
-			</choose>
-		</foreach>
-	</update>
 
 	<delete id="deleteArticle" parameterType="int">
-    <![CDATA[
-      DELETE FROM t_article2
-      WHERE articleNO IN (
-         SELECT articleNO FROM  t_article2
-         START WITH articleNO = #{articleNO}
-         CONNECT BY PRIOR  articleNO = parentNO )
-    ]]>
-	</delete>
-
-
-	<select id="selectNewImageFileNO" resultType="int">
-    <![CDATA[
-      SELECT  NVL(MAX(imageFileNO), 0)+1 FROM t_imageFile2		
-    ]]>
-	</select>
-
-
-	<select id="selectImageFileList" resultMap="imgResult" parameterType="int">
-    <![CDATA[
-      SELECT * FROM t_imageFile2
-      WHERE articleNO=#{articleNO}
-      ORDER BY imageFileNO	
-    ]]>
-	</select>
-
-
-	<delete id="deleteModImage" parameterType="imageVO">
 	    <![CDATA[
-	      DELETE FROM t_imageFile2
-	      WHERE articleNO = #{articleNO}
-	      AND imageFileNO = #{imageFileNO}
+	      DELETE FROM t_article2
+	      WHERE articleNO IN (
+	         SELECT articleNO FROM  t_article2
+	         START WITH articleNO = #{articleNO}
+	         CONNECT BY PRIOR  articleNO = parentNO )
 	    ]]>
 	</delete>
 
-<insert id="insertModNewImage" parameterType="imageVO">
-	    INSERT INTO t_imageFile2 (
-						        imageFileNO,
-						        imageFileName,
-						        articleNO,
-						        regDate
-						    )
-						    VALUES (
-						        #{imageFileNO},
-						        #{imageFileName},
-						        #{articleNO},
-						        SYSDATE
-						    )
-</insert>
 </mapper>
