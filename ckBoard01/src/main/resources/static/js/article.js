@@ -60,13 +60,11 @@
   function submitModArticle(button) {
 	//  표준 getAttribute 사용
 	    var articleNO = button.getAttribute("data-article-no");
-	    console.log("getAttribute:", articleNO);
       // CKEditor 본문 HTML 가져오기
       var content = CKEDITOR.instances.ckeditor.getData();
 
       // 제목 가져오기
       var title = document.querySelector("input[name='title']").value;
-
       // 글번호(articleNO)는 hidden input이나 data 속성에서 가져오세요.
       //var articleNO =  /*[[${articleMap.article.articleNO}]]*/ '0';
 
