@@ -13,5 +13,4 @@ public interface ArticleService {
 	public void modArticle(Map articleMap) throws Exception;
 	public void removeArticle(int articleNO) throws Exception;
 	
-	public void removeModImage(ImageVO imageVO) throws Exception;
 }

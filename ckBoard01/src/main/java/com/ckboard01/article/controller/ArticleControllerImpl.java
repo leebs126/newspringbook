@@ -37,7 +37,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ckboard01.article.service.ArticleService;
 import com.ckboard01.article.vo.ArticleVO;
-import com.ckboard01.article.vo.ImageVO;
 import com.ckboard01.member.vo.MemberVO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -165,7 +164,6 @@ public class ArticleControllerImpl implements ArticleController {
 		return resEnt;
 	}
 
-	// 다중 이미지 글 추가하기
 	@Override
 	@PostMapping("/article/addNewArticle.do")
 	@ResponseBody
@@ -219,7 +217,6 @@ public class ArticleControllerImpl implements ArticleController {
 	}
 	
 	
-	// 다중 답글 추가하기
 	@Override
 	@PostMapping("/article/addReplyArticle.do")
 	@ResponseBody
@@ -343,10 +340,6 @@ public class ArticleControllerImpl implements ArticleController {
 	                               @RequestParam("upload") MultipartFile upload) throws Exception {
 
 	    System.out.println("이미지업로드 호출됨: " + upload.getOriginalFilename());
-	   // File file = new File(ARTICLE_IMAGE_REPO + "\\" + fileName);
-	    // 저장 경로 ARTICLE_IMAGE_REPO
-	    //String uploadDir = request.getServletContext().getRealPath("/ckupload/");
-	    //String uploadDir =
 	    File uploadDir = new File(ARTICLE_CK_IMAGE_REPO + "\\" + "temp");
 	    if (!uploadDir.exists()) {
 	    	uploadDir.mkdirs();
@@ -372,33 +365,5 @@ public class ArticleControllerImpl implements ArticleController {
 	    out.print(new ObjectMapper().writeValueAsString(json));
 	    out.flush();
 	}
-
-
-//	// 수정 시 다중 이미지 업로드하기
-//	private List<String> uploadModImageFile(MultipartHttpServletRequest multipartRequest) throws Exception {
-//		List<String> fileList = new ArrayList<String>();
-//		Iterator<String> fileNames = multipartRequest.getFileNames();
-//		while (fileNames.hasNext()) {
-//			String fileName = fileNames.next();
-//			MultipartFile mFile = multipartRequest.getFile(fileName);
-//			String originalFileName = mFile.getOriginalFilename();
-//			if (originalFileName != "" && originalFileName != null) {
-//				fileList.add(originalFileName);
-//				File file = new File(ARTICLE_IMAGE_REPO + "\\" + fileName);
-//				if (mFile.getSize() != 0) { // File Null Check
-//					if (!file.exists()) { // 경로상에 파일이 존재하지 않을 경우
-//						file.getParentFile().mkdirs(); // 경로에 해당하는 디렉토리들을 생성
-//						mFile.transferTo(new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + originalFileName)); // 임시로
-//					}
-//				}
-//			} else {
-//				fileList.add(null);
-//			}
-//
-//		}
-//		return fileList;
-//	}
-
-
 
 }

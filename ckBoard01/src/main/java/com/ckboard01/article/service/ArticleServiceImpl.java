@@ -39,7 +39,6 @@ public class ArticleServiceImpl  implements ArticleService{
 		return articlesMap;
 	}
 
-	 //다중 이미지 글 추가하기
 	@Override
 	public int addNewArticle(Map articleMap) throws Exception{
 		int _articleNO = articleRepository.selectNewArticleNO();
@@ -50,16 +49,14 @@ public class ArticleServiceImpl  implements ArticleService{
 		return _articleNO;
 	}
 	
-	//다중 이미지 답글추가하기
-		@Override
-		public int addReplyArticle(Map articleMap) throws Exception{
-			int _articleNO = articleRepository.selectNewArticleNO();
-			articleMap.put("articleNO", _articleNO);
-			articleRepository.insertReplyArticle(articleMap);
-			return _articleNO;
-		}
+	@Override
+	public int addReplyArticle(Map articleMap) throws Exception{
+		int _articleNO = articleRepository.selectNewArticleNO();
+		articleMap.put("articleNO", _articleNO);
+		articleRepository.insertReplyArticle(articleMap);
+		return _articleNO;
+	}
 	
-		//다중 파일 보이기
 	@Override
 	public Map viewArticle(Map viewMap) throws Exception {
 		Map<String, Object> articleMap = new HashMap<String, Object>();
@@ -70,16 +67,8 @@ public class ArticleServiceImpl  implements ArticleService{
 		ArticleVO articleVO = articleRepository.selectArticleById(articleNO); 
 		
 		articleMap.put("article", articleVO);
-//		String writerId = articleVO.getMemId();
-//		if(id == null || !(id.equals(writerId))) {  //로그인 아이디와 글쓴이 아이디가 같지 않으면 조회수를 1증가 시킴
-//			articleRepository.updateViewCounts(articleNO);
-//			articleVO = articleRepository.selectArticle(articleNO);
-//		}
-		
 		
 		//해당 글의 댓글 조회
-//		List<CommentVO> commentsList = commentRepository.selectAllCommentsList(articleNO);
-//		articleMap.put("commentsList", commentsList);
 		Map<String, Integer> pagingMap = new  HashMap<String, Integer>();
 		pagingMap.put("articleNO", articleNO);
 		pagingMap.put("pageNum", 1);  
@@ -101,41 +90,6 @@ public class ArticleServiceImpl  implements ArticleService{
 	@Override
 	public void modArticle(Map articleMap) throws Exception {
 		articleRepository.updateArticle(articleMap);
-		
-		List<ImageVO> imageFileList = (List<ImageVO>)articleMap.get("imageFileList");
-		List<ImageVO> modAddImageFileList = (List<ImageVO>)articleMap.get("modAddImageFileList");
-		
-		@SuppressWarnings("unchecked")
-		List<String> oldFileNamesList = (List<String>) articleMap.get("oldFileNames");
-	    List<String> newFileNamesList = (List<String>) articleMap.get("newFileNames");
-	    
-	    
-
-		if(imageFileList != null && imageFileList.size() != 0) {
-			int added_img_counts = newFileNamesList.size();
-			int pre_img_counts = oldFileNamesList.size();
-
-			if(pre_img_counts < added_img_counts) {  
-				articleRepository.updateImageFile(articleMap);     //기존 이미지도 수정하고 새 이미지도 추가한 경우  
-				for(ImageVO imageVO : modAddImageFileList) {
-					int imageFileNO = articleRepository.selectNewImageFileNO();
-					imageVO.setImageFileNO(imageFileNO);
-					articleRepository.insertModNewImage(imageVO);
-				}
-			}else {
-//				articleRepository.updateImageFile(imageFileList);  //기존의 이미지를 수정만 한 경우
-				articleRepository.updateImageFile(articleMap);  //기존의 이미지를 수정만 한 경우
-			}
-		}else if(modAddImageFileList != null && modAddImageFileList.size() != 0) {  //새 이미지를 추가한 경우
-			
-			for(ImageVO imageVO : modAddImageFileList) {
-				int imageFileNO = articleRepository.selectNewImageFileNO();
-				imageVO.setImageFileNO(imageFileNO);
-				articleRepository.insertModNewImage(imageVO);
-			}
-//			articleMap.put("modAddImageFileList", modAddImageFileList);
-			
-		}
 	}
 	
 	@Override
@@ -144,10 +98,4 @@ public class ArticleServiceImpl  implements ArticleService{
 	}
 
 
-	@Override
-	public void removeModImage(ImageVO imageVO) throws Exception {
-		articleRepository.deleteModImage(imageVO);
-	}
-	
-	
 }
