@@ -22,7 +22,7 @@
                         articleNO,
                         parentNO,
                        CASE 
-			           WHEN LENGTH(title) > 20 THEN SUBSTR(title, 1, 25) || '...'
+			           WHEN LENGTH(title) > 25 THEN SUBSTR(title, 1, 25) || '...'
 			           ELSE title
 			      	   END AS title,
                         memId,
