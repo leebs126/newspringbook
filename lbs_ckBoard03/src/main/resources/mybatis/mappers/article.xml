@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springboot.ckb.article.repository.ArticleRepository">
+	<resultMap id="articlesResult" type="article">
+		<result property="level" column="lvl" />
+		<result property="articleNO" column="articleNO" />
+		<result property="parentNO" column="parentNO" />
+		<result property="title" column="title" />
+		<result property="content" column="content" jdbcType="CLOB"/>
+		<result property="writeDate" column="writeDate" />
+		<result property="viewCounts" column="viewCounts" />
+	</resultMap>
+
+	<select id="selectAllArticlesList" parameterType="java.util.Map" resultMap="articlesResult">
+	<![CDATA[
+	SELECT * FROM (
+				SELECT groupNO,
+                        LVL,
+                        articleNO,
+                        parentNO,
+                       CASE 
+			           WHEN LENGTH(title) > 25 THEN SUBSTR(title, 1, 25) || '...'
+			           ELSE title
+			      	   END AS title,
+                       writerName,
+                        writeDate
+                            FROM (
+                                SELECT 
+                                    groupNO, 
+                                    LEVEL as LVL,
+                                    articleNO,
+                                    parentNO,
+                                    title,
+                                    writerName,
+                                    writeDate
+                                    FROM (
+			                                SELECT * FROM t_article2
+											WHERE groupNO IN (
+											 	                     SELECT groupNO
+											 	                     FROM (
+																	            SELECT  recNum, 
+																			              groupNO
+																	            FROM (   
+																	                    SELECT rowNum  AS recNum, groupNO
+																	                    FROM (
+																		                        SELECT distinct groupNO FROM t_article2
+																		                        ORDER BY groupNO DESC
+																	                          )
+																            	 )
+																	             WHERE recNum BETWEEN(#{section}-1)*100+(#{pageNum}-1)*10+1 AND (#{section}-1)*100+#{pageNum}*10           
+																	       )     	 
+																	)
+                                                               
+                                    )
+                                   START WITH  parentNO=0
+                                   CONNECT BY PRIOR articleNO = parentNO
+                                   ORDER SIBLINGS BY articleNO DESC)
+                               )
+                               
+	]]>
+	</select>
+
+	<select id="selectNewGroupNO" resultType="int"> 
+	   <![CDATA[  
+			SELECT NVL(MAX(groupNO), 0)+1 AS maxGroupNO FROM t_article2
+		 ]]>
+	</select>
+
+	<select id="selectTotalArticles" resultType="int">
+		<![CDATA[  
+			SELECT COUNT(DISTINCT groupNO) FROM t_article2
+		 ]]>
+	</select>
+
+	<!--다중 이미지 새글 추가 SQL문 -->
+	<insert id="insertNewArticle" parameterType="java.util.Map">
+	    <![CDATA[
+	      INSERT INTO t_article2 (
+		        groupNO,
+		        articleNO,
+		        parentNO,
+				writerName,
+		        writerEmail, 
+		        title,
+		        content
+		    ) VALUES (
+		        #{groupNO},
+		        #{articleNO},
+		        #{parentNO},
+		        #{writerName},
+		        #{writerEmail}, 
+		        #{title},
+		        #{content}
+		    )
+	    ]]>
+	</insert>
+	
+		<!--다중 이미지 답글 추가 SQL문 -->
+	<insert id="insertReplyArticle" parameterType="java.util.Map">
+	    <![CDATA[
+	      INSERT INTO t_article2(groupNO, 
+	                             articleNO, 
+	                             parentNO, 
+	                             writerName, 
+	                             title, 
+	                             content
+	                             )
+	      VALUES (#{groupNO},
+	               #{articleNO},
+	      		   #{parentNO}, 
+	      		   #{writerName}, 
+	      		   #{title}, 
+	      		   #{content}
+	      		   )
+	    ]]>
+	</insert>
+	
+
+
+
+	<select id="selectNewArticleNO" resultType="int">
+		<![CDATA[
+			SELECT  NVL(MAX(articleNO), 0) + 1 FROM t_article2		
+		]]>
+	</select>
+
+	<select id="selectArticleByNO" resultType="article" parameterType="int">
+	    <![CDATA[
+	      SELECT 
+	        articleNO,
+	        groupNO,
+	        parentNO,
+	        writerEmail,
+	        writerName,
+	        title,
+	        content,
+	        writeDate
+	     FROM t_article2
+	     WHERE articleNO = #{articleNO}		
+	    ]]>
+	</select>
+
+	<!-- 다중 파일 수정하기 -->
+	<update id="updateArticle" parameterType="java.util.Map">
+		<![CDATA[
+			UPDATE t_article2
+			SET 
+			   title=#{title},
+			   content=#{content}
+			WHERE 
+			articleNO=#{articleNO}
+		]]>
+	</update>
+
+
+	<delete id="deleteArticle" parameterType="int">
+	    <![CDATA[
+	      DELETE FROM t_article2
+	      WHERE articleNO IN (
+	         SELECT articleNO FROM  t_article2
+	         START WITH articleNO = #{articleNO}
+	         CONNECT BY PRIOR  articleNO = parentNO )
+	    ]]>
+	</delete>
+
+</mapper>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <meta charset="UTF-8">
+  <style>.no-underline { text-decoration:none; }</style>
+</head>
+<body>
+<div  id="side" th:fragment="side">
+  <h1>사이드 메뉴</h1>
+  <h1>
+	<!-- 🔹 관리자 로그인 시: 회원관리만 표시 -->
+	<div sec:authorize="hasRole('ADMIN')">
+	    <a th:href="@{/member/listMembers}" class="no-underline">회원관리</a><br>
+	</div>
+
+	<!-- 🔹 일반 사용자 로그인 시: 내정보 관리 표시 -->
+	<div sec:authorize="hasRole('USER')">
+	    <a th:href="@{/member/myInfo}" class="no-underline">내정보관리</a><br>
+	</div>
+
+	<!-- 🔹 공통 메뉴 -->
+	<a th:href="@{/article/listArticles.do}" class="no-underline">게시판관리</a><br>
+	<a href="#" class="no-underline">상품관리</a><br>
+
+  </h1>
+</div>
+</body>
+</html>

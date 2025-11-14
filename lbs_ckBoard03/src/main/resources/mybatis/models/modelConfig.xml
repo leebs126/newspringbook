@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration 	PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+  <typeAliases>
+	<typeAlias type="com.springboot.ckb.member.domain.Member"  alias="member" />
+	<typeAlias type="com.springboot.ckb.article.domain.Article"  alias="article" />
+	<typeAlias type="com.springboot.ckb.article.dommain.Image"  alias="image" />
+	<typeAlias type="com.springboot.ckb.comment.domain.Comment"  alias="comment" />
+	<typeAlias type="com.springboot.ckb.common.security.domain.OauthMember"  alias="oauthUser" />
+	<typeAlias type="com.springboot.ckb.common.security.domain.RefreshToken"  alias="refreshToken" />
+  </typeAliases>
+</configuration>
+
+
+
