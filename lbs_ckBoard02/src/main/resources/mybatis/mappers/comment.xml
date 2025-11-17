@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springboot.ckb.comment.repository.CommentRepository">
+	<resultMap id="commentsResult" type="comment">
+		<result property="commentNO" column="commentNO" />
+		<result property="contents" column="contents" />
+		<result property="replyId" column="replyId" />
+		<result property="creDate" column="creDate" />
+		<result property="articleNO" column="articleNO" />
+		<result property="pCommentNO" column="pCommentNO" />
+		<result property="level" column="level" />
+	</resultMap>
+
+	<!-- 댓글 조회 -->
+<!-- 	
+<select id="selectAllCommentsList" parameterType="int"
+	resultMap="commentsResult">
+    <![CDATA[
+      SELECT commentNO,
+             comments, 
+             articleNO, 
+             replyID, 
+             creDate 
+      FROM t_comments1
+      WHERE
+	    articleNO = #{articleNO}
+	  ORDER BY creDate desc
+    ]]>
+</select>
+ -->
+ <!-- 계층형 쿼리문으로 댓글 조회 -->
+<!--	 <select id="selectAllCommentsList" parameterType="int" resultMap="commentsResult">
+		 <![CDATA[
+			 SELECT LEVEL,
+			    commentNO,
+			    pCommentNO,
+			    cGroupNO,
+			    LPAD(' ',4*(LEVEL-1)) || contents contents,
+			    creDate,
+			    replyId,
+			    articleNO
+			FROM t_comments1
+			WHERE articleNO = #{articleNO}
+			START WITH pCommentNO = 0
+			CONNECT BY PRIOR commentNO=pCommentNO
+			ORDER SIBLINGS BY commentNO DESC
+		 ]]>
+	</select>
+	-->
+
+<!-- 댓글 그룹번호를 이용해서 댓글 조회하기 -->
+<select id="selectAllCommentsList" parameterType="java.util.Map" resultMap="commentsResult">
+<![CDATA[
+SELECT 
+    cgroupNO, 
+    commentNO,
+    level,
+    articleNO,
+    pCommentNO,
+    contents,
+    replyId,
+    creDate
+FROM t_comments2
+    WHERE cgroupNO IN (
+         SELECT cgroupNO
+         FROM (
+                    SELECT  recNum, 
+                              cgroupNO
+                    FROM (   
+                            SELECT rowNum  AS recNum, cgroupNO
+                            FROM (
+                                    SELECT distinct cgroupNO FROM t_comments2
+                                    WHERE articleNO = #{articleNO}
+                                             AND pCommentNO = 0
+                                    
+                                    ORDER BY cgroupNO DESC
+                                  )
+                     )
+                     WHERE recNum BETWEEN(#{section}-1)*100+(#{pageNum}-1)*10+1 AND (#{section}-1)*100+ #{pageNum} * 10           
+               )     	 
+      )
+   START WITH  pCommentNO=0
+   CONNECT BY PRIOR commentNO = pCommentNO
+   ORDER SIBLINGS BY commentNO DESC  
+]]>
+</select>
+
+<!--<select id="selectAllCommentsList" parameterType="java.util.Map" resultMap="commentsResult">
+   <![CDATA[
+	SELECT * FROM (
+				select cGroupNO,
+                       LVL as cLevel,
+                         commentNO,
+                         pCommentNO,
+                         contents,
+                         creDate,
+                         replyID,
+                         articleNO 
+                            from (
+                                select 
+                                    cGroupNO, 
+                                    LEVEL as LVL,
+                                     commentNO,
+                                   pCommentNO,
+                                   contents,
+                                   creDate,
+                                   replyID,
+                                   articleNO                                    
+                                    from (
+			                                select * from t_comments1
+											where cGroupNO in(
+											 	                     select cGroupNO
+											 	                     from (
+																	            select  recNum, 
+																			              CGroupNO
+																				            from(   
+																				                    select rowNum  as recNum, cGroupNO
+																				                    from (
+																					                        select distinct cGroupNO from t_comments1
+                                                                                                            WHERE articleNO = #{articleNO}
+                                                                                                            AND pCommentNO = 0
+																					                        order by cGroupNO desc
+																				                          )
+																			            	 )
+																	            	 where recNum between (#{pageNum}-1)*10+1 and #{pageNum}*10
+																	       )     	 
+																	)
+                                                               
+                                    )
+                                   
+                                   START WITH  pCommentNO=0
+                                     CONNECT BY PRIOR commentNO=pCommentNO
+                                     ORDER SIBLINGS BY commentNO DESC)
+                               )
+ ]]>
+</select>-->
+
+	
+<!-- 
+	<insert id="insertNewComment" parameterType="commentVO">
+	    <![CDATA[
+	      INSERT INTO t_comments1(commentNO, 
+	                               comments, 
+	                               replyID, 
+	                               articleNO)
+	      VALUES(#{commentNO},
+	              #{comments},
+	      		  #{replyID}, 
+	      		  #{articleNO})
+	    ]]>
+	</insert>
+ -->
+ 
+	<insert id="insertNewComment" parameterType="comment">
+	    <![CDATA[
+	      INSERT INTO t_comments2(commentNO,
+	                               cGroupNO, 
+	                               contents, 
+	                               replyId, 
+	                               articleNO,
+	                               pCommentNO)
+	      VALUES(#{commentNO},
+	             #{cGroupNO},
+	              #{contents},
+	      		  #{replyId}, 
+	      		  #{articleNO},
+	      		  #{pCommentNO})
+	    ]]>
+	</insert>
+ 
+ 	
+	<select id="selectNewCommentNO" resultType="int">
+		<![CDATA[
+			SELECT  NVL(MAX(commentNO), 0) + 1 FROM t_comments2		
+		]]>
+	</select>
+	
+	<select id="selectCommentById" parameterType="int" resultType="comment">
+		<![CDATA[
+			SELECT  commentNO,
+					pCommentNO,
+					cGroupNO,
+			        contents,
+			        replyId,
+			        articleNO,
+			        creDate
+			FROM  t_comments2
+			WHERE
+			  commentNO = #{commentNO}
+		]]>
+	</select>
+	
+	<update id="updateComment" parameterType="comment">
+	    <![CDATA[
+		      UPDATE t_comments2 
+		      	SET contents = #{contents}
+		      WHERE
+		     	commentNO = #{commentNO}
+	    ]]>
+	</update>
+	
+	<delete id="deleteComment" parameterType="comment">
+	    <![CDATA[
+		  DELETE FROM t_comments2
+      	  WHERE commentNO in (
+	         SELECT commentNO FROM  t_comments2
+	         START WITH commentNO = #{commentNO}
+	         CONNECT BY PRIOR  commentNO = pCommentNO )
+    ]]>
+	</delete>
+	
+	<select id="selectNewCGroupNO" resultType="int">
+		<![CDATA[
+			SELECT  NVL(MAX(cGroupNO), 0) + 1 FROM t_comments2		
+		]]>
+	</select>	
+	
+</mapper>
+

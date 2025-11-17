@@ -1,0 +1,89 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.bookshop01'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	/* ===============================
+	   📦 Spring Boot 기본 스타터
+	=============================== */
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	/* ===============================
+	   💾 DB / MyBatis / JDBC
+	=============================== */
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+	/* ===============================
+	   🔐 Security / OAuth2 / JWT
+	=============================== */
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	/* ===============================
+	   🧩 기타 라이브러리
+	=============================== */
+	// 파일 업로드
+	implementation 'commons-fileupload:commons-fileupload:1.4'
+	// 썸네일 처리
+	implementation 'net.coobird:thumbnailator:0.4.20'
+	// JSON 처리 (json-lib)
+	implementation 'net.sf.json-lib:json-lib:2.4:jdk15'
+	implementation 'commons-beanutils:commons-beanutils:1.9.4'
+	implementation 'commons-collections:commons-collections:3.2.2'
+	implementation 'commons-lang:commons-lang:2.6'
+	implementation 'commons-logging:commons-logging:1.2'
+	implementation 'net.sf.ezmorph:ezmorph:1.0.6'
+
+	/* ===============================
+	   🧱 Lombok
+	=============================== */
+	implementation 'org.projectlombok:lombok:1.18.26'
+	annotationProcessor 'org.projectlombok:lombok:1.18.26'
+	testImplementation 'org.projectlombok:lombok:1.18.26'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+	/* ===============================
+	   ⚙️ Servlet API (필요시)
+	=============================== */
+	compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+	/* ===============================
+	   🧪 Test 관련
+	=============================== */
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	/* ===============================
+	   🧩 개발 편의 기능
+	=============================== */
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

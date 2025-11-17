@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  th:replace="layout :: layout(~{::title}, ~{::body})">
+
+  <head>
+    <meta charset="UTF-8">
+    <title th:fragment="title">CK에디터 글쓰기창</title>
+
+  </head>
+  <div th:fragment="body">
+	<style>
+		.ck .ck-notification_area,
+		.ck .ck-notification__message {
+		    display: none !important;
+		}
+
+		
+	</style>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script th:src="@{/ckeditor/ckeditor.js}"></script>
+	<!--<script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>-->
+
+	<script type="text/javascript">
+	  function backToList(obj) {
+	    obj.action ="/article/listArticles.do";
+	    obj.submit();
+	  }
+	  
+	</script>
+	
+    <h1 style="text-align:center">글쓰기</h1>
+    <form name="articleForm" method="post"
+          th:action="@{/article/addNewArticle.do}"
+          enctype="multipart/form-data">
+      <table border="0" align="center">
+        <tr>
+          <td align="right">작성자</td>
+          <td colspan="2" align="center" th:text="${session.loginUser.nickname}">작성자명</td>
+        </tr>
+        <tr>
+          <td align="right">글제목: </td>
+          <td colspan="2">
+            <input type="text" size="67" maxlength="500" name="title" placeholder="글제목"/>
+          </td>
+        </tr>
+		<tr>
+			<td align="right" valign="top"><br>글내용: </td>
+			<td colspan=2>
+			<textarea name="content" rows="20" cols="100" maxlength="4000" placeholder="이곳에 글을 쓰세요."  id="ckeditor"></textarea>
+				<script>
+					CKEDITOR.replace('ckeditor', { //해당 이름으로 된 textarea에 에디터를 적용
+						width : '100%',
+						height : '600px',
+						removePlugins: 'notification',
+						//filebrowserUploadUrl : '/article/imageUpload.do'
+						filebrowserUploadUrl : '/article/imageUpload.do?upload=1',
+						on: {
+						        instanceReady: function (evt) {
+						            evt.editor.on('fileUploadResponse', function (event) {
+						                // 서버에서 반환된 이미지 URL 추출
+						               // var uploadUrl = event.data.fileLoader.uploadUrl;
+						                var fileName = event.data.fileLoader.fileName;  //업로드한 파일명 얻기
+
+																              //  alert(fileName);
+						                xhr = event.data.fileLoader.xhr;
+						                var response = JSON.parse( xhr.responseText);  //서버에서 전송한 json 데이터를 얻습니다.
+						                var uuidAddedFileName = response.uuidAddedFileName;  //uuid를 추가한 파일명을 얻습니다.
+						             
+										// CKEditor에 업로드한 이미지 img 태그에 다운로드받아서 표시
+						                var imageUrl = 'http://localhost:8090/ckImageDownload.do?imageFileName='+ uuidAddedFileName;
+						                var imgElement = CKEDITOR.dom.element.createFromHtml('<img src="' + imageUrl + '" width="640" />');
+						                event.editor.insertElement(imgElement);
+						            });
+						        }
+						   }
+						   
+					});
+					
+			     </script> 
+			</td>
+	     </tr>
+		 <tr>
+          <td align="right"></td>
+          <td colspan="2">
+            <input type="submit" value="글쓰기"/>
+            <input type="button" value="목록보기" onclick="backToList(this.form)"/>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </body>
+  </html>

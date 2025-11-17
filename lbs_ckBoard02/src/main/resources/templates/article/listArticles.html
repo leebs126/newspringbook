@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  th:replace="layout :: layout(~{::title}, ~{::body})">
+
+<head>
+    <title th:fragment="title">글목록</title>
+</head>
+
+<body>
+	<div th:fragment="body">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script th:inline="javascript">
+		/* 로그인 여부를 JS Boolean으로 변환 */
+		 const isLogOn = /*[[${session.isLogOn}]]*/ false; 
+	</script>
+	<style>
+		  .cell-item {
+		    padding: 4px 0;
+		    text-align: center;   /* 가운데 정렬 */
+		    border-bottom: 1px solid #ccc;
+		  }
+
+		  table {
+		    border-collapse: collapse;
+		  }
+
+		  th, td {
+		    padding: 8px;
+		  }
+		   .no-uline {text-decoration:none;}
+		  .sel-page{text-decoration:none;color:red;}
+		  .cls1 {text-decoration:none;}
+		  .cls2{text-align:center; font-size:30px;}
+		</style>
+		<script th:src="@{/js/article.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
+	    <h2>게시판 글목록</h2>
+		
+		<table border="1" width="100%">
+		  <thead>
+		    <tr style="background:#33ff00; height: 30px;">
+		      <th>글번호</th>
+		      <th>제목</th>
+		      <th>작성자</th>
+		      <th>작성일</th>
+		      <th>조회수</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <!-- groupNO 단위로 순회 -->
+		    <tr th:each="entry, istat : ${articlesMap}" 
+		        th:with="counter=${((pageNum != null ? pageNum : 1) - 1) * 10 + istat.index + 1}">
+		      
+		      <!-- 글번호 -->
+		      <td>
+		        <div th:each="article, iterStat : ${entry.value}" >
+					<span th:if="${iterStat.first}" th:text="${counter}"></span>
+			    </div>
+		      </td>
+
+		      <!-- 제목 -->
+		      <td style="padding-left:30px; text-align:left; ">
+		        <div th:each="article, iterStat : ${entry.value}">
+				  <a class="no-uline" th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+				     th:style="'margin-left:' + (${article.level} * 20) + 'px;'">
+				     
+					 <!-- level 이 2 이상일 때만 [답글] 표시 -->
+					 <span th:if="${article.level > 1}">[답글]</span>
+					 <span th:text="${article.title}">제목</span>
+				  </a>
+				  
+				  
+		        </div>
+		      </td>
+
+		      <!-- 작성자 -->
+		      <td width="200px">
+		        <div th:each="article : ${entry.value}" th:text="${article.writerName}">
+		        </div>
+		      </td>
+
+		      <!-- 작성일 -->
+		      <td>
+		        <div th:each="article : ${entry.value}" 
+		             th:text="${#dates.format(article.writeDate, 'yyyy-MM-dd')}">
+		        </div>
+		      </td>
+
+		      <!-- 조회수 -->
+		      <td>
+		        <div th:each="article : ${entry.value}" th:text="${article.viewCnt}">
+		        </div>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+
+		
+		<div style="margin-top:20px; text-align:center;">
+		        <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
+		            <a th:href="@{/article/listArticles.do(pageNum=${pageNum})}"
+		               th:text="${pageNum}"
+		               th:classappend="${pageNum == currentPage} ? 'active' : ''"
+		               style="margin:0 5px;"></a>
+		        </span>
+		  </div>
+	</div>
+
+	<!--<a class="cls1" id="create-btn-guest"
+	   th:href="|javascript:fn_articleForm('${session.isLogOn}', 'article/articleForm.do', '/member/loginForm')|">
+	  <p class="cls2">새글쓰기</p>
+	</a>
+-->
+ <a class="cls1" id="create-btn-guest" style="cursor: pointer;">
+  <p class="cls2">새글쓰기</p>
+</a>
+
+	
+</body>
+</html>
+
