@@ -36,12 +36,12 @@
 </script>		
 <div class="container mt-5">
     <h2>내 정보</h2>
-	<form th:action="@{/member/modify}" method="post" th:object="${member}">
+	<form th:action="@{/admin/member/modify}" method="post" th:object="${member}">
 	    <div sec:csrf /> <!-- 🔹 여기서 CSRF 토큰 자동 삽입 -->
 
 	    <div class="mb-3">
 	        <label for="memId" class="form-label">아이디</label>
-	        <input type="text" id="memId" th:field="*{memId}" class="form-control non-editable" readonly>
+	        <input type="text" id="memId" th:field="*{memId}" class="form-control" readonly >
 	    </div>
 		<div class="mb-3">
 		    <label for="pwd" class="form-label">비밀번호</label>
@@ -71,7 +71,6 @@
 	        <input type="text" id="updatedAt" th:field="*{updatedAt}" class="form-control non-editable" readonly>
 		</div>
 
-		
 	    <button type="button" id="editBtn" class="btn btn-primary" onclick="enableEdit()">수정하기</button>
 		<button type="button" id="deleteBtn" class="btn btn-danger" onclick="removeAccount()">탈퇴하기</button>
 	    <button type="submit" id="saveBtn" class="btn btn-success" style="display:none;">수정 최종 반영</button>

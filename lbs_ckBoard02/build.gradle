@@ -57,6 +57,9 @@ dependencies {
 	implementation 'commons-lang:commons-lang:2.6'
 	implementation 'commons-logging:commons-logging:1.2'
 	implementation 'net.sf.ezmorph:ezmorph:1.0.6'
+	
+	//이메일 기능
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	/* ===============================
 	   🧱 Lombok

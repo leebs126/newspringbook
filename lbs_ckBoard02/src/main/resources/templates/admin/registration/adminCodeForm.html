@@ -1,4 +1,85 @@
-<form action="/admin/registration/verifyCode" method="post">
+<div>
+    <input type="email" id="email" placeholder="관리자 이메일 입력">
+    <button onclick="sendCode()">인증코드 전송</button>
+</div>
+
+<div id="codeArea" style="display:none;">
+    <input type="text" id="authCode" placeholder="인증코드 입력">
+    <button onclick="verifyCode()">인증하기</button>
+    <button onclick="resendCode()">재전송</button>
+
+    <div>
+        남은 시간: <span id="timer">03:00</span>
+    </div>
+</div>
+
+<script>
+let timerInterval;
+
+// 인증코드 요청
+function sendCode() {
+    const email = document.getElementById("email").value;
+
+    fetch('/admin/registration/sendCode', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'email=' +email
+    }).then(res => {
+        startTimer();
+        document.getElementById("codeArea").style.display = "block";
+    });
+}
+
+// 3분 타이머 시작
+function startTimer() {
+    let time = 180; 
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        let m = String(Math.floor(time / 60)).padStart(2, "0");
+        let s = String(time % 60).padStart(2, "0");
+        document.getElementById("timer").textContent = `${m}:${s}`;
+
+        if (time <= 0) {
+            clearInterval(timerInterval);
+            alert("인증 시간이 만료되었습니다. 인증코드를 다시 요청해 주세요.");
+        }
+        time--;
+    }, 1000);
+}
+
+// 인증하기
+function verifyCode() {
+    const email = document.getElementById("email").value;
+    const code = document.getElementById("authCode").value;
+
+    fetch('/admin/registration/verifyCode', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `email=${email}&code=${code}`
+    })
+        .then(res => res.json())
+        .then(result => {
+            if (result) {
+                alert("인증 성공!");
+            } else {
+                alert("인증 실패 또는 만료된 코드입니다.");
+            }
+        });
+}
+
+// 재전송
+function resendCode() {
+    sendCode();
+    document.getElementById("authCode").value = "";
+}
+</script>
+
+
+
+
+
+<!--<form action="/admin/registration/verifyCode" method="post">
     <h2>관리자 등록 확인</h2>
 
     <input type="password" name="adminCode" placeholder="관리자 등록 코드 입력" required>
@@ -7,3 +88,4 @@
 
     <p th:if="${error}" th:text="${error}" style="color:red;"></p>
 </form>
+-->

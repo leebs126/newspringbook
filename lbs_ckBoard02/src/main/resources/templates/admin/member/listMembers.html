@@ -5,18 +5,27 @@
 
  <head>
     <meta charset="UTF-8">
-    <title>회원 정보 출력창</title>
+	<title th:fragment="title">회원 정보 출력창</title>
+
  </head>
   <body>
+<div th:fragment="body">	
+	<style>
+	    th {
+	        white-space: nowrap;
+	    }
+	</style>
+	
     <table border="1" align="center" width="100%">
       <tr align="center" bgcolor="lightgreen">
 		 <th style="width:10%;">아이디</th>
 	     <th style="width:15%;">비밀번호</th>
 	     <th style="width:15%;">이름</th>
-	     <th style="width:20%;">이메일</th>
-	     <th style="width:15%;">가입일</th>
+	     <th style="width:15%;">이메일</th>
+	     <th style="width:25%;">가입일</th>
+		 <th style="width:15%;">최종수정일</th>
 	     <th style="width:12%;">수정</th>
-	     <th style="width:13%;">삭제</th>
+	     <th style="width:15%;">삭제</th>
       </tr>
 
       <!-- 회원 목록 반복 -->
@@ -25,17 +34,17 @@
         <td th:text="${member.pwd}">비밀번호</td>
         <td th:text="${member.name}">이름</td>
         <td th:text="${member.email}">이메일</td>
-        <td th:text="${#dates.format(member.joinDate, 'yyyy-MM-dd')}">가입일</td>
+        <td th:text="${#dates.format(member.createdAt, 'yyyy-MM-dd')}">가입일</td>
+		<td th:text="${#dates.format(member.updatedAt, 'yyyy-MM-dd')}">최종수정일</td>
 		<td>
 			<a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-			   th:href="@{/member/modify(memId=${member.memId})}"
-			   th:onclick="return confirm('정말 삭제하시겠습니까?');">
+			   th:href="@{/admin/member/memberInfo(memId=${member.memId})}">
 			   수정
 			</a>
-		        </td>
+		</td>
 		<td>
 			<a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-			   th:href="@{/member/remove(memId=${member.memId})}"
+			   th:href="@{/admin/member/removeAccount(memId=${member.memId})}"
 			   th:onclick="return confirm('정말 삭제하시겠습니까?');">
 			   삭제
 			</a>
@@ -44,8 +53,9 @@
     </table>
 
     <!-- 회원가입 버튼 -->
-    <a th:href="@{/member/memberForm.do}">
+    <a th:href="@{/member/memberForm}">
       <h1 style="text-align:center">회원가입</h1>
     </a>
+</div>
   </body>
  </html>

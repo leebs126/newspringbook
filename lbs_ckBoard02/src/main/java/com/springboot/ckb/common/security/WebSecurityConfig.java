@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -85,8 +84,10 @@ public class WebSecurityConfig {
                 .requestMatchers("/member/listMembers.do", "/member/removeMember.do").hasRole("ADMIN")
 //                 로그인, 회원가입, OAuth2, 정적리소스는 항상 허용
                 .requestMatchers("/member/registerMember", "/member/memberForm", "/member/loginForm").permitAll()
-                .requestMatchers("/admin/registration/memberForm", "/admin/registration/verifyCode").permitAll()
+                .requestMatchers("/admin/registration/memberForm").permitAll()
+                .requestMatchers("/admin/registration/sendCode", "/admin/registration/verifyCode").permitAll()
                 .requestMatchers("/admin/registration/adminMemberForm", "/admin/registration/createAdmin").permitAll()
+                
 //                .requestMatchers("/admin/registration/adminMemberForm",
 //                        "/admin/registration/createAdmin").hasRole("ADMIN")
                 // 나머지 요청도 허용 (게시판 메인 접근 가능)

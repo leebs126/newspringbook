@@ -15,15 +15,14 @@ import lombok.Data;
 
 @Data
 @Component("member")
-//public class Member implements UserDetails {
 public class Member{
 	private String memId;
 	private String pwd;
 	private String name;
 	private String email;
 	private String nickname;
-	private Date joinDate;
-	
+	private Date createdAt;
+	private Date updatedAt;
 	// ✅ 권한 필드 추가
     private String role;  // ROLE_USER 또는 ROLE_ADMIN
 	

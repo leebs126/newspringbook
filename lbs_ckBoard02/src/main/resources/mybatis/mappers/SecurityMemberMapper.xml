@@ -9,18 +9,19 @@
         <result property="pwd" column="pwd" />
         <result property="name" column="name" />
         <result property="email" column="email" />
-        <result property="joinDate" column="joinDate" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
          <result property="role" column="role"/>
 	</resultMap> 
 	
-	<select id="selectAllMemberList" resultMap="memResult">
+	<!--<select id="selectAllMemberList" resultMap="memResult">
       <![CDATA[
-		SELECT memId, pwd, name, email, joinDate
+		SELECT memId, pwd, name, email, created_at, updated_at
 		FROM t_member3
-		ORDER BY joinDate DESC
+		ORDER BY created_at DESC
       ]]>
 	</select>
-
+-->
 
 	<select id="findByEmail" parameterType="String" resultMap="memResult">
       <![CDATA[
@@ -37,13 +38,13 @@
 	]]>
   </select>
     <insert id="insertMember" parameterType="member" useGeneratedKeys="true">
+	 <![CDATA[
 	    INSERT INTO t_member3 (
 			    memId, 
 	    		PWD, 
 	    		EMAIL, 
 	    		NAME, 
 	    		NICKNAME,
-	    		JOINDATE,
 	    		ROLE
 	    		)
 	    VALUES (#{memId}, 
@@ -51,17 +52,19 @@
 	    		#{email}, 
 	    		#{name},
 	    		#{nickname}, 
-	    		SYSDATE,
 	    		#{role}
 	    		)
+	]]>
   </insert>
     <update id="updateMember" parameterType="member">
+	<![CDATA[
 	    UPDATE t_member3 
 	    SET
 	      EMAIL = #{email},
 	      PWD = #{pwd},
 	      NAME = #{name}
 	    WHERE memId = #{memId}
+    ]]>
   </update>
 
 </mapper>

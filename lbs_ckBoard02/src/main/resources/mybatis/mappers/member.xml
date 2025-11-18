@@ -9,13 +9,14 @@
         <result property="pwd" column="pwd" />
         <result property="name" column="name" />
         <result property="email" column="email" />
-        <result property="joinDate" column="joinDate" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
 	</resultMap> 
 
 	<select id="selectAllMemberList" resultMap="memResult">
       <![CDATA[
          SELECT * FROM t_member3	
-         ORDER BY joinDate DESC	 	
+         ORDER BY created_at DESC	 	
       ]]>
 	</select>
     
@@ -35,17 +36,38 @@
 	</insert>
 	
    
-   <update id="updateMember"  parameterType="member">
-     <![CDATA[
-	     UPDATE t_member3
-	     SET pwd=#{pwd}, 
-	         name=#{name},
-	         nickname=#{nickname}, 
-	         email=#{email}
-	     WHERE
-	     memId=#{memId}
-      ]]>      
-   </update> 
+	<update id="updateMember" parameterType="member">
+    UPDATE t_member3
+    <set>
+
+        <!-- 비밀번호가 값이 있을 때만 업데이트 -->
+        <if test="pwd != null and pwd != ''">
+            pwd = #{pwd},
+        </if>
+
+        <!-- 이름이 값이 있을 때만 업데이트 -->
+        <if test="name != null and name != ''">
+            name = #{name},
+        </if>
+
+        <!-- 닉네임이 값이 있을 때만 업데이트 -->
+        <if test="nickname != null and nickname != ''">
+            nickname = #{nickname},
+        </if>
+
+        <!-- 이메일이 값이 있을 때만 업데이트 -->
+        <if test="email != null and email != ''">
+            email = #{email},
+        </if>
+
+        <!-- updated_at은 항상 갱신 -->
+        updated_at = SYSDATE
+
+    </set>
+    WHERE memId = #{memId}
+  </update>
+
+
      
    <delete id="deleteAccount"  parameterType="String">
 	<![CDATA[
@@ -62,7 +84,8 @@
 		       email,
 		       nickname,
 		       role,
-		       joindate
+		       created_at,
+		       updated_at
 		FROM t_member3	
 		WHERE memId=#{memId} 
 	]]>
