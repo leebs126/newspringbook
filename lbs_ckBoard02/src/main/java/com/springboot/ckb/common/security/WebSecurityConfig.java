@@ -84,7 +84,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/member/listMembers.do", "/member/removeMember.do").hasRole("ADMIN")
 //                 로그인, 회원가입, OAuth2, 정적리소스는 항상 허용
                 .requestMatchers("/member/registerMember", "/member/memberForm", "/member/loginForm").permitAll()
-                .requestMatchers("/admin/registration/memberForm").permitAll()
+                .requestMatchers("/admin/registration/adminCodeForm").permitAll()
                 .requestMatchers("/admin/registration/sendCode", "/admin/registration/verifyCode").permitAll()
                 .requestMatchers("/admin/registration/adminMemberForm", "/admin/registration/createAdmin").permitAll()
                 
@@ -158,16 +158,15 @@ public class WebSecurityConfig {
          	            request.getRequestDispatcher("/error/403").forward(request, response);
             	        })
             	    // 2️⃣ 권한 부족 시 403 처리
-            	    .accessDeniedHandler(new AccessDeniedHandler() {
-            	        @Override
-            	        public void handle(HttpServletRequest request,
-            	                           HttpServletResponse response,
-            	                           AccessDeniedException accessDeniedException) throws IOException, ServletException {
-            	            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            	            request.setAttribute("errorMessage", "접근 권한이 없습니다.");
-            	            request.getRequestDispatcher("/error/403").forward(request, response);
-            	        }
-            	    })
+        		    .accessDeniedHandler((request, response, accessDeniedException) -> {
+        			    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        			    response.setContentType("text/html; charset=UTF-8");
+
+        			    request.setAttribute("errorMessage", "접근 권한이 없습니다.");
+
+        			    // 🔥 Thymeleaf의 templates/error/403.html 로 포워딩
+        			    request.getRequestDispatcher("/error/403").forward(request, response);
+        			})
             	)
             	.csrf(AbstractHttpConfigurer::disable);
 

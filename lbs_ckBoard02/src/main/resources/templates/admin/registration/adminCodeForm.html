@@ -25,6 +25,7 @@ function sendCode() {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'email=' +email
     }).then(res => {
+	//	alert(res);
         startTimer();
         document.getElementById("codeArea").style.display = "block";
     });
@@ -56,16 +57,17 @@ function verifyCode() {
     fetch('/admin/registration/verifyCode', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `email=${email}&code=${code}`
+        body: `email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`
     })
         .then(res => res.json())
-        .then(result => {
-            if (result) {
-                alert("인증 성공!");
-            } else {
-                alert("인증 실패 또는 만료된 코드입니다.");
-            }
-        });
+		.then(result => {
+		    if (result.success) {
+		        alert("인증 성공!");
+				window.location.href = "/admin/registration/adminMemberForm";  
+		    } else {
+		        alert("인증 실패 또는 만료된 코드입니다.");
+		    }
+		});
 }
 
 // 재전송

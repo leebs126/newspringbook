@@ -1,5 +1,8 @@
 package com.springboot.ckb.admin.registration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +37,7 @@ public class AdminRegisterController {
     @Autowired
     private EmailService mailService;
     // 1️⃣ 관리자 등록 코드 입력창
-    @GetMapping("/memberForm")
+    @GetMapping("/adminCodeForm")
     public String adminCodeForm() {
         return "/admin/registration/adminCodeForm";   // 코드 입력 페이지
     }
@@ -70,26 +73,36 @@ public class AdminRegisterController {
     
     // 인증코드 확인
     @PostMapping("/verifyCode")
-    public ResponseEntity<?> verifyCode(@RequestParam String email,
-                                        @RequestParam String code) {
+    public ResponseEntity<?> verifyCode(@RequestParam("email") String email,
+                                        @RequestParam("code") String code,
+                                        HttpSession session) {
         boolean result = adminCodeService.verifyCode(email, code);
 
-        if (result) return ResponseEntity.ok("인증 성공");
-        else return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                 .body("인증 실패. 다시 시도하세요.");
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", result);
+
+        if (result) {
+            // 🔥 세션에 관리자 등록 승인 여부 저장
+            session.setAttribute("adminRegistrationApproved", true);
+
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                 .body(response);
+        }
     }
 
     /// 3️⃣ 승인된 사용자만 관리자 등록폼 접근 가능
     @GetMapping("/adminMemberForm")
     public String adminMemberForm(HttpSession session, Model model) {
 
-        // 세션에서 관리자 등록 승인 여부 확인
+//        // 세션에서 관리자 등록 승인 여부 확인
         Boolean approved = (Boolean) session.getAttribute("adminRegistrationApproved");
-
+//
         if (approved == null || !approved) {
-            return "redirect:/admin/memberForm"; // 비정상 접근 차단
+            return "redirect:/admin/registration/adminCodeForm"; // 비정상 접근 차단
         }
-
+        
         // ★ 반드시 Member 객체를 모델에 추가
         model.addAttribute("member", new Member());
 
