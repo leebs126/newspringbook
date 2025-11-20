@@ -99,16 +99,23 @@ public class ArticleControllerImpl implements ArticleController {
 	}
 
 	// 다중 이미지 보여주기
-	@GetMapping("/article/viewArticle.do")
+	@GetMapping("/article/viewArticle")
 	public ModelAndView viewArticle(@RequestParam("articleNO") int articleNO,
-			@RequestParam(value = "removeCompleted", required = false) String removeCompleted,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
+									@RequestParam(value ="commentNO", required = false) String commentNO,
+									@RequestParam(value = "removeCompleted", required = false) String removeCompleted,
+									HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewName = (String) request.getAttribute("viewName");
 		
 		Map<String, Object> viewMap = new HashMap();
 		viewMap.put("articleNO", articleNO);
 
 		Map articleMap = articleService.viewArticle(viewMap);
+		
+		if(commentNO != null && !commentNO.isEmpty()) {
+			HttpSession session = request.getSession();
+			session.setAttribute("replyTargetCommentNO", commentNO);	
+		}
+		
 		articleMap.put("removeCompleted", removeCompleted);
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName(viewName);
@@ -270,6 +277,13 @@ public class ArticleControllerImpl implements ArticleController {
 		}
 		return resEnt;
 	}
+	
+	@PostMapping("/clear/replyTarget")
+	@ResponseBody
+	public void clearReplyTarget(HttpSession session){
+	    session.removeAttribute("replyTargetCommentNO");
+	}
+	
 
 	@PostMapping("/article/modArticleJsonCK.do")
 	@ResponseBody
@@ -305,7 +319,7 @@ public class ArticleControllerImpl implements ArticleController {
 		return resEnt;
 	}
 
-	@RequestMapping(value = "/article/articleForm.do", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/article/articleForm", method = { RequestMethod.GET, RequestMethod.POST })
 	private ModelAndView articleForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewName = (String) request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView();

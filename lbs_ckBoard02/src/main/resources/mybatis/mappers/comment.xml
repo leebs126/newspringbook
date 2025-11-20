@@ -8,7 +8,8 @@
 		<result property="commentNO" column="commentNO" />
 		<result property="contents" column="contents" />
 		<result property="replyId" column="replyId" />
-		<result property="creDate" column="creDate" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
 		<result property="articleNO" column="articleNO" />
 		<result property="pCommentNO" column="pCommentNO" />
 		<result property="level" column="level" />
@@ -62,7 +63,8 @@ SELECT
     pCommentNO,
     contents,
     replyId,
-    creDate
+    created_at,
+    updated_at
 FROM t_comments2
     WHERE cgroupNO IN (
          SELECT cgroupNO
@@ -186,7 +188,8 @@ FROM t_comments2
 			        contents,
 			        replyId,
 			        articleNO,
-			        creDate
+			        created_at,
+			        updated_at
 			FROM  t_comments2
 			WHERE
 			  commentNO = #{commentNO}

@@ -31,10 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }).then((result) => {
       if (result.isConfirmed) {
         // ✅ 일반 로그인
-        window.location.href = '/member/loginForm?action=/article/articleForm.do';
+        window.location.href = '/member/loginForm?action=/article/articleForm';
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         // ✅ Google 로그인
-        window.location.href = '/oauth2/authorize/google?redirectURI=/article/articleForm.do';
+        window.location.href = '/oauth2/authorize/google?redirectURI=/article/articleForm';
       } else if (result.isDenied) {
         // ✅ 취소 (아무 동작 안 함)
         Swal.fire({

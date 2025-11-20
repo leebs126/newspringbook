@@ -21,9 +21,6 @@ public class Comment {
     private String contents;
     private String replyId;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-    private Date creDate;
-
     @JsonProperty("articleNO")
     private int articleNO;
 
@@ -32,7 +29,13 @@ public class Comment {
     @JsonProperty("pCommentNO")
     private int pCommentNO;
 
-	
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private Date createdAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private Date updatedAt;
+
+    
 	
 
 }

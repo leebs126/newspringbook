@@ -115,7 +115,16 @@ public class WebSecurityConfig {
             	    String redirect = (String) session.getAttribute("action");
             	    session.removeAttribute("action");
 
-            	    response.sendRedirect(redirect != null ? redirect : "/main");
+            	    if(redirect.equals("/article/viewArticle")) {
+            	    	String articleNO = (String)session.getAttribute("articleNO");
+            	    	String commentNO = (String)session.getAttribute("commentNO");
+            	    	redirect+="?articleNO=" + articleNO + "&commentNO=" + commentNO;		
+            	    	response.sendRedirect(redirect);	
+            	    }else if(redirect.equals("/article/articleForm")){
+            	    	response.sendRedirect(redirect);
+            	    }else {
+            	    	response.sendRedirect(redirect != null ? redirect : "/main");	
+            	    }
                 })
                 .failureUrl("/member/loginForm?loginFailed=true")
                 .permitAll()

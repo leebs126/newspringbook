@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.springboot.ckb.comment.service.CommentService;
 import com.springboot.ckb.comment.domain.Comment;
 import com.springboot.ckb.member.domain.Member;
+import com.springboot.ckb.member.dto.SessionUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,14 +29,19 @@ public class CommentControllerImpl implements CommentController {
 	private CommentService commentService;
 	
 	//새 댓글 추가 기능
-	@PostMapping("/addNewComment.do")
+	@PostMapping("/addNewComment")
 	@Override
 	public ResponseEntity<String> addNewComment(@RequestBody Comment comment,
 								HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		HttpSession session = request.getSession();
-		Member member = (Member)session.getAttribute("member");
-		String replyId = member.getMemId();  //로그인  사용자 아이디를 얻음
+		SessionUser loginUser = (SessionUser) session.getAttribute("loginUser");
+		String memId = null;
+		if (loginUser == null) {
+		    throw new RuntimeException("로그인이 필요합니다.");
+		}
+		
+		String replyId = loginUser.getMemId();  //로그인  사용자 아이디를 얻음
 		comment.setReplyId(replyId);
 		Comment newComment = commentService.addNewComment(comment);
 
@@ -64,7 +70,7 @@ public class CommentControllerImpl implements CommentController {
 		return new ResponseEntity(commentjson, responseHeaders, HttpStatus.CREATED);
 	}
 
-	@PostMapping("/removeComment.do")
+	@PostMapping("/removeComment")
 	@Override
 	public ResponseEntity<String> removeComment(@RequestBody Comment comment, 
 			                                    HttpServletRequest request, 
@@ -76,15 +82,20 @@ public class CommentControllerImpl implements CommentController {
 		
 	}
 
-	@PostMapping("/addReplyComment.do")
+	@PostMapping("/addReplyComment")
 	@Override
 	public ResponseEntity<String> addReplyComment(@RequestBody Comment comment, 
 			                                      HttpServletRequest request,
                                                   HttpServletResponse response) throws Exception {
 		
 		HttpSession session = request.getSession();
-		Member member = (Member)session.getAttribute("member");
-		String replyId = member.getMemId();  //로그인  사용자 아이디를 얻음
+		SessionUser loginUser = (SessionUser) session.getAttribute("loginUser");
+		String memId = null;
+		if (loginUser == null) {
+		    throw new RuntimeException("로그인이 필요합니다.");
+		}
+		
+		String replyId = loginUser.getMemId();  //로그인  사용자 아이디를 얻음
 		comment.setReplyId(replyId);
 		Comment newComment = commentService.addReplyComment(comment);
 

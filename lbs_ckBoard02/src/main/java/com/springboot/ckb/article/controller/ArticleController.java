@@ -26,6 +26,7 @@ public interface ArticleController {
 	public ResponseEntity<Map<String, Object>> addReplyArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response) throws Exception; 
 	
 	public ModelAndView viewArticle(@RequestParam("articleNO") int articleNO,
+									@RequestParam(value="commentNO", required=false) String commentNO,
 									@RequestParam(value="removeCompleted", required=false) String removeCompleted,
 									HttpServletRequest request, 
 									HttpServletResponse response) throws Exception;

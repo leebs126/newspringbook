@@ -6,36 +6,95 @@
      <meta charset="UTF-8">
      <title th:fragment="title">글상세</title>
 
-  </head>
-  <body>
-	<div th:fragment="body">
-		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script th:src="@{/ckeditor/ckeditor.js}"></script>
-		<script th:src="@{/js/article.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
-		<script th:src="@{/js/comment.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
-		<style>
-		  #tr_btn_modify {
-		    display:none;
-		  }
-		  .tr_modEnable {
-		    visibility:hidden;
-		  }
-		  
-		  /* 전체 텍스트는 왼쪽 정렬 */
-		  .article-content {
-		    text-align: left;
-		  }
+</head>
+<body>
+<div th:fragment="body">
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script th:src="@{/ckeditor/ckeditor.js}"></script>
+	<script th:src="@{/js/article.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
+	<script th:src="@{/js/comment.js(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+//		const isLogOn = /*[[${session.isLogOn} ?: false]]*/ false;
+//		window.onload = function() {
+//		    var replyTargetCommentNO = /*[[${session.replyTargetCommentNO}]]*/ null;
 
-		  /* 본문 안의 이미지는 중앙 정렬 */
-		  .article-content img {
-		    display: block;
-		    margin: 0 auto;
-		  }
+//		    if (replyTargetCommentNO) {
+//		        showReplyTextareaAfterLogin(replyTargetCommentNO);
+//		        fetch('/clear/replyTarget', { method: 'POST' });
+//		    }
+//		};
+		
+		
+		/*
+	    window.addEventListener("DOMContentLoaded", function() {
 
-		</style>
-
+	        /* 세션에 저장된 대댓글 대상 commentNO 읽기 */
+	        // var replyTargetCommentNO = /*[[${session.replyTargetCommentNO}]]*/ null;
+			
+			/*
+	        if(replyTargetCommentNO){
+				waitForReplyDiv(replyTargetCommentNO, function(div) {
+			         div.style.display = "block";
+			         div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			         fetch('/clear/replyTarget', { method: 'POST' });
+				 });
+				*/
+				/*
+		       setTimeout(function() {
+		           showReplyTextareaAfterLogin(replyTargetCommentNO);
+		           fetch('/clear/replyTarget', { method: 'POST' });
+		       }, 0);
+			   */
+			   /*
+	        }
+	    });
+		*/
+	    /* 로그인 후 자동으로 textarea 열어주는 함수 */
+	    function showReplyTextareaAfterLogin(replyTargetCommentNO){
+			alert("replyTargetCommentNO=" + replyTargetCommentNO);
+	        const div = document.getElementById("div_replytextarea" + replyTargetCommentNO);
+			alert(div);
+			if(div){
+	            div.style.display = "block";
+	            // 스크롤 바로 이동 (선택)
+	            div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+	        }
+	    }
+    /*]]>*/
+	function waitForReplyDiv(commentNO, callback) {
+	    const interval = setInterval(function() {
+	        const div = document.getElementById("div_replytextarea" + commentNO);
+	        if (div) {
+	            clearInterval(interval);
+	            callback(div);
+	        }
+	    }, 50);
+	}
 	
+	</script>
+	<style>
+	  #tr_btn_modify {
+	    display:none;
+	  }
+	  .tr_modEnable {
+	    visibility:hidden;
+	  }
+	  
+	  /* 전체 텍스트는 왼쪽 정렬 */
+	  .article-content {
+	    text-align: left;
+	  }
+	
+	  /* 본문 안의 이미지는 중앙 정렬 */
+	  .article-content img {
+	    display: block;
+	    margin: 0 auto;
+	  }
+	
+	</style>
 <div id="div_viewArticle" >	
     <form name="frmArticle" method="post" enctype="multipart/form-data">
     <table border="0" align="center">
@@ -165,9 +224,10 @@
       </tr>
       <tr>
         <td>
-          <button th:onclick="|fn_addNewComment('${session.isLogOn}','/member/loginForm.do','${articleMap.article.articleNO}')|">
-            댓글등록
-          </button>
+		  <button 
+		    th:onclick="|fn_addNewComment(${session.isLogOn}, '/member/loginForm', '${articleMap.article.articleNO}')|">
+		     댓글등록
+		  </button>
         </td>
       </tr>
     </table>
@@ -181,6 +241,9 @@
           </tr>
         </thead>
         <tbody>
+			<!--댓글 리스트 반복-->
+
+			
            <!--댓글 리스트 반복-->
 		   <tr th:each="entry: ${articleMap.commentsGroupMap}" th:id="'comment_tr' + ${entry.value[0].cGroupNO}">
 		     <td width="800" height="50" align="left">
@@ -190,22 +253,24 @@
 				     th:attr="data-parent=${comment.pCommentNO}"
 				     style="margin-bottom:5px;">
 
-				  <!-- 부모 댓글 본문 -->
+				   <!--부모 댓글 본문--> 
 				  <div class="comment-body">
-				    <!-- 들여쓰기 (level 만큼 padding-left) -->
+				     <!--들여쓰기 (level 만큼 padding-left)--> 
 				    <span th:each="i : ${#numbers.sequence(1, comment.level)}" style="padding-left:10px"></span>
 				    <span th:id="'span_comment_' + ${comment.commentNO}"></span>
 				    <span th:text="${comment.replyId}"></span>&nbsp;
 				    <span th:text="${comment.contents}"></span>&nbsp;
-				    <span th:text="${#dates.format(comment.creDate, 'yyyy-MM-dd HH:mm')}"></span>
+				    <span th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+					<span th:text="${#dates.format(comment.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
 
-				    <!-- 답글작성 -->
+
+				     <!--답글작성--> 
 				    <a href="javascript:void(0)"
-				       th:onclick="|showTextarea(${comment.commentNO})|"
+				       th:onclick="|showTextarea(${session.isLogOn}, ${articleMap.article.articleNO}, ${comment.commentNO})|"
 				       style="text-decoration: none;">답글작성</a>
 
-				    <!-- 로그인 회원과 댓글 작성자가 같은 경우 수정/삭제 버튼 표시 -->
-				    <th:block th:if="${session.member != null and comment.replyId == session.member.memId}">
+				     <!--로그인 회원과 댓글 작성자가 같은 경우 수정/삭제 버튼 표시--> 
+				    <th:block th:if="${session.loginUser != null and comment.replyId == session.loginUser.memId}">
 				      <a href="javascript:void(0)"
 				         th:onclick="|showModtextarea(${comment.commentNO})|"
 				         style="text-decoration: none;">수정</a>
@@ -214,7 +279,7 @@
 				         style="text-decoration: none;">삭제</a>
 				    </th:block>
 
-				    <!-- 댓글 수정 textarea -->
+				     <!--댓글 수정 textarea--> 
 				    <div th:id="'div_modtextarea' + ${comment.commentNO}" style="display:none">
 				      <textarea th:id="'modtextarea_comment' + ${comment.commentNO}"
 				                rows="4" cols="50"
@@ -225,28 +290,47 @@
 				      <button th:onclick="|hideModtextarea(${comment.commentNO})|">취소</button>
 				    </div>
 
-				    <!-- 답글 작성 textarea -->
+				     <!--답글 작성 textarea -->
 				    <div th:id="'div_replytextarea' + ${comment.commentNO}" style="display:none">
 				      <textarea th:id="'replytextarea_comment' + ${comment.commentNO}"
 				                rows="4" cols="50"
 				                placeholder="답글은 200자까지 가능합니다."></textarea>
 				      <br>
 				      <button th:onclick="|fn_addReplyComment('${session.isLogOn}', '/member/loginForm.do', ${comment.commentNO}, ${comment.level}, ${comment.cGroupNO}, ${comment.articleNO})|">
-				        댓글반영하기
+				        <!--댓글반영하기-->
 				      </button>
 				      <button th:onclick="|hideTextarea(${comment.commentNO})|">취소</button>
 				    </div>
-				  </div> <!-- 부모 댓글 본문 -->
+				  </div>  <!--부모 댓글 본문--> 
 
-				  <!-- 자식 댓글들이 들어갈 영역 -->
+				   <!--자식 댓글들이 들어갈 영역--> 
 				  <div class="replies" th:id="'replies_' + ${comment.commentNO}"></div>
 				</div>
-
 		     </td>
 		   </tr>
         </tbody>
       </table>
     </div>
-</div>	
+</div>
+
+<!-- 로그인 선택 모달 -->
+<div id="loginSelectModal" 
+     style="display:none; position:fixed; top:40%; left:50%; transform:translate(-50%, -50%);
+            background:white; border:1px solid #ccc; padding:20px; border-radius:10px; 
+            box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:9999;">
+
+    <p style="font-size:16px; font-weight:bold;">댓글을 작성하려면 로그인이 필요합니다.</p>
+
+    <button id="btn-normal-login" 
+            style="padding:8px 20px; margin-right:10px;">
+        일반 로그인
+    </button>
+
+    <button id="btn-google-login" 
+            style="padding:8px 20px; background:#4285F4; color:white; border:none;">
+        Google 로그인
+    </button>
+</div>
+	
   </body>
   </html>

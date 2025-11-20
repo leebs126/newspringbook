@@ -1,4 +1,118 @@
+function fn_addNewComment(isLogOn, loginForm, articleNO, pCommentNO){
+    if(isLogOn){  
+        // -----------------------------
+        // 👉 로그인 상태: 기존 로직 그대로
+        // -----------------------------
+        var textarea_comment = document.getElementById("textarea_comment" + articleNO);
+        _contents = textarea_comment.value;
 
+        if(!_contents){
+            alert("댓글을 입력해주세요.");
+            return;
+        }
+
+        var commentInfo ={
+            "contents": _contents,
+            "articleNO": articleNO
+        };
+
+        $.ajax({
+            type:"POST",
+            url:"/comm/addNewComment",
+            contentType:"application/json;charset=UTF-8",
+            data: JSON.stringify(commentInfo),
+            success:function (result){
+                var jsonComment = JSON.parse(result);
+
+                var commentInfo = "";
+                commentInfo += jsonComment.replyId +"&nbsp; ";
+                commentInfo += jsonComment.contents +"&nbsp; ";
+                commentInfo += jsonComment.createdAt +"&nbsp; ";
+				commentInfo += jsonComment.updatedAt +"&nbsp; ";
+				
+                var commentNO = jsonComment.commentNO;
+                var contents = jsonComment.contents;
+                var level = jsonComment.level;
+                var pCommentNO = jsonComment.pCommentNO;
+                var cGroupNO = jsonComment.cGroupNO;
+                level++;
+
+                // 새 댓글 동적 추가
+                var tbody = $("#table_comment tbody");
+                var newRow = $("<tr id=comment_tr" + cGroupNO + " align=left style='color: green;'>");
+                newRow.append($('<td>').html(
+                    "<div   id=div_comment_"+commentNO +" " +  
+                            "data-parent="+pCommentNO+ " " + 
+                            "style='margin-bottom:5px;'>" +
+                      " <div class=comment-body> " + 
+                        "<span style='padding-left:10px'/>"+commentInfo + " " +
+                        "<a href='javascript:showTextarea(" + commentNO+ ")'>답글작성</a> " +
+                        "<a href='javascript:showModtextarea(" + commentNO + ")'>수정</a> " +
+                        "<a href='javascript:fn_removeComment("+commentNO+", "+pCommentNO+","+cGroupNO+")'>삭제</a> " +
+
+                        "<div id='div_replytextarea"+commentNO+"' style='display:none'>" + 
+                        "<textarea id='replytextarea_comment" + commentNO+"' rows='4' cols='50'></textarea>" + 
+                        "<br>" + 
+                        "<button onclick='fn_addReplyComment("+isLogOn+",\""+loginForm+"\"," + commentNO + "," + level + ","+ cGroupNO +","+ articleNO+ ")'>댓글반영하기</button> " +
+                        "<button onclick='hideTextarea(" + commentNO + ")'>취소</button>" + 
+                        "</div>" +
+
+                        "<div id='div_modtextarea" + commentNO + "' style='display:none'>" +
+                        "<textarea id='modtextarea_comment" + commentNO + "' rows=4 cols=50>" + contents +"</textarea>" +
+                        "<br>" +
+                        "<button onclick='fn_modComment("+commentNO+","+level+")'>댓글수정하기</button> " +
+                        "<button onclick='hideTextarea("+commentNO+")'>취소</button>" +
+                        "</div>" +
+                      "</div>" + 
+                      "<div class=replies id=replies_" + commentNO+"></div>" + 
+                    "</div>"
+                ));
+                tbody.prepend(newRow);
+
+                const textareaId = "textarea_comment" + articleNO;
+                document.getElementById(textareaId).value = "";
+            },
+            error:function(){
+                alert("에러가 발생했습니다.");
+            }
+        });
+
+    }else{
+        // -----------------------------
+        // ❌ 비로그인 시 팝업 띄우기
+        // -----------------------------
+        openLoginSelectModal(articleNO);
+    }
+}
+
+function openLoginSelectModal(articleNO, commentNO) {
+    const modal = document.getElementById("loginSelectModal");
+    modal.style.display = "block";
+
+    // 일반 로그인 클릭
+    document.getElementById("btn-normal-login").onclick = function () {
+        window.location.href = "/member/loginForm?action=/article/viewArticle&articleNO=" + articleNO +"&commentNO= " + commentNO;
+    };
+
+    // Google 로그인 클릭
+    document.getElementById("btn-google-login").onclick = function () {
+        window.location.href = "/oauth2/authorization/google?action=/article/viewArticle.do&articleNO=" + articleNO + "&commentNO= " + commentNO;
+    };
+}
+
+
+function showTextarea(isLogOn, articleNO, commentNO) {
+//	alert(commentNO);
+//  alert("isLogOn: " + isLogOn);
+	if(isLogOn){  
+		var textareaDiv = document.getElementById("div_replytextarea"+commentNO);
+				textareaDiv.style.display = "block";
+    }else{
+		openLoginSelectModal(articleNO, commentNO);	
+	}
+}
+
+/*
 function fn_addNewComment(isLogOn, loginForm, articleNO, pCommentNO){
 	console.log(loginForm);
 	if(isLogOn == 'true'){  //로그인 상태일 때
@@ -84,12 +198,9 @@ function fn_addNewComment(isLogOn, loginForm, articleNO, pCommentNO){
 		    location.href=loginForm+'?action=/article/viewArticle.do&articleNO=' + articleNO;
 	 }
 }
+*/
 
-function showTextarea(commentNO) {
-	//alert(commentNO);
-  var textareaDiv = document.getElementById("div_replytextarea"+commentNO);
-  textareaDiv.style.display = "block";
-}
+
 
 
 function hideTextarea(commentNO) {
@@ -99,7 +210,7 @@ function hideTextarea(commentNO) {
 }
 
 //수정텍스트에어리어 표시
-function showModtextarea(commentNO) {
+function showModtextarea(isLogOn, commentNO) {
 //	alert(commentNO);
   var textareaDiv = document.getElementById("div_modtextarea"+commentNO);
   textareaDiv.style.display = "block";
@@ -127,7 +238,7 @@ function fn_modComment(_commentNO, _level) {
   
   $.ajax({
       type:"POST",
-      url:"/comm/modComment.do",
+      url:"/comm/modComment",
       contentType:"application/json;charset=UTF-8",
       data: JSON.stringify(modCommentInfo),
       success:function (result, textStatus){
@@ -136,8 +247,10 @@ function fn_modComment(_commentNO, _level) {
          
          commentInfo += jsonComment.replyId +" ";
          commentInfo += jsonComment.contents +" ";
-		 commentInfo += jsonComment.creDate;
-         var commentNO = jsonComment.commentNO;
+		 commentInfo += jsonComment.createdAt;
+		 commentInfo += jsonComment.updatedAt;
+		 
+		 var commentNO = jsonComment.commentNO;
          var contents = jsonComment.contents;
          var articleNO = jsonComment.articleNO;
 		 var cGroupNO = jsonComment.cGroupNO;
@@ -205,7 +318,7 @@ function fn_removeComment(commentNO, pCommentNO, cGroupNO){
 	  
 	  $.ajax({
 	      type:"POST",
-	      url:"/comm/removeComment.do",
+	      url:"/comm/removeComment",
 	      contentType:"application/json;charset=UTF-8",
 	      data: JSON.stringify(commentInfo),
 	      success:function (result, textStatus){
@@ -265,7 +378,7 @@ function fn_addReplyComment(isLogOn, loginForm, _pCommentNO, _pLevel, _cGroupNO,
 	 
  	   $.ajax({
        type:"POST",
-	       url:"/comm/addReplyComment.do",
+	       url:"/comm/addReplyComment",
 	       contentType:"application/json;charset=UTF-8",
 	       data: JSON.stringify(replyCommentInfo),
 	       success:function (result, textStatus){
@@ -275,7 +388,7 @@ function fn_addReplyComment(isLogOn, loginForm, _pCommentNO, _pLevel, _cGroupNO,
 			var commentNO = jsonComment.commentNO;
 			var replyId   = jsonComment.replyId;
 			var contents  = jsonComment.contents;
-			var creDate   = jsonComment.creDate;
+			var creDate   = jsonComment.createdAt;
 			var pCommentNO = jsonComment.pCommentNO;
 			var cGroupNO = jsonComment.cGroupNO;
 			var indent = 10 * _pLevel; // level 만큼 들여쓰기
@@ -345,7 +458,7 @@ function fn_addReplyComment(isLogOn, loginForm, _pCommentNO, _pLevel, _cGroupNO,
 	 alert("로그인 후 댓글 작성이 가능합니다.")
 	 alert(loginForm);
 	    //alert(${article.articleNO});
-	    location.href=loginForm+'?action=/article/viewArticle.do&articleNO=' + articleNO;
+	    location.href=loginForm+'?action=/article/viewArticle&articleNO=' + articleNO;
  }
 	 
 }

@@ -11,7 +11,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script th:inline="javascript">
 		/* 로그인 여부를 JS Boolean으로 변환 */
-		 const isLogOn = /*[[${session.isLogOn}]]*/ false; 
+		 const isLogOn = false; 
 	</script>
 	<style>
 		  .cell-item {
@@ -60,7 +60,7 @@
 		      <!-- 제목 -->
 		      <td style="padding-left:30px; text-align:left; ">
 		        <div th:each="article, iterStat : ${entry.value}">
-				  <a class="no-uline" th:href="@{/article/viewArticle.do(articleNO=${article.articleNO})}"
+				  <a class="no-uline" th:href="@{/article/viewArticle(articleNO=${article.articleNO})}"
 				     th:style="'margin-left:' + (${article.level} * 20) + 'px;'">
 				     
 					 <!-- level 이 2 이상일 때만 [답글] 표시 -->
@@ -105,11 +105,6 @@
 		  </div>
 	</div>
 
-	<!--<a class="cls1" id="create-btn-guest"
-	   th:href="|javascript:fn_articleForm('${session.isLogOn}', 'article/articleForm.do', '/member/loginForm')|">
-	  <p class="cls2">새글쓰기</p>
-	</a>
--->
  <a class="cls1" id="create-btn-guest" style="cursor: pointer;">
   <p class="cls2">새글쓰기</p>
 </a>
