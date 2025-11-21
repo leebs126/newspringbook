@@ -17,41 +17,16 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-//		const isLogOn = /*[[${session.isLogOn} ?: false]]*/ false;
-//		window.onload = function() {
-//		    var replyTargetCommentNO = /*[[${session.replyTargetCommentNO}]]*/ null;
+		const isLogOn = /*[[${session.isLogOn} ?: false]]*/ false;
+		window.onload = function() {
+		    var replyTargetCommentNO = /*[[${session.replyTargetCommentNO}]]*/ null;
 
-//		    if (replyTargetCommentNO) {
-//		        showReplyTextareaAfterLogin(replyTargetCommentNO);
-//		        fetch('/clear/replyTarget', { method: 'POST' });
-//		    }
-//		};
+		    if (replyTargetCommentNO) {
+		        showReplyTextareaAfterLogin(replyTargetCommentNO);
+		        fetch('/clear/replyTarget', { method: 'POST' });
+		    }
+		};
 		
-		
-		/*
-	    window.addEventListener("DOMContentLoaded", function() {
-
-	        /* 세션에 저장된 대댓글 대상 commentNO 읽기 */
-	        // var replyTargetCommentNO = /*[[${session.replyTargetCommentNO}]]*/ null;
-			
-			/*
-	        if(replyTargetCommentNO){
-				waitForReplyDiv(replyTargetCommentNO, function(div) {
-			         div.style.display = "block";
-			         div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-			         fetch('/clear/replyTarget', { method: 'POST' });
-				 });
-				*/
-				/*
-		       setTimeout(function() {
-		           showReplyTextareaAfterLogin(replyTargetCommentNO);
-		           fetch('/clear/replyTarget', { method: 'POST' });
-		       }, 0);
-			   */
-			   /*
-	        }
-	    });
-		*/
 	    /* 로그인 후 자동으로 textarea 열어주는 함수 */
 	    function showReplyTextareaAfterLogin(replyTargetCommentNO){
 			alert("replyTargetCommentNO=" + replyTargetCommentNO);
@@ -219,7 +194,7 @@
       <tr>
         <td>
           <textarea th:id="'textarea_comment' + ${articleMap.article.articleNO}" rows="4" cols="100"
-                    placeholder="댓글은 200까지 가능합니다."></textarea>
+                    placeholder="댓글은 로그인 후 200까지 가능합니다."></textarea>
         </td>
       </tr>
       <tr>
@@ -272,7 +247,7 @@
 				     <!--로그인 회원과 댓글 작성자가 같은 경우 수정/삭제 버튼 표시--> 
 				    <th:block th:if="${session.loginUser != null and comment.replyId == session.loginUser.memId}">
 				      <a href="javascript:void(0)"
-				         th:onclick="|showModtextarea(${comment.commentNO})|"
+				         th:onclick="|showModTextarea(${comment.commentNO})|"
 				         style="text-decoration: none;">수정</a>
 				      <a href="javascript:void(0)"
 				         th:onclick="|fn_removeComment(${comment.commentNO}, ${comment.pCommentNO}, ${comment.cGroupNO})|"
@@ -280,28 +255,27 @@
 				    </th:block>
 
 				     <!--댓글 수정 textarea--> 
-				    <div th:id="'div_modtextarea' + ${comment.commentNO}" style="display:none">
-				      <textarea th:id="'modtextarea_comment' + ${comment.commentNO}"
+				    <div th:id="'div_modTextarea' + ${comment.commentNO}" style="display:none">
+				      <textarea th:id="'modTextarea_comment' + ${comment.commentNO}"
 				                rows="4" cols="50"
-				                placeholder="수정글은 200자까지 가능합니다."
+				                placeholder="수정글은 200자까지 가능합니다.(로그인 후 작성가능)"
 				                th:text="${#strings.trim(comment.contents)}"></textarea>
 				      <br>
 				      <button th:onclick="|fn_modComment(${comment.commentNO}, ${comment.level})|">수정반영하기</button>
 				      <button th:onclick="|hideModtextarea(${comment.commentNO})|">취소</button>
 				    </div>
 
-				     <!--답글 작성 textarea -->
-				    <div th:id="'div_replytextarea' + ${comment.commentNO}" style="display:none">
-				      <textarea th:id="'replytextarea_comment' + ${comment.commentNO}"
-				                rows="4" cols="50"
-				                placeholder="답글은 200자까지 가능합니다."></textarea>
-				      <br>
-				      <button th:onclick="|fn_addReplyComment('${session.isLogOn}', '/member/loginForm.do', ${comment.commentNO}, ${comment.level}, ${comment.cGroupNO}, ${comment.articleNO})|">
-				        <!--댓글반영하기-->
-				      </button>
-				      <button th:onclick="|hideTextarea(${comment.commentNO})|">취소</button>
-				    </div>
-				  </div>  <!--부모 댓글 본문--> 
+					<!--답글 작성 textarea -->
+				    <div th:id="'div_replyTextarea' + ${comment.commentNO}"  style="display:none">
+					  <textarea th:id="'replyTextarea_comment' + ${comment.commentNO}"
+					            rows="4" cols="50"
+					            placeholder="답글은 200자까지 가능합니다."></textarea>
+					  <br>
+					  <button th:onclick="|fn_addReplyComment('${session.isLogOn}', '/member/loginForm.do', ${comment.commentNO}, ${comment.level}, ${comment.cGroupNO}, ${comment.articleNO})|">
+					    댓글반영
+					  </button>
+					  <button th:onclick="|hideTextarea(${comment.commentNO})|">취소</button>
+					</div>  <!--부모 댓글 본문--> 
 
 				   <!--자식 댓글들이 들어갈 영역--> 
 				  <div class="replies" th:id="'replies_' + ${comment.commentNO}"></div>

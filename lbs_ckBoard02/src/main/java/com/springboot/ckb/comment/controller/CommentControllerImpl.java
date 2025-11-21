@@ -54,7 +54,7 @@ public class CommentControllerImpl implements CommentController {
 		return new ResponseEntity(commentjson, responseHeaders, HttpStatus.CREATED);
 	}
 
-	@PostMapping("/modComment.do")
+	@PostMapping("/modComment")
 	@Override
 	public ResponseEntity<String> ModComment(@RequestBody Comment comment, 
 			                                 HttpServletRequest request,

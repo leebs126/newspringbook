@@ -111,9 +111,13 @@ public class ArticleControllerImpl implements ArticleController {
 
 		Map articleMap = articleService.viewArticle(viewMap);
 		
-		if(commentNO != null && !commentNO.isEmpty()) {
-			HttpSession session = request.getSession();
-			session.setAttribute("replyTargetCommentNO", commentNO);	
+		if (commentNO != null 
+		    && !commentNO.trim().isEmpty()
+		    && !"null".equals(commentNO.trim())
+		    && !"undefined".equals(commentNO.trim())) {
+
+		    HttpSession session = request.getSession();
+		    session.setAttribute("replyTargetCommentNO", Integer.parseInt(commentNO.trim()));
 		}
 		
 		articleMap.put("removeCompleted", removeCompleted);
@@ -200,13 +204,13 @@ public class ArticleControllerImpl implements ArticleController {
 			int articleNO = articleService.addNewArticle(articleMap);
 			message = "<script>";
 			message += " alert('글을 추가했습니다.');";
-			message += " location.href='" + multipartRequest.getContextPath() + "/article/viewArticle.do?articleNO="
+			message += " location.href='" + multipartRequest.getContextPath() + "/article/viewArticle?articleNO="
 					+ articleMap.get("articleNO") + "';";
 			message += " </script>";
 		} catch (Exception e) {
 			message = "<script>";
 			message += " alert('오류가 발생했습니다. 다시 작성해 주세요.');";
-			message += " location.href='" + multipartRequest.getContextPath() + "/article/articleForm.do'";
+			message += " location.href='" + multipartRequest.getContextPath() + "/article/articleForm'";
 			message += " </script>";
 			e.printStackTrace();
 		} finally {

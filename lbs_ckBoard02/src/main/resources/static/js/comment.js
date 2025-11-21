@@ -46,7 +46,7 @@ function fn_addNewComment(isLogOn, loginForm, articleNO, pCommentNO){
                             "style='margin-bottom:5px;'>" +
                       " <div class=comment-body> " + 
                         "<span style='padding-left:10px'/>"+commentInfo + " " +
-                        "<a href='javascript:showTextarea(" + commentNO+ ")'>답글작성</a> " +
+                        "<a href='javascript:showReplyTextarea(" + commentNO+ ", "+ ")'>답글작성</a> " +
                         "<a href='javascript:showModtextarea(" + commentNO + ")'>수정</a> " +
                         "<a href='javascript:fn_removeComment("+commentNO+", "+pCommentNO+","+cGroupNO+")'>삭제</a> " +
 
@@ -81,7 +81,7 @@ function fn_addNewComment(isLogOn, loginForm, articleNO, pCommentNO){
         // -----------------------------
         // ❌ 비로그인 시 팝업 띄우기
         // -----------------------------
-        openLoginSelectModal(articleNO);
+        openLoginSelectModal(articleNO, "");
     }
 }
 
@@ -91,12 +91,12 @@ function openLoginSelectModal(articleNO, commentNO) {
 
     // 일반 로그인 클릭
     document.getElementById("btn-normal-login").onclick = function () {
-        window.location.href = "/member/loginForm?action=/article/viewArticle&articleNO=" + articleNO +"&commentNO= " + commentNO;
+        window.location.href = "/member/loginForm?action=/article/viewArticle&articleNO=" + articleNO +"&commentNO=" + commentNO;
     };
 
     // Google 로그인 클릭
     document.getElementById("btn-google-login").onclick = function () {
-        window.location.href = "/oauth2/authorization/google?action=/article/viewArticle.do&articleNO=" + articleNO + "&commentNO= " + commentNO;
+        window.location.href = "/oauth2/authorization/google?action=/article/viewArticle.do&articleNO=" + articleNO + "&commentNO=" + commentNO;
     };
 }
 
@@ -112,6 +112,10 @@ function showTextarea(isLogOn, articleNO, commentNO) {
 	}
 }
 
+function showReplyTextarea(commentNO){
+  var textareaDiv = document.getElementById("div_replytextarea"+commentNO);
+  textareaDiv.style.display = "block";
+}
 /*
 function fn_addNewComment(isLogOn, loginForm, articleNO, pCommentNO){
 	console.log(loginForm);
@@ -210,9 +214,9 @@ function hideTextarea(commentNO) {
 }
 
 //수정텍스트에어리어 표시
-function showModtextarea(isLogOn, commentNO) {
-//	alert(commentNO);
-  var textareaDiv = document.getElementById("div_modtextarea"+commentNO);
+function showModTextarea(commentNO) {
+  alert(commentNO);
+  var textareaDiv = document.getElementById("div_modTextarea"+commentNO);
   textareaDiv.style.display = "block";
 }
 
@@ -228,8 +232,8 @@ function hideModtextarea(commentNO) {
 
 function fn_modComment(_commentNO, _level) {
   //alert("_level: " +_level);
-  var _modtextarea = document.getElementById("modtextarea_comment"+_commentNO);
-  var _contents = _modtextarea.value;
+  var _modTextarea = document.getElementById("modTextarea_comment"+_commentNO);
+  var _contents = _modTextarea.value;
   
   var modCommentInfo ={
 		 "contents": _contents,
@@ -267,7 +271,7 @@ function fn_modComment(_commentNO, _level) {
 		 var updatedHtml =
 		   "<span style='padding-left:" + indentedPx + "px; color:green;'>" +commentInfo + "</span> " +
 		   "<a href='javascript:showTextarea(" + commentNO + ")' style='text-decoration:none;'>답글작성</a> " +
-		   "<a href='javascript:showModtextarea(" + commentNO + ")' style='text-decoration:none;'>수정</a> " +
+		   "<a href='javascript:showModTextarea(" + commentNO + ")' style='text-decoration:none;'>수정</a> " +
 		   "<a href='javascript:fn_removeComment(" + commentNO + "," + _level + "," + cGroupNO + ")' style='text-decoration:none;'>삭제</a>" +
 
 		   // 답글 textarea

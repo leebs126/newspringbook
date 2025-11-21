@@ -115,7 +115,9 @@ public class WebSecurityConfig {
             	    String redirect = (String) session.getAttribute("action");
             	    session.removeAttribute("action");
 
-            	    if(redirect.equals("/article/viewArticle")) {
+            	    if(redirect == null) {
+            	    	response.sendRedirect("/main");
+            	    }else if(redirect.equals("/article/viewArticle")) {
             	    	String articleNO = (String)session.getAttribute("articleNO");
             	    	String commentNO = (String)session.getAttribute("commentNO");
             	    	redirect+="?articleNO=" + articleNO + "&commentNO=" + commentNO;		
