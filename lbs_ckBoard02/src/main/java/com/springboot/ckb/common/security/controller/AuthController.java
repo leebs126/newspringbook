@@ -22,15 +22,31 @@ public class AuthController {
                                 @RequestParam(value = "redirectURI", required = false) String redirectURI,
                                 @RequestParam(value = "groupNO", required = false) String groupNO,
                                 @RequestParam(value = "parentNO", required = false) String parentNO,
+                                @RequestParam(value= "articleNO", required=false) String articleNO,  //댓글 쓰기시 글번호
+  							    @RequestParam(value= "commentNO", required=false) String commentNO,
                                 HttpServletRequest request,
                                 HttpServletResponse response) throws IOException {
 
         HttpSession session = request.getSession();
-        if (redirectURI != null && !redirectURI.isEmpty()) {
+        if (redirectURI != null && !redirectURI.isEmpty()) { //로그인 후 리다이렉트할 경로 저장
         	session.setAttribute("redirectURI", redirectURI);
-        	session.setAttribute("groupNO", groupNO);
-        	session.setAttribute("parentNO", parentNO);
         }
+        
+        if(parentNO != null && !parentNO.isEmpty() ) {  //답글쓰기로 로그인 시 
+			session.setAttribute("parentNO", parentNO);
+		}
+		
+		if(groupNO != null && !groupNO.isEmpty() ) {  //답글쓰기로 로그인 시 
+			session.setAttribute("groupNO", groupNO);
+		}
+		
+		if(articleNO != null && !articleNO.isEmpty()) {  //댓글 쓰기 시 로그인 후 해당 글번호의 글로 이동
+			session.setAttribute("articleNO", articleNO);
+		}
+		
+		if(commentNO != null && !commentNO.isEmpty()) {  //댓글 쓰기 시 로그인 후 해당 글번호의 글로 이동
+			session.setAttribute("commentNO", commentNO);
+		}
 
         // 실제 Spring Security가 사용하는 엔드포인트로 보내기
         response.sendRedirect("/oauth2/authorization/" + provider);

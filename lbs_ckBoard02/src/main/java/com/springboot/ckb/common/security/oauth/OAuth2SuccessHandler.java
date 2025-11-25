@@ -157,27 +157,28 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	        session.removeAttribute("redirectURI");
 	    }
 	    
-//	    // ✅ 세션에서 redirectURI 꺼내기
-//	    HttpSession session = request.getSession(false);
-//	    
-//	    //구글 로그인 시 세션에 로그온 상태 설정
-//	    CustomOAuth2UserService customUser = (CustomOAuth2UserService) authentication.getPrincipal();
-//	    session.setAttribute("member", customUser.get());
-//	    session.setAttribute("isLogOn", true);
-//	    String redirect = null;
-//	    if (session != null) {
-//	        redirect = (String) session.getAttribute("redirectURI");
-//	        session.removeAttribute("redirectURI");
-//	    }
-//	    
-	    if (redirectURI != null && !redirectURI.isEmpty()) {
-	        targetUrl = redirectURI; // JWT를 붙이지 않고 redirect
-	    } else {
-	        targetUrl = getTargetUrl(accessToken);
+	    if(redirectURI == null) {
+	    	response.sendRedirect("/main");
+	    }else if(redirectURI.equals("/article/viewArticle")) {
+	    	String articleNO = (String)session.getAttribute("articleNO");
+	    	String commentNO = (String)session.getAttribute("commentNO");
+	    	redirectURI+="?articleNO=" + articleNO + "&commentNO=" + commentNO;		
+	    	response.sendRedirect(redirectURI);	
+	    }else if(redirectURI.equals("/article/articleForm")){
+	    	response.sendRedirect(redirectURI);
+	    }else {
+	    	response.sendRedirect(redirectURI != null ? redirectURI : "/main");	
 	    }
-
-	    clearAuthenticationAttributes(request, response);
-	    getRedirectStrategy().sendRedirect(request, response, targetUrl);
+	    
+	    
+//	    if (redirectURI != null && !redirectURI.isEmpty()) {
+//	        targetUrl = redirectURI; // JWT를 붙이지 않고 redirect
+//	    } else {
+//	        targetUrl = getTargetUrl(accessToken);
+//	    }
+//
+//	    clearAuthenticationAttributes(request, response);
+//	    getRedirectStrategy().sendRedirect(request, response, targetUrl);
 	}
 
 

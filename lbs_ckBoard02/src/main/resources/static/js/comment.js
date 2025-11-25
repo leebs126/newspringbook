@@ -47,21 +47,21 @@ function fn_addNewComment(isLogOn, loginForm, articleNO, pCommentNO){
                       " <div class=comment-body> " + 
                         "<span style='padding-left:10px'/>"+commentInfo + " " +
                         "<a href='javascript:showReplyTextarea(" + commentNO+ ", "+ ")'>답글작성</a> " +
-                        "<a href='javascript:showModtextarea(" + commentNO + ")'>수정</a> " +
+                        "<a href='javascript:showModTextarea(" + commentNO + ")'>수정</a> " +
                         "<a href='javascript:fn_removeComment("+commentNO+", "+pCommentNO+","+cGroupNO+")'>삭제</a> " +
 
-                        "<div id='div_replytextarea"+commentNO+"' style='display:none'>" + 
-                        "<textarea id='replytextarea_comment" + commentNO+"' rows='4' cols='50'></textarea>" + 
+                        "<div id='div_replyTextarea"+commentNO+"' style='display:none'>" + 
+                        "<textarea id='replyTextarea_comment" + commentNO+"' rows='4' cols='50'></textarea>" + 
                         "<br>" + 
                         "<button onclick='fn_addReplyComment("+isLogOn+",\""+loginForm+"\"," + commentNO + "," + level + ","+ cGroupNO +","+ articleNO+ ")'>댓글반영하기</button> " +
-                        "<button onclick='hideTextarea(" + commentNO + ")'>취소</button>" + 
+                        "<button onclick='hideReplyTextarea(" + commentNO + ")'>취소</button>" + 
                         "</div>" +
 
-                        "<div id='div_modtextarea" + commentNO + "' style='display:none'>" +
-                        "<textarea id='modtextarea_comment" + commentNO + "' rows=4 cols=50>" + contents +"</textarea>" +
+                        "<div id='div_modTextarea" + commentNO + "' style='display:none'>" +
+                        "<textarea id='modTextarea_comment" + commentNO + "' rows=4 cols=50>" + contents +"</textarea>" +
                         "<br>" +
                         "<button onclick='fn_modComment("+commentNO+","+level+")'>댓글수정하기</button> " +
-                        "<button onclick='hideTextarea("+commentNO+")'>취소</button>" +
+                        "<button onclick='hideModTextarea("+commentNO+")'>취소</button>" +
                         "</div>" +
                       "</div>" + 
                       "<div class=replies id=replies_" + commentNO+"></div>" + 
@@ -96,24 +96,24 @@ function openLoginSelectModal(articleNO, commentNO) {
 
     // Google 로그인 클릭
     document.getElementById("btn-google-login").onclick = function () {
-        window.location.href = "/oauth2/authorization/google?action=/article/viewArticle.do&articleNO=" + articleNO + "&commentNO=" + commentNO;
+        window.location.href = "/oauth2/authorize/google?redirectURI=/article/viewArticle&articleNO=" + articleNO + "&commentNO=" + commentNO;
     };
 }
 
 
-function showTextarea(isLogOn, articleNO, commentNO) {
+function displayReplyTextarea(isLogOn, articleNO, commentNO) {
 //	alert(commentNO);
 //  alert("isLogOn: " + isLogOn);
 	if(isLogOn){  
-		var textareaDiv = document.getElementById("div_replytextarea"+commentNO);
-				textareaDiv.style.display = "block";
+		var textareaDiv = document.getElementById("div_replyTextarea"+commentNO);
+		textareaDiv.style.display = "block";
     }else{
 		openLoginSelectModal(articleNO, commentNO);	
 	}
 }
 
 function showReplyTextarea(commentNO){
-  var textareaDiv = document.getElementById("div_replytextarea"+commentNO);
+  var textareaDiv = document.getElementById("div_replyTextarea"+commentNO);
   textareaDiv.style.display = "block";
 }
 /*
@@ -207,15 +207,15 @@ function fn_addNewComment(isLogOn, loginForm, articleNO, pCommentNO){
 
 
 
-function hideTextarea(commentNO) {
+function hideReplyTextarea(commentNO) {
   //alert(commentNO);
-  var textareaDiv = document.getElementById("div_replytextarea"+commentNO);
+  var textareaDiv = document.getElementById("div_replyTextarea"+commentNO);
   textareaDiv.style.display = "none";
 }
 
 //수정텍스트에어리어 표시
 function showModTextarea(commentNO) {
-  alert(commentNO);
+ // alert(commentNO);
   var textareaDiv = document.getElementById("div_modTextarea"+commentNO);
   textareaDiv.style.display = "block";
 }
@@ -223,9 +223,9 @@ function showModTextarea(commentNO) {
 
 
 //수정텍스트에어리어  취소
-function hideModtextarea(commentNO) {
+function hideModTextarea(commentNO) {
   //alert(commentNO);
-  var textareaDiv = document.getElementById("div_modtextarea"+commentNO);
+  var textareaDiv = document.getElementById("div_modTextarea"+commentNO);
   textareaDiv.style.display = "none";
 }
 
@@ -265,30 +265,30 @@ function fn_modComment(_commentNO, _level) {
          }else {
 			indentedPx = 10 * (_level);
 		 }
-		 //alert("_level :"  +_level);
+	//	 alert("commentNO :"  + commentNO);
 		 // 수정한 댓글 div에 접근
 		 var currentDiv = $("#div_comment_" + _commentNO);
 		 var updatedHtml =
 		   "<span style='padding-left:" + indentedPx + "px; color:green;'>" +commentInfo + "</span> " +
-		   "<a href='javascript:showTextarea(" + commentNO + ")' style='text-decoration:none;'>답글작성</a> " +
+		   "<a href='javascript:showReplyTextarea(" + commentNO + ")' style='text-decoration:none;'>답글작성</a> " +
 		   "<a href='javascript:showModTextarea(" + commentNO + ")' style='text-decoration:none;'>수정</a> " +
 		   "<a href='javascript:fn_removeComment(" + commentNO + "," + _level + "," + cGroupNO + ")' style='text-decoration:none;'>삭제</a>" +
 
 		   // 답글 textarea
-		   "<div id='div_replytextarea" + commentNO + "' style='display:none; margin-left:20px;'>" +
-		     "<textarea id='replytextarea_comment" + commentNO + "' rows='4' cols='50' placeholder='답글은 200자까지 가능합니다.'></textarea>" +
+		   "<div id='div_replyTextarea" + commentNO + "' style='display:none; margin-left:20px;'>" +
+		     "<textarea id='replyTextarea_comment" + commentNO + "' rows='4' cols='50' placeholder='답글은 200자까지 가능합니다.'></textarea>" +
 		     "<br>" +
 		     "<button onclick='fn_addReplyComment(true,\"\", " + commentNO + ", " + (_level+1) + ", " + cGroupNO + ", " + articleNO + ")'>댓글반영하기</button> " +
-		     "<button onclick='hideTextarea(" + commentNO + ")'>취소</button>" +
+		     "<button onclick='hideReplyTextarea(" + commentNO + ")'>취소</button>" +
 		   "</div>" +
 
 		   // 수정 textarea
-		   "<div id='div_modtextarea" + commentNO + "' style='display:none; margin-left:20px;'>" +
-		     "<textarea id='modtextarea_comment" + commentNO + "' rows='4' cols='50' placeholder='수정글은 200자까지 가능합니다.'>" +
+		   "<div id='div_modTextarea" + commentNO + "' style='display:none; margin-left:20px;'>" +
+		     "<textarea id='modTextarea_comment" + commentNO + "' rows='4' cols='50' placeholder='수정글은 200자까지 가능합니다.'>" +
 		       contents +"</textarea>" +
 		     "<br>" +
 		     "<button onclick='fn_modComment(" + commentNO + ", " + _level + ")'>수정반영하기</button> " +
-		     "<button onclick='hideModtextarea(" + commentNO + ")'>취소</button>" +
+		     "<button onclick='hideModTextarea(" + commentNO + ")'>취소</button>" +
 		   "</div>" 
 		   ;
 
@@ -300,7 +300,7 @@ function fn_modComment(_commentNO, _level) {
 		   // replies 다시 붙이기 (원래 순서대로 부모의 마지막으로 붙음)
 		   currentDiv.append(replies)
       	  
-      	   hideModtextarea(commentNO);  //수정 후 수정 텍스트에어리어를 닫습니다.
+      	   hideModTextarea(commentNO);  //수정 후 수정 텍스트에어리어를 닫습니다.
       },
      error:function(data,textStatus){
         alert("에러가 발생했습니다.");
@@ -365,7 +365,7 @@ function fn_addReplyComment(isLogOn, loginForm, _pCommentNO, _pLevel, _cGroupNO,
 	
 	var replyCommentInfo = null;
 	if(isLogOn == 'true' || isLogOn == true){  //로그인 상태일 때
-		var replytextarea = document.getElementById("replytextarea_comment"+ _pCommentNO);
+		var replytextarea = document.getElementById("replyTextarea_comment"+ _pCommentNO);
 		var _replyContents = replytextarea.value;
 			 
 		 if(_replyContents == null || _replyContents.length==0){
@@ -406,28 +406,28 @@ function fn_addReplyComment(isLogOn, loginForm, _pCommentNO, _pLevel, _cGroupNO,
 				    <span>${replyId}</span>&nbsp;
 				    <span>${contents}</span>&nbsp;
 				    <span>${creDate}</span>
-				    <a href="javascript:showTextarea(${commentNO})" style="text-decoration:none;">답글작성</a>
-				    <a href="javascript:showModtextarea(${commentNO})" style="text-decoration:none;">수정</a>
+				    <a href="javascript:showReplyTextarea(${commentNO})" style="text-decoration:none;">답글작성</a>
+				    <a href="javascript:showModTextarea(${commentNO})" style="text-decoration:none;">수정</a>
 				    <a href="javascript:fn_removeComment(${commentNO}, ${pCommentNO}, ${cGroupNO})" style="text-decoration:none;">삭제</a>
 	
 				    <!-- 답글 작성 textarea -->
-				    <div id="div_replytextarea${commentNO}" style="display:none; margin-left:20px;">
-				      <textarea id="replytextarea_comment${commentNO}" rows="4" cols="50"
+				    <div id="div_replyTextarea${commentNO}" style="display:none; margin-left:20px;">
+				      <textarea id="replyTextarea_comment${commentNO}" rows="4" cols="50"
 				        placeholder="답글은 200자까지 가능합니다."></textarea>
 				      <br>
 				      <button onclick="fn_addReplyComment(true, '/member/loginForm.do', ${commentNO}, ${_pLevel+1}, ${cGroupNO}, ${articleNO})">
 				        댓글반영하기
 				      </button>
-				      <button onclick="hideTextarea(${commentNO})">취소</button>
+				      <button onclick="hideReplyTextarea(${commentNO})">취소</button>
 				    </div>
 	
 				    <!-- 수정 textarea -->
-				    <div id="div_modtextarea${commentNO}" style="display:none; margin-left:20px;">
-				      <textarea id="modtextarea_comment${commentNO}" rows="4" cols="50"
+				    <div id="div_modTextarea${commentNO}" style="display:none; margin-left:20px;">
+				      <textarea id="modTextarea_comment${commentNO}" rows="4" cols="50"
 				        placeholder="수정글은 200자까지 가능합니다.">${contents}</textarea>
 				      <br>
 				      <button onclick="fn_modComment(${commentNO}, ${_pLevel})">수정반영하기</button>
-				      <button onclick="hideModtextarea(${commentNO})">취소</button>
+				      <button onclick="hideModTextarea(${commentNO})">취소</button>
 				    </div>
 				</div>
 				<div class="replies" id="replies_${commentNO}"></div>
@@ -446,7 +446,7 @@ function fn_addReplyComment(isLogOn, loginForm, _pCommentNO, _pLevel, _cGroupNO,
 			});
 			parentDiv.html(children);*/
 
-	        var div_replytextarea = document.getElementById("div_replytextarea"+pCommentNO);
+	        var div_replytextarea = document.getElementById("div_replyTextarea"+pCommentNO);
 	        replytextarea.value="";
 	        div_replytextarea.style.display = "none";
 	          

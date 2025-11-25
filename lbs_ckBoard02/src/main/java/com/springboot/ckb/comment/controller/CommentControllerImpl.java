@@ -36,12 +36,18 @@ public class CommentControllerImpl implements CommentController {
 		
 		HttpSession session = request.getSession();
 		SessionUser loginUser = (SessionUser) session.getAttribute("loginUser");
-		String memId = null;
 		if (loginUser == null) {
 		    throw new RuntimeException("로그인이 필요합니다.");
 		}
 		
-		String replyId = loginUser.getMemId();  //로그인  사용자 아이디를 얻음
+		String provider = loginUser.getProvider();
+		String replyId = null;
+		
+		if(provider.equals("LOCAL")) {
+			replyId = loginUser.getMemId();  //로그인  사용자 아이디를 얻음	
+		}else if(provider.equals("GOOGLE")) {
+			replyId = loginUser.getNickname();
+		}
 		comment.setReplyId(replyId);
 		Comment newComment = commentService.addNewComment(comment);
 
@@ -90,12 +96,18 @@ public class CommentControllerImpl implements CommentController {
 		
 		HttpSession session = request.getSession();
 		SessionUser loginUser = (SessionUser) session.getAttribute("loginUser");
-		String memId = null;
 		if (loginUser == null) {
 		    throw new RuntimeException("로그인이 필요합니다.");
 		}
 		
-		String replyId = loginUser.getMemId();  //로그인  사용자 아이디를 얻음
+		String provider = loginUser.getProvider();
+		String replyId = null;
+		
+		if(provider.equals("LOCAL")) {
+			replyId = loginUser.getMemId();  //로그인  사용자 아이디를 얻음	
+		}else if(provider.equals("GOOGLE")) {
+			replyId = loginUser.getNickname();
+		}
 		comment.setReplyId(replyId);
 		Comment newComment = commentService.addReplyComment(comment);
 
